@@ -18,6 +18,6 @@
                                         MaterialOpacity="0.35" />
                         </ExperimentalAcrylicBorder.Material>
                 </ExperimentalAcrylicBorder>
-                <local:PlaylistsListView />
+                <local:FlowCoordinator />
         </Panel>
 </Window>
