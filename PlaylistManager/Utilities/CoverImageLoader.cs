@@ -1,16 +1,16 @@
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
-using BeatSaberPlaylistsLib.Types;
 
 namespace PlaylistManager.Utilities
 {
     public class CoverImageLoader
     {
         private readonly Assembly assembly;
-        private const string LOADING_PATH = "PlaylistManager.Icons.LoadingIcon.png";
+        private const string kLoadingPath = "PlaylistManager.Icons.LoadingIcon.png";
+        private const string kFolderPath = "PlaylistManager.Icons.FolderIcon.png";
         private Bitmap? loadingImage;
+        private Bitmap? folderImage;
         
         public CoverImageLoader(Assembly assembly)
         {
@@ -25,9 +25,23 @@ namespace PlaylistManager.Utilities
                 {
                     return loadingImage;
                 }
-                using Stream? imageStream = assembly.GetManifestResourceStream(LOADING_PATH);
+                using Stream? imageStream = assembly.GetManifestResourceStream(kLoadingPath);
                 loadingImage = Bitmap.DecodeToWidth(imageStream, 512);
                 return loadingImage;
+            }
+        }
+        
+        public Bitmap FolderImage
+        {
+            get
+            {
+                if (folderImage != null)
+                {
+                    return folderImage;
+                }
+                using Stream? imageStream = assembly.GetManifestResourceStream(kFolderPath);
+                folderImage = Bitmap.DecodeToWidth(imageStream, 512);
+                return folderImage;
             }
         }
     }

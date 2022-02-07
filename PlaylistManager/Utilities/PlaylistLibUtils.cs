@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using BeatSaberPlaylistsLib.Types;
 
 namespace PlaylistManager.Utilities
@@ -55,6 +56,11 @@ namespace PlaylistManager.Utilities
                 return playlistSong.LevelId;
             }
             return null;
+        }
+
+        public async Task<IPlaylist[]> GetPlaylistsAsync(BeatSaberPlaylistsLib.PlaylistManager playlistManager, bool includeChildren = false)
+        {
+            return await Task.Run(() => playlistManager.GetAllPlaylists(includeChildren));
         }
     }
 }

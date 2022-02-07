@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -24,18 +25,59 @@ namespace PlaylistManager.UserControls
     
     public class PlaylistCoverViewModel : ViewModelBase
     {
-        public readonly IPlaylist playlist;
+        public readonly IPlaylist? playlist;
+        public readonly BeatSaberPlaylistsLib.PlaylistManager? playlistManager;
+        public readonly bool isPlaylist;
         private readonly CoverImageLoader? coverImageLoader;
+        private readonly PlaylistLibUtils? playlistLibUtils;
+        private int? numPlaylists;
         private Bitmap? coverImage;
-        
+
         public PlaylistCoverViewModel(IPlaylist playlist)
         {
             this.playlist = playlist;
+            isPlaylist = true;
             coverImageLoader = Locator.Current.GetService<CoverImageLoader>();
         }
+        
+        public PlaylistCoverViewModel(BeatSaberPlaylistsLib.PlaylistManager playlistManager)
+        {
+            this.playlistManager = playlistManager;
+            isPlaylist = false;
+            coverImageLoader = Locator.Current.GetService<CoverImageLoader>();
+            playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
+        }
 
-        public string Title => playlist.Title;
-        public string Author => playlist.Author ?? "";
+        public string Title
+        {
+            get
+            {
+                if (isPlaylist)
+                {
+                    return playlist?.Title ?? "";
+                }
+                return Path.GetFileName(playlistManager?.PlaylistPath) ?? "";
+            }
+        }
+
+        public string Author
+        {
+            get
+            {
+                if (isPlaylist)
+                {
+                    return playlist?.Author ?? "";
+                }
+                
+                if (numPlaylists == null)
+                {
+                    _ = LoadPlaylistsAsync();
+                    return "";
+                }
+                
+                return $"{numPlaylists} playlists";
+            }
+        }
 
         public Bitmap? CoverImage
         {
@@ -45,8 +87,13 @@ namespace PlaylistManager.UserControls
                 {
                     return coverImage;
                 }
-                _ = LoadCover();
-                return coverImageLoader?.LoadingImage;
+
+                if (isPlaylist)
+                {
+                    _ = LoadCoverAsync();
+                    return coverImageLoader?.LoadingImage;
+                }
+                return coverImageLoader?.FolderImage;
             }
             set
             {
@@ -55,13 +102,22 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        public async Task LoadCover()
+        private async Task LoadCoverAsync()
         {
-            await using var imageStream = playlist.GetCoverStream();
+            await using var imageStream = playlist?.GetCoverStream();
             var bitmap = await Task.Run(() => Bitmap.DecodeToWidth(imageStream, 400));
             if (bitmap != null)
             {
                 CoverImage = bitmap;
+            }
+        }
+        
+        private async Task LoadPlaylistsAsync()
+        {
+            if (playlistLibUtils != null && playlistManager != null)
+            {
+                numPlaylists = (await playlistLibUtils.GetPlaylistsAsync(playlistManager)).Length;
+                NotifyPropertyChanged(nameof(Author));
             }
         }
     }

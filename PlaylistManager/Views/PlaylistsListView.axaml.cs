@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using PlaylistManager.Types;
@@ -40,9 +41,19 @@ namespace PlaylistManager.Views
             
             public ViewModel()
             {
+                Task.Run(LoadPlaylistsAsync);
+            }
+
+            private async Task LoadPlaylistsAsync()
+            {
                 if (playlistLibUtils != null)
                 {
-                    var playlists = playlistLibUtils.PlaylistManager.GetAllPlaylists();
+                    var folders = playlistLibUtils.PlaylistManager.GetChildManagers();
+                    var playlists = await playlistLibUtils.GetPlaylistsAsync(playlistLibUtils.PlaylistManager);
+                    foreach (var folder in folders)
+                    {
+                        SearchResults.Add(new PlaylistCoverViewModel(folder));
+                    }
                     foreach (var playlist in playlists)
                     {
                         SearchResults.Add(new PlaylistCoverViewModel(playlist));
