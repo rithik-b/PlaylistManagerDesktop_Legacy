@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistManager", "PlaylistManager\PlaylistManager.csproj", "{B25443B1-6C11-40F0-8B06-46DF1475910D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B25443B1-6C11-40F0-8B06-46DF1475910D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B25443B1-6C11-40F0-8B06-46DF1475910D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B25443B1-6C11-40F0-8B06-46DF1475910D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B25443B1-6C11-40F0-8B06-46DF1475910D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
