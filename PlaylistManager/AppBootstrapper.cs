@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Avalonia;
+using PlaylistManager.Utilities;
+using PlaylistManager.Windows;
 using Splat;
 
 namespace PlaylistManager
@@ -11,6 +14,10 @@ namespace PlaylistManager
         public AppBootstrapper(Application app)
         {
             Locator.CurrentMutable.RegisterConstant(app, typeof(App));
+            // ReSharper disable once ConvertClosureToMethodGroup (Reason: We want PlaylistManager's Assembly)
+            Locator.CurrentMutable.RegisterLazySingleton(() => Assembly.GetExecutingAssembly());
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistLibUtils>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<CoverImageLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);
         }
 

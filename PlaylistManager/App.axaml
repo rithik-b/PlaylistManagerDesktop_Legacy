@@ -1,7 +1,11 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:utilities="clr-namespace:PlaylistManager.Utilities"
              x:Class="PlaylistManager.App">
     <Application.Styles>
         <FluentTheme Mode="Dark"/>
     </Application.Styles>
+    <Application.DataTemplates>
+        <utilities:ViewLocator/>
+    </Application.DataTemplates>
 </Application>

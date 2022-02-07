@@ -5,6 +5,10 @@
       <map>
         <entry key="PlaylistManager/App.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/MainWindow.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/PlaylistsListView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/UserControls/PlaylistCoverView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/Views/PlaylistsListView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/Windows/MainWindow.axaml" value="PlaylistManager/PlaylistManager.csproj" />
       </map>
     </option>
   </component>
