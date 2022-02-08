@@ -35,26 +35,34 @@ namespace PlaylistManager.UserControls
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            if (DataContext is PlaylistCoverViewModel {isPlaylist: true} viewModel and {playlist: { }})
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: true} coverViewModel and {playlist: { }}
+                && playlistsListView is {viewModel: {CurrentManager: { }}})
             {
                 var dragData = new DataObject();
-                dragData.Set(kPlaylistData, viewModel.playlist);
+                dragData.Set(kPlaylistData, coverViewModel.playlist);
+                dragData.Set(DataFormats.FileNames, new string[1]
+                {
+                    Path.Combine(playlistsListView.viewModel.CurrentManager.PlaylistPath, 
+                        coverViewModel.playlist.Filename + "." +
+                        (coverViewModel.playlist.SuggestedExtension ??
+                         playlistsListView.viewModel.CurrentManager.DefaultHandler?.DefaultExtension ?? "bplist"))
+                });
                 
                 // Need to keep file name as it will change when moving
-                var oldFileName = viewModel.playlist.Filename;
+                var oldFileName = coverViewModel.playlist.Filename;
                 
-                var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move | DragDropEffects.None);
+                var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Link |
+                                                                    DragDropEffects.Move | 
+                                                                    DragDropEffects.Copy |
+                                                                    DragDropEffects.None);
                 if (result == DragDropEffects.Move)
                 {
-                    var newFileName = viewModel.playlist.Filename;
-                    playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-                    if (playlistsListView is {viewModel: {CurrentManager: { }}})
-                    {
-                        viewModel.playlist.Filename = oldFileName;
-                        playlistsListView.viewModel.CurrentManager.DeletePlaylist(viewModel.playlist);
-                        viewModel.playlist.Filename = newFileName;
-                        playlistsListView.viewModel.SearchResults.Remove(viewModel);
-                    }
+                    var newFileName = coverViewModel.playlist.Filename;
+                    coverViewModel.playlist.Filename = oldFileName;
+                    playlistsListView.viewModel.CurrentManager.DeletePlaylist(coverViewModel.playlist);
+                    coverViewModel.playlist.Filename = newFileName;
+                    playlistsListView.viewModel.SearchResults.Remove(coverViewModel);
                 }
             }
         }
