@@ -84,6 +84,12 @@ namespace PlaylistManager.Views
                 playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
                 currentManager = playlistLibUtils?.PlaylistManager;
                 _ = LoadPlaylistsAsync();
+
+                playlistLibUtils.PlaylistManagerChanged += manager =>
+                {
+                    currentManager = manager;
+                    _ = LoadPlaylistsAsync();
+                };
             }
 
             private async Task LoadPlaylistsAsync()

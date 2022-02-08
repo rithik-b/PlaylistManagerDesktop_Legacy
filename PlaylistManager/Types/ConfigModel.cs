@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using PlaylistManager.Utilities;
 
 namespace PlaylistManager.Types
@@ -9,7 +8,18 @@ namespace PlaylistManager.Types
     public class ConfigModel
     {
         private const string kConfigPath = "PlaylistManager.json";
-        public string BeatSaberDir { get; set; }
+        public event Action<string>? DirectoryChanged;
+        
+        private string beatSaberDir = "";
+        public string BeatSaberDir
+        {
+            get => beatSaberDir;
+            set
+            {
+                beatSaberDir = value;
+                DirectoryChanged?.Invoke(value);
+            }
+        }
 
         public static ConfigModel Factory()
         {
