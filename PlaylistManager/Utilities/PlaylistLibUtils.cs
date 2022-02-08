@@ -80,13 +80,6 @@ namespace PlaylistManager.Utilities
 
     public static class PlaylistLibExtensions
     {
-        public static void MovePlaylist(this IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager oldManager, BeatSaberPlaylistsLib.PlaylistManager newManager)
-        {
-            oldManager.DeletePlaylist(playlist);
-            playlist.Filename = "";
-            newManager.StorePlaylist(playlist);
-        }
-        
         public static string? GetIdentifierForPlaylistSong(this IPlaylistSong playlistSong)
         {
             if (playlistSong.Identifiers.HasFlag(Identifier.Hash))

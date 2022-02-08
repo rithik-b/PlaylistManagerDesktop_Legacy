@@ -35,9 +35,28 @@ namespace PlaylistManager.UserControls
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            var dragData = new DataObject();
-            dragData.Set(kPlaylistData, DataContext);
-            await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: true} viewModel and {playlist: { }})
+            {
+                var dragData = new DataObject();
+                dragData.Set(kPlaylistData, viewModel.playlist);
+                
+                // Need to keep file name as it will change when moving
+                var oldFileName = viewModel.playlist.Filename;
+                
+                var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move | DragDropEffects.None);
+                if (result == DragDropEffects.Move)
+                {
+                    var newFileName = viewModel.playlist.Filename;
+                    playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+                    if (playlistsListView is {viewModel: {CurrentManager: { }}})
+                    {
+                        viewModel.playlist.Filename = oldFileName;
+                        playlistsListView.viewModel.CurrentManager.DeletePlaylist(viewModel.playlist);
+                        viewModel.playlist.Filename = newFileName;
+                        playlistsListView.viewModel.SearchResults.Remove(viewModel);
+                    }
+                }
+            }
         }
 
         private void DragOver(object sender, DragEventArgs e)
@@ -59,18 +78,11 @@ namespace PlaylistManager.UserControls
                 && current is {playlistManager: { }})
             {
                 e.DragEffects = DragDropEffects.Move;
-                if (e.Data.Get(kPlaylistData) is PlaylistCoverViewModel drag)
+                if (e.Data.Get(kPlaylistData) is IPlaylist drag)
                 {
-                    if (drag.isPlaylist && drag is {playlist: { }})
-                    {
-                        playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-                        if (playlistsListView is {viewModel: {CurrentManager: { }}})
-                        {
-                            drag.playlist.MovePlaylist(playlistsListView.viewModel.CurrentManager,current.playlistManager);
-                            playlistsListView.viewModel.SearchResults.Remove(drag);
-                            await current.LoadPlaylistsAsync();
-                        }
-                    }
+                    drag.Filename = "";
+                    current.playlistManager.StorePlaylist(drag);
+                    _ = current.LoadPlaylistsAsync();
                 }
             }
             else
