@@ -3,6 +3,7 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <ApplicationIcon>Icons\Logo.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
         <None Remove=".gitignore" />
@@ -32,13 +33,7 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
-      <None Remove="Icons\Loading.png" />
-      <EmbeddedResource Include="Icons\LoadingIcon.png" />
-      <None Remove="Icons\DefaultIcon.png" />
-      <EmbeddedResource Include="Icons\DefaultIcon.png" />
-      <None Remove="Icons\Logo.png" />
-      <EmbeddedResource Include="Icons\Logo.png" />
-      <None Remove="Icons\FolderIcon.png" />
-      <EmbeddedResource Include="Icons\FolderIcon.png" />
+        <EmbeddedResource Include="Icons\*.png" />
+        <AvaloniaResource Include="Icons\Logo.ico" />
     </ItemGroup>
 </Project>

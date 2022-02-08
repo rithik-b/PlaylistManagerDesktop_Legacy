@@ -7,7 +7,8 @@
         x:Class="PlaylistManager.Windows.MainWindow"
         Title="PlaylistManager"
         TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent">
+        Background="Transparent"
+        Icon="/Icons/Logo.ico">
         <Panel>
                 <ExperimentalAcrylicBorder IsHitTestVisible="False">
                         <ExperimentalAcrylicBorder.Material>
