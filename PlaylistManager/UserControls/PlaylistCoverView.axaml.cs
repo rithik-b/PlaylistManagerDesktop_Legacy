@@ -37,12 +37,13 @@ namespace PlaylistManager.UserControls
         {
             var dragData = new DataObject();
             dragData.Set(kPlaylistData, DataContext);
-            var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
+            await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
         }
 
         private void DragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.Contains(kPlaylistData))
+            if (e.Data.Contains(kPlaylistData) && DataContext is PlaylistCoverViewModel current && !current.isPlaylist
+                && current is {playlistManager: { }})
             {
                 e.DragEffects = DragDropEffects.Move;
             }
@@ -54,18 +55,10 @@ namespace PlaylistManager.UserControls
 
         private async void Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.Contains(kPlaylistData))
-            {
-                e.DragEffects = DragDropEffects.Move;
-            }
-            else
-            {
-                e.DragEffects = DragDropEffects.None;
-            }
-
-            if (DataContext is PlaylistCoverViewModel current && !current.isPlaylist
+            if (e.Data.Contains(kPlaylistData) && DataContext is PlaylistCoverViewModel current && !current.isPlaylist
                 && current is {playlistManager: { }})
             {
+                e.DragEffects = DragDropEffects.Move;
                 if (e.Data.Get(kPlaylistData) is PlaylistCoverViewModel drag)
                 {
                     if (drag.isPlaylist && drag is {playlist: { }})
@@ -74,9 +67,15 @@ namespace PlaylistManager.UserControls
                         if (playlistsListView is {viewModel: {CurrentManager: { }}})
                         {
                             drag.playlist.MovePlaylist(playlistsListView.viewModel.CurrentManager,current.playlistManager);
+                            playlistsListView.viewModel.SearchResults.Remove(drag);
+                            await current.LoadPlaylistsAsync();
                         }
                     }
                 }
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
             }
         }
         #endregion
@@ -173,7 +172,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private async Task LoadPlaylistsAsync()
+        public async Task LoadPlaylistsAsync()
         {
             if (playlistLibUtils != null && playlistManager != null)
             {

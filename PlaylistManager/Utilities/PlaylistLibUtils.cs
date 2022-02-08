@@ -16,6 +16,7 @@ namespace PlaylistManager.Utilities
         private readonly ConfigModel configModel;
         private BeatSaberPlaylistsLib.PlaylistManager playlistManager;
         public event Action<BeatSaberPlaylistsLib.PlaylistManager>? PlaylistManagerChanged;
+        public event Action? PlaylistManagerRefreshed;
         
         private const string ICON_PATH = "PlaylistManager.Icons.DefaultIcon.png";
 
@@ -30,14 +31,20 @@ namespace PlaylistManager.Utilities
                 Path.Combine(configModel.BeatSaberDir, "Playlists"), 
                 legacyPlaylistHandler, blistPlaylistHandler);
             
+            playlistManager.PlaylistsRefreshRequested += RaiseRefresh;
+
             configModel.DirectoryChanged += dir =>
             {
+                playlistManager.PlaylistsRefreshRequested -= RaiseRefresh;
                 playlistManager = new BeatSaberPlaylistsLib.PlaylistManager(
                     Path.Combine(dir, "Playlists"),
                     legacyPlaylistHandler, blistPlaylistHandler);
                 PlaylistManagerChanged?.Invoke(playlistManager);
+                playlistManager.PlaylistsRefreshRequested += RaiseRefresh;
             };
         }
+
+        private void RaiseRefresh(object? sender, string source) => PlaylistManagerRefreshed?.Invoke();
 
         public BeatSaberPlaylistsLib.PlaylistManager PlaylistManager => playlistManager;
 
