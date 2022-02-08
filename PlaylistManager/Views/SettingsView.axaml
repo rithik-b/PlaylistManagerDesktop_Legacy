@@ -2,7 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:userControls="clr-namespace:PlaylistManager.UserControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.Views.SettingsView">
-    Welcome to Avalonia!
+        <ScrollViewer Background="#80808080">
+            <StackPanel VerticalAlignment="Center" Margin="20">
+                <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
+            </StackPanel>
+        </ScrollViewer>
 </UserControl>
