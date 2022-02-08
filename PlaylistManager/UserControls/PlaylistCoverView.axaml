@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.UserControls.PlaylistCoverView">
     <DockPanel Width="200">
-        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top">
+        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top" DragDrop.AllowDrop="{Binding AllowDrop}" PointerPressed="DoDrag">
             <Panel>
                 <Image Width="200" Stretch="Uniform" Source="{Binding CoverImage}" />
             </Panel>

@@ -13,13 +13,14 @@ namespace PlaylistManager.Views
 {
     public class PlaylistsListView : UserControl
     {
-        private readonly ViewModel viewModel;
+        public readonly ViewModel viewModel;
         
         public PlaylistsListView()
         {
             InitializeComponent();
             viewModel = new ViewModel();
             DataContext = viewModel;
+            Locator.CurrentMutable.RegisterConstant(this, typeof(PlaylistsListView));
         }
 
         private void InitializeComponent()

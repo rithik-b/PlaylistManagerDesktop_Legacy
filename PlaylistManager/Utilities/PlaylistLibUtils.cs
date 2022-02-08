@@ -6,6 +6,7 @@ using BeatSaberPlaylistsLib.Blist;
 using BeatSaberPlaylistsLib.Legacy;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Types;
+using PlaylistManager.Views;
 
 namespace PlaylistManager.Utilities
 {
@@ -64,7 +65,22 @@ namespace PlaylistManager.Utilities
             return playlist;
         }
 
-        public string? GetIdentifierForPlaylistSong(IPlaylistSong playlistSong)
+        public async Task<IPlaylist[]> GetPlaylistsAsync(BeatSaberPlaylistsLib.PlaylistManager playlistManager, bool includeChildren = false)
+        {
+            return await Task.Run(() => playlistManager.GetAllPlaylists(includeChildren));
+        }
+    }
+
+    public static class PlaylistLibExtensions
+    {
+        public static void MovePlaylist(this IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager oldManager, BeatSaberPlaylistsLib.PlaylistManager newManager)
+        {
+            oldManager.DeletePlaylist(playlist);
+            playlist.Filename = "";
+            newManager.StorePlaylist(playlist);
+        }
+        
+        public static string? GetIdentifierForPlaylistSong(this IPlaylistSong playlistSong)
         {
             if (playlistSong.Identifiers.HasFlag(Identifier.Hash))
             {
@@ -79,11 +95,6 @@ namespace PlaylistManager.Utilities
                 return playlistSong.LevelId;
             }
             return null;
-        }
-
-        public async Task<IPlaylist[]> GetPlaylistsAsync(BeatSaberPlaylistsLib.PlaylistManager playlistManager, bool includeChildren = false)
-        {
-            return await Task.Run(() => playlistManager.GetAllPlaylists(includeChildren));
         }
     }
 }

@@ -1,17 +1,22 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Types;
 using PlaylistManager.Utilities;
+using PlaylistManager.Views;
 using Splat;
 
 namespace PlaylistManager.UserControls
 {
     public class PlaylistCoverView : UserControl
     {
+        private PlaylistsListView? playlistsListView;
+        
         public PlaylistCoverView()
         {
             InitializeComponent();
@@ -20,7 +25,61 @@ namespace PlaylistManager.UserControls
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            AddHandler(DragDrop.DropEvent, Drop);
+            AddHandler(DragDrop.DragOverEvent, DragOver);
         }
+
+        #region Drag and Drop
+        
+        private const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
+        
+        private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            var dragData = new DataObject();
+            dragData.Set(kPlaylistData, DataContext);
+            var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
+        }
+
+        private void DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(kPlaylistData))
+            {
+                e.DragEffects = DragDropEffects.Move;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
+        }
+
+        private async void Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(kPlaylistData))
+            {
+                e.DragEffects = DragDropEffects.Move;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
+
+            if (DataContext is PlaylistCoverViewModel current && !current.isPlaylist
+                && current is {playlistManager: { }})
+            {
+                if (e.Data.Get(kPlaylistData) is PlaylistCoverViewModel drag)
+                {
+                    if (drag.isPlaylist && drag is {playlist: { }})
+                    {
+                        playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+                        if (playlistsListView is {viewModel: {CurrentManager: { }}})
+                        {
+                            drag.playlist.MovePlaylist(playlistsListView.viewModel.CurrentManager,current.playlistManager);
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
     }
     
     public class PlaylistCoverViewModel : ViewModelBase
@@ -47,7 +106,9 @@ namespace PlaylistManager.UserControls
             coverImageLoader = Locator.Current.GetService<CoverImageLoader>();
             playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
         }
-
+        
+        public bool AllowDrop => !isPlaylist;
+        
         public string Title
         {
             get
