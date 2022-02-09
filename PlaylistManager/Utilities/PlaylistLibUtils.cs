@@ -117,5 +117,10 @@ namespace PlaylistManager.Utilities
             }
             return null;
         }
+        
+        public static string GetPlaylistPath(this IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        => Path.Combine(parentManager.PlaylistPath, playlist.Filename + "." + 
+                                                    (playlist.SuggestedExtension ??
+                                                     parentManager.DefaultHandler?.DefaultExtension ?? "bplist"));
     }
 }

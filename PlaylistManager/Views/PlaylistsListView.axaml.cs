@@ -29,17 +29,23 @@ namespace PlaylistManager.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            AddHandler(DragDrop.DragOverEvent, DragOver!);
-            AddHandler(DragDrop.DropEvent, Drop!);
+            var copyTarget = this.Find<Border>("CopyTarget");
+            copyTarget.AddHandler(DragDrop.DragOverEvent, DragOver!);
+            copyTarget.AddHandler(DragDrop.DropEvent, Drop!);
         }
 
         private void DragOver(object? sender, DragEventArgs e)
         {
             if (viewModel.CurrentManager != null 
                 && e.Data.Contains(DataFormats.FileNames)
+                && !e.Data.Contains(PlaylistCoverView.kPlaylistData)
                 && viewModel.CurrentManager.SupportsExtension(Path.GetExtension(e.Data.GetFileNames()?.FirstOrDefault() ?? "")))
             {
-                e.DragEffects = DragDropEffects.Link;
+                e.DragEffects = DragDropEffects.Copy;
+            }
+            else if (!e.Data.Contains(PlaylistCoverView.kPlaylistData))
+            {
+                e.DragEffects = DragDropEffects.None;
             }
         }
 

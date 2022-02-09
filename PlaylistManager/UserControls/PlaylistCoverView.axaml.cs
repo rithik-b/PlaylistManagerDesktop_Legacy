@@ -39,14 +39,12 @@ namespace PlaylistManager.UserControls
             if (DataContext is PlaylistCoverViewModel {isPlaylist: true} coverViewModel and {playlist: { }}
                 && playlistsListView is {viewModel: {CurrentManager: { }}})
             {
+                var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
                 var dragData = new DataObject();
                 dragData.Set(kPlaylistData, coverViewModel.playlist);
                 dragData.Set(DataFormats.FileNames, new string[1]
                 {
-                    Path.Combine(playlistsListView.viewModel.CurrentManager.PlaylistPath, 
-                        coverViewModel.playlist.Filename + "." +
-                        (coverViewModel.playlist.SuggestedExtension ??
-                         playlistsListView.viewModel.CurrentManager.DefaultHandler?.DefaultExtension ?? "bplist"))
+                    playlistPath
                 });
                 
                 // Need to keep file name as it will change when moving
@@ -60,7 +58,10 @@ namespace PlaylistManager.UserControls
                 {
                     var newFileName = coverViewModel.playlist.Filename;
                     coverViewModel.playlist.Filename = oldFileName;
-                    playlistsListView.viewModel.CurrentManager.DeletePlaylist(coverViewModel.playlist);
+                    if (File.Exists(playlistPath))
+                    {
+                        playlistsListView.viewModel.CurrentManager.DeletePlaylist(coverViewModel.playlist);
+                    }
                     coverViewModel.playlist.Filename = newFileName;
                     playlistsListView.viewModel.SearchResults.Remove(coverViewModel);
                 }
@@ -74,17 +75,6 @@ namespace PlaylistManager.UserControls
                 current is {playlistManager: { }} && e.Data.Contains(kPlaylistData))
             {
                 e.DragEffects = DragDropEffects.Move;
-                return;
-            }
-            
-            // If a file is dragged (from outside), it can be dragged from anywhere
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (playlistsListView?.viewModel.CurrentManager != null 
-                && e.Data.Contains(DataFormats.FileNames)
-                && !e.Data.Contains(kPlaylistData) 
-                && playlistsListView.viewModel.CurrentManager.SupportsExtension(Path.GetExtension(e.Data.GetFileNames()?.FirstOrDefault() ?? "")))
-            {
-                e.DragEffects = DragDropEffects.Link;
             }
             else
             {
@@ -94,29 +84,12 @@ namespace PlaylistManager.UserControls
         
         private async void Drop(object sender, DragEventArgs e)
         {
-            if (DataContext is PlaylistCoverViewModel current)
+            if (DataContext is PlaylistCoverViewModel current && !current.isPlaylist && current is {playlistManager: { }})
             {
-                if (!current.isPlaylist && current is {playlistManager: { }})
+                if (e.Data.Contains(kPlaylistData) && e.Data.Get(kPlaylistData) is IPlaylist drag)
                 {
-                    if (e.Data.Contains(kPlaylistData) && e.Data.Get(kPlaylistData) is IPlaylist drag)
-                    {
-                        PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
-                        _ = current.LoadPlaylistsAsync();
-                    }
-                    else if (e.Data.Contains(DataFormats.FileNames))
-                    {
-                        await PlaylistLibUtils.OnPlaylistFileCopy(e.Data.GetFileNames()!, current.playlistManager);
-                        _ = current.LoadPlaylistsAsync();
-                    }
-                }
-                else if (current.isPlaylist && current is {playlist: {}})
-                {
-                    playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-                    if (playlistsListView is {viewModel: {CurrentManager: { }}} && e.Data.Contains(DataFormats.FileNames) && !e.Data.Contains(kPlaylistData))
-                    {
-                        await PlaylistLibUtils.OnPlaylistFileCopy(e.Data.GetFileNames()!, playlistsListView.viewModel.CurrentManager);
-                        playlistsListView.viewModel.CurrentManager.RequestRefresh("PlaylistManager (desktop)");
-                    }
+                    PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
+                    _ = current.LoadPlaylistsAsync();
                 }
             }
         }
@@ -147,6 +120,8 @@ namespace PlaylistManager.UserControls
             coverImageLoader = Locator.Current.GetService<CoverImageLoader>();
             playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
         }
+        
+        private bool AllowDrop => !isPlaylist;
         
         public string Title
         {
