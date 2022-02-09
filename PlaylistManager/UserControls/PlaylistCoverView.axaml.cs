@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
@@ -18,6 +17,8 @@ namespace PlaylistManager.UserControls
 {
     public class PlaylistCoverView : UserControl
     {
+        // TODO: Use get fields for DI objects
+        
         private PlaylistsListView? playlistsListView;
         private TextBox? renameBox;
         
@@ -213,12 +214,10 @@ namespace PlaylistManager.UserControls
                 else if (!isPlaylist && playlistManager != null)
                 {
                     var input = value;
-                    foreach (var c in Path.GetInvalidPathChars())
+                    foreach (var c in Path.GetInvalidFileNameChars())
                     {
                         input = input.Replace($"{c}", "");
                     }
-                    input = input.Replace("/", "");
-                    input = input.Replace("\\", "");
                     if (Path.GetFileName(playlistManager?.PlaylistPath) != input)
                     {
                         playlistManager?.RenameManager(input);
@@ -385,6 +384,7 @@ namespace PlaylistManager.UserControls
 
         public void Delete()
         {
+            // TODO: Show a popup before delete
             playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
             if (playlistsListView is {viewModel: {CurrentManager: { }}})
             {

@@ -17,6 +17,15 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="New">
+                        <MenuItem Header="Playlist" />
+                        <MenuItem Header="Folder" />
+                    </MenuItem>
+                    <MenuItem Header="Paste" />
+                </ContextMenu>
+            </Border.ContextMenu>
         </Border>
     </DockPanel>
 </UserControl>
