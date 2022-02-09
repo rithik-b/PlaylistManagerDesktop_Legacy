@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.UserControls.PlaylistCoverView">
-    <DockPanel Width="200" DragDrop.AllowDrop="{Binding AllowDrop}" PointerPressed="DoDrag">
+    <DockPanel Width="200" DragDrop.AllowDrop="{Binding AllowDrop}" PointerPressed="DoDrag" PointerReleased="OnPointerReleased">
         <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top">
             <Panel>
                 <Image Width="200" Stretch="Uniform" Source="{Binding CoverImage}" />
@@ -14,5 +14,15 @@
             <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" FontSize="16" FontWeight="Light" />
             <TextBlock Text="{Binding Author}" HorizontalAlignment="Center" FontSize="14" FontWeight="Light" />
         </StackPanel>
+        
+        <DockPanel.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Open"  />
+                <MenuItem Header="Cut" />
+                <MenuItem Header="Copy" />
+                <MenuItem Header="Rename" />
+                <MenuItem Header="Delete" />
+            </ContextMenu>
+        </DockPanel.ContextMenu>
     </DockPanel>
 </UserControl>

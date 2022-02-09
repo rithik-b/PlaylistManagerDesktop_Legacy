@@ -32,9 +32,19 @@ namespace PlaylistManager.UserControls
         #region Drag and Drop
         
         public const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
+        private const int kHoldDelay = 300;
+        private bool pointerHeld;
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
+            pointerHeld = true;
+
+            await Task.Delay(kHoldDelay);
+            if (!pointerHeld)
+            {
+                return;
+            }
+            
             playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
             if (DataContext is PlaylistCoverViewModel {isPlaylist: true} coverViewModel and {playlist: { }}
                 && playlistsListView is {viewModel: {CurrentManager: { }}})
@@ -49,7 +59,7 @@ namespace PlaylistManager.UserControls
                 
                 // Need to keep file name as it will change when moving
                 var oldFileName = coverViewModel.playlist.Filename;
-                
+
                 var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Link |
                                                                     DragDropEffects.Move | 
                                                                     DragDropEffects.Copy |
@@ -67,6 +77,9 @@ namespace PlaylistManager.UserControls
                 }
             }
         }
+        
+        // Tracks if pointer is released to prevent a drag operation
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) => pointerHeld = false;
 
         private void DragOver(object sender, DragEventArgs e)
         {

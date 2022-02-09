@@ -7,8 +7,6 @@ using BeatSaberPlaylistsLib.Blist;
 using BeatSaberPlaylistsLib.Legacy;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Types;
-using PlaylistManager.UserControls;
-using PlaylistManager.Views;
 
 namespace PlaylistManager.Utilities
 {
