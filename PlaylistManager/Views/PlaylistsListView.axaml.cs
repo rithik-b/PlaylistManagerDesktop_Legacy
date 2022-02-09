@@ -77,9 +77,13 @@ namespace PlaylistManager.Views
                 viewModel.CurrentManager = viewModel.SelectedPlaylistOrManager.playlistManager;
             }
         }
-        
-        private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+
+        private void LoseFocus(object? sender, PointerPressedEventArgs e)
         {
+            if (viewModel.SelectedPlaylistOrManager != null)
+            {
+                viewModel.SelectedPlaylistOrManager.IsRenaming = false;
+            }
             viewModel.SelectedPlaylistOrManager = null;
         }
 
@@ -118,6 +122,10 @@ namespace PlaylistManager.Views
                 get => selectedPlaylistOrManager;
                 set
                 {
+                    if (selectedPlaylistOrManager != null)
+                    {
+                        selectedPlaylistOrManager.IsRenaming = false;
+                    }
                     selectedPlaylistOrManager = value;
                     NotifyPropertyChanged();
                 }

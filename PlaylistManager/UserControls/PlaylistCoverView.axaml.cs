@@ -1,8 +1,9 @@
+using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
@@ -16,6 +17,7 @@ namespace PlaylistManager.UserControls
     public class PlaylistCoverView : UserControl
     {
         private PlaylistsListView? playlistsListView;
+        private TextBox? renameBox;
         
         public PlaylistCoverView()
         {
@@ -107,6 +109,27 @@ namespace PlaylistManager.UserControls
             }
         }
         #endregion
+
+        private async void RenameClick(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is PlaylistCoverViewModel viewModel)
+            {
+                viewModel.IsRenaming = true;
+                renameBox ??= this.Find<TextBox>("RenameBox");
+                // I am sorry but I gotta wait a tick
+                await Task.Delay(1);
+                renameBox.Focus();
+                renameBox.CaretIndex = Int32.MaxValue;
+            }
+        }
+
+        private void RenameKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && DataContext is PlaylistCoverViewModel viewModel)
+            {
+                viewModel.IsRenaming = false;
+            }
+        }
     }
     
     public class PlaylistCoverViewModel : ViewModelBase
@@ -114,8 +137,9 @@ namespace PlaylistManager.UserControls
         public readonly IPlaylist? playlist;
         public readonly BeatSaberPlaylistsLib.PlaylistManager? playlistManager;
         public readonly bool isPlaylist;
-        private readonly CoverImageLoader? coverImageLoader;
-        private readonly PlaylistLibUtils? playlistLibUtils;
+        private CoverImageLoader? coverImageLoader;
+        private PlaylistLibUtils? playlistLibUtils;
+        private PlaylistsListView? playlistsListView;
         private int? numPlaylists;
         private Bitmap? coverImage;
 
@@ -123,15 +147,12 @@ namespace PlaylistManager.UserControls
         {
             this.playlist = playlist;
             isPlaylist = true;
-            coverImageLoader = Locator.Current.GetService<CoverImageLoader>();
         }
         
         public PlaylistCoverViewModel(BeatSaberPlaylistsLib.PlaylistManager playlistManager)
         {
             this.playlistManager = playlistManager;
             isPlaylist = false;
-            coverImageLoader = Locator.Current.GetService<CoverImageLoader>();
-            playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
         }
         
         private bool AllowDrop => !isPlaylist;
@@ -145,6 +166,20 @@ namespace PlaylistManager.UserControls
                     return playlist?.Title ?? "";
                 }
                 return Path.GetFileName(playlistManager?.PlaylistPath) ?? "";
+            }
+            set
+            {
+                if (isPlaylist && playlist != null)
+                {
+                    playlist.Title = value;
+                    playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+                    playlistsListView?.viewModel.CurrentManager?.StorePlaylist(playlist);
+                }
+                else if (!isPlaylist && playlistManager != null)
+                {
+                    playlistManager.RenameManager(value);
+                }
+                NotifyPropertyChanged();
             }
         }
 
@@ -175,7 +210,7 @@ namespace PlaylistManager.UserControls
                 {
                     return coverImage;
                 }
-
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
                 if (isPlaylist)
                 {
                     _ = LoadCoverAsync();
@@ -202,11 +237,51 @@ namespace PlaylistManager.UserControls
         
         public async Task LoadPlaylistsAsync()
         {
+            playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>();
             if (playlistLibUtils != null && playlistManager != null)
             {
                 numPlaylists = (await playlistLibUtils.GetPlaylistsAsync(playlistManager)).Length;
                 NotifyPropertyChanged(nameof(Author));
             }
         }
+
+        #region Context Menu
+        
+        private bool isRenaming;
+        public bool IsRenaming
+        {
+            get => isRenaming;
+            set
+            {
+                isRenaming = value;
+                if (value)
+                {
+                    RenameTitle = Title;
+                }
+                else
+                {
+                    if (Title != RenameTitle)
+                    {
+                        Title = RenameTitle;
+                    }
+                }
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IsNotRenaming));
+            }
+        }
+        private bool IsNotRenaming => !isRenaming;
+
+        private string renameTitle;
+        public string RenameTitle
+        {
+            get => renameTitle;
+            set
+            {
+                renameTitle = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion
     }
 }
