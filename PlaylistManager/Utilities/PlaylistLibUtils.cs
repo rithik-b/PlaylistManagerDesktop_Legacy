@@ -120,5 +120,12 @@ namespace PlaylistManager.Utilities
         => Path.Combine(parentManager.PlaylistPath, playlist.Filename + "." + 
                                                     (playlist.SuggestedExtension ??
                                                      parentManager.DefaultHandler?.DefaultExtension ?? "bplist"));
+
+        public static IPlaylistHandler? GetHandlerForPlaylist(this IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        {
+            var file = playlist.GetPlaylistPath(parentManager);
+            var handler = parentManager.GetHandlerForExtension(Path.GetExtension(file));
+            return handler;
+        }
     }
 }

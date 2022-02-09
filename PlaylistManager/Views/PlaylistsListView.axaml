@@ -10,7 +10,7 @@
             <TextBlock Text="{Binding FolderTitle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
         <Border DragDrop.AllowDrop="True" Name="CopyTarget" PointerPressed="LoseFocus">
-            <ListBox Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped">
+            <ListBox Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped" KeyDown="OnShortcut">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

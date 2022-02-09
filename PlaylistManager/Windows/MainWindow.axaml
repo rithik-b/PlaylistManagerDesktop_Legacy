@@ -6,7 +6,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PlaylistManager.Windows.MainWindow"
         Title="PlaylistManager"
-        TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         Icon="/Icons/Logo.ico">
         <Panel>

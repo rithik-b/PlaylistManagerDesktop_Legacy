@@ -20,7 +20,6 @@ namespace PlaylistManager.UserControls
     {
         private PlaylistsListView? playlistsListView;
         private TextBox? renameBox;
-        private IClipboard? clipboard;
         
         public PlaylistCoverView()
         {
@@ -73,12 +72,8 @@ namespace PlaylistManager.UserControls
                 {
                     var newFileName = coverViewModel.playlist.Filename;
                     coverViewModel.playlist.Filename = oldFileName;
-                    if (File.Exists(playlistPath))
-                    {
-                        playlistsListView.viewModel.CurrentManager.DeletePlaylist(coverViewModel.playlist);
-                    }
+                    coverViewModel.Delete();
                     coverViewModel.playlist.Filename = newFileName;
-                    playlistsListView.viewModel.SearchResults.Remove(coverViewModel);
                 }
             }
         }
@@ -108,6 +103,7 @@ namespace PlaylistManager.UserControls
                 {
                     PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
                     _ = current.LoadPlaylistsAsync();
+                    e.DragEffects = DragDropEffects.Move;
                 }
             }
         }
@@ -121,34 +117,19 @@ namespace PlaylistManager.UserControls
             playlistsListView?.OpenSelectedPlaylistOrManager();
         }
         
-        private void CutClick(object? sender, RoutedEventArgs e)
+        private async void CutClick(object? sender, RoutedEventArgs? e)
         {
-            CopyClick(sender, e);
-            if (DataContext is PlaylistCoverViewModel {isPlaylist: true, playlist:{}} coverViewModel && playlistsListView is {viewModel:{CurrentManager:{}}})
+            if (DataContext is PlaylistCoverViewModel viewModel)
             {
-                var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
-                if (File.Exists(playlistPath))
-                {
-                    playlistsListView.viewModel.CurrentManager.DeletePlaylist(coverViewModel.playlist);
-                }
-                playlistsListView.viewModel.SearchResults.Remove(coverViewModel);
+                await viewModel.Cut();
             }
         }
 
-        private void CopyClick(object? sender, RoutedEventArgs e)
+        private async void CopyClick(object? sender, RoutedEventArgs? e)
         {
-            clipboard ??= Locator.Current.GetService<Application>()?.Clipboard;
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (DataContext is PlaylistCoverViewModel {isPlaylist: true, playlist:{}} coverViewModel && playlistsListView is {viewModel:{CurrentManager:{}}})
+            if (DataContext is PlaylistCoverViewModel viewModel)
             {
-                var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
-                var dragData = new DataObject();
-                dragData.Set(kPlaylistData, coverViewModel.playlist);
-                dragData.Set(DataFormats.FileNames, new string[1]
-                {
-                    playlistPath
-                });
-                _ = clipboard?.SetDataObjectAsync(dragData);
+                await viewModel.Copy();
             }
         }
         
@@ -174,16 +155,11 @@ namespace PlaylistManager.UserControls
             }
         }
 
-        private void DeleteClick(object? sender, RoutedEventArgs e)
+        private void DeleteClick(object? sender, RoutedEventArgs? e)
         {
             if (DataContext is PlaylistCoverViewModel viewModel)
             {
-                playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-                if (playlistsListView is {viewModel: {CurrentManager: { }}})
-                {
-                    viewModel.Delete(playlistsListView.viewModel.CurrentManager);
-                    playlistsListView.viewModel.SearchResults.Remove(viewModel);
-                }
+                viewModel.Delete();
             }
         }
         
@@ -314,20 +290,62 @@ namespace PlaylistManager.UserControls
             }
         }
 
-        public void Delete(BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        #region Context Menu
+
+        public async Task Cut()
         {
-            if (isPlaylist && playlist != null)
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            if (isPlaylist && playlist != null && playlistsListView is {viewModel:{CurrentManager:{}}})
             {
-                parentManager.DeletePlaylist(playlist);
+                var playlistPath = playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
+                var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
+                if (File.Exists(playlistPath))
+                {
+                    await Task.Run(async () =>
+                    {
+                        await using FileStream fileStream = new(tempPath, FileMode.Create);
+                        playlist.GetHandlerForPlaylist(playlistsListView.viewModel.CurrentManager)?.Serialize(playlist, fileStream);
+                        playlistsListView.viewModel.CurrentManager.DeletePlaylist(playlist);
+                        playlistsListView.viewModel.SearchResults.Remove(this);
+                    });
+                }
+                
+                var dragData = new DataObject();
+                dragData.Set(PlaylistCoverView.kPlaylistData, playlist);
+                dragData.Set(DataFormats.FileNames, new string[1]
+                {
+                    tempPath
+                });
+                var clipboard = Application.Current?.Clipboard;
+                if (clipboard != null)
+                {
+                    await clipboard.SetDataObjectAsync(dragData);
+                }
             }
-            else if (playlistManager != null)
+        }
+        
+        public async Task Copy()
+        {
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            if (isPlaylist && playlist != null && playlistsListView is {viewModel:{CurrentManager:{}}})
             {
-                parentManager.DeleteChildManager(playlistManager);
+                var playlistPath = playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
+                var dragData = new DataObject();
+                dragData.Set(PlaylistCoverView.kPlaylistData, playlist);
+                dragData.Set(DataFormats.FileNames, new string[1]
+                {
+                    playlistPath
+                });
+                var clipboard = Application.Current?.Clipboard;
+                if (clipboard != null)
+                {
+                    await clipboard.SetDataObjectAsync(dragData);
+                }
             }
         }
 
-        #region Context Menu
-        
+        #region Rename
+
         private bool isRenaming;
         public bool IsRenaming
         {
@@ -360,6 +378,32 @@ namespace PlaylistManager.UserControls
             {
                 renameTitle = value;
                 NotifyPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        public void Delete()
+        {
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            if (playlistsListView is {viewModel: {CurrentManager: { }}})
+            {
+                if (isPlaylist && playlist != null)
+                {
+                    var playlistPath = playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
+                    if (File.Exists(playlistPath))
+                    {
+                        playlistsListView.viewModel.CurrentManager.DeletePlaylist(playlist);
+                    }
+                }
+                else if (playlistManager != null)
+                {
+                    if (Directory.Exists(playlistManager.PlaylistPath))
+                    {
+                        playlistsListView.viewModel.CurrentManager.DeleteChildManager(playlistManager);
+                    }
+                }
+                playlistsListView.viewModel.SearchResults.Remove(this);
             }
         }
 

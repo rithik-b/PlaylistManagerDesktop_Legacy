@@ -56,6 +56,7 @@ namespace PlaylistManager.Views
             {
                 await PlaylistLibUtils.OnPlaylistFileCopy(e.Data.GetFileNames()!, viewModel.CurrentManager);
                 viewModel.CurrentManager.RequestRefresh("PlaylistManager (desktop)");
+                e.DragEffects = DragDropEffects.Copy;
             }
         }
 
@@ -82,6 +83,29 @@ namespace PlaylistManager.Views
                 viewModel.SelectedPlaylistOrManager.IsRenaming = false;
             }
             viewModel.SelectedPlaylistOrManager = null;
+        }
+        
+        private async void OnShortcut(object? sender, KeyEventArgs e)
+        {
+            if (viewModel.SelectedPlaylistOrManager != null)
+            {
+                if (e.KeyModifiers == KeyModifiers.Control)
+                {
+                    switch (e.Key)
+                    {
+                        case Key.X:
+                            await viewModel.SelectedPlaylistOrManager.Cut();
+                            break;
+                        case Key.C:
+                            await viewModel.SelectedPlaylistOrManager.Copy();
+                            break;
+                    }
+                }
+                else if (e.Key == Key.Delete)
+                {
+                    viewModel.SelectedPlaylistOrManager.Delete();
+                }
+            }
         }
 
         public void OpenSelectedPlaylistOrManager()
