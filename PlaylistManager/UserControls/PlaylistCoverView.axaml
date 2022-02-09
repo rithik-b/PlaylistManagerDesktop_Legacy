@@ -22,7 +22,7 @@
                 <MenuItem Header="Cut" />
                 <MenuItem Header="Copy" />
                 <MenuItem Header="Rename" Click="RenameClick" />
-                <MenuItem Header="Delete" />
+                <MenuItem Header="Delete" Click="DeleteClick" />
             </ContextMenu>
         </DockPanel.ContextMenu>
     </DockPanel>

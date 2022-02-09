@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -144,6 +143,19 @@ namespace PlaylistManager.UserControls
             }
         }
 
+        private void DeleteClick(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is PlaylistCoverViewModel viewModel)
+            {
+                playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+                if (playlistsListView is {viewModel: {CurrentManager: { }}})
+                {
+                    viewModel.Delete(playlistsListView.viewModel.CurrentManager);
+                    playlistsListView.viewModel.SearchResults.Remove(viewModel);
+                }
+            }
+        }
+        
         #endregion
     }
     
@@ -267,6 +279,18 @@ namespace PlaylistManager.UserControls
             {
                 numPlaylists = (await playlistLibUtils.GetPlaylistsAsync(playlistManager)).Length;
                 NotifyPropertyChanged(nameof(Author));
+            }
+        }
+
+        public void Delete(BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        {
+            if (isPlaylist && playlist != null)
+            {
+                parentManager.DeletePlaylist(playlist);
+            }
+            else if (playlistManager != null)
+            {
+                parentManager.DeleteChildManager(playlistManager);
             }
         }
 
