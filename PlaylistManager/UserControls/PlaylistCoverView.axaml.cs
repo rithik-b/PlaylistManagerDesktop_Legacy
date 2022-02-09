@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
@@ -18,6 +20,7 @@ namespace PlaylistManager.UserControls
     {
         private PlaylistsListView? playlistsListView;
         private TextBox? renameBox;
+        private IClipboard? clipboard;
         
         public PlaylistCoverView()
         {
@@ -48,7 +51,7 @@ namespace PlaylistManager.UserControls
             }
             
             playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (DataContext is PlaylistCoverViewModel {isPlaylist: true} coverViewModel and {playlist: { }}
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: true, playlist:{}} coverViewModel
                 && playlistsListView is {viewModel: {CurrentManager: { }}})
             {
                 var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
@@ -115,9 +118,37 @@ namespace PlaylistManager.UserControls
         private void OpenClick(object? sender, RoutedEventArgs e)
         {
             playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (playlistsListView != null)
+            playlistsListView?.OpenSelectedPlaylistOrManager();
+        }
+        
+        private void CutClick(object? sender, RoutedEventArgs e)
+        {
+            CopyClick(sender, e);
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: true, playlist:{}} coverViewModel && playlistsListView is {viewModel:{CurrentManager:{}}})
             {
-                playlistsListView.OpenSelectedPlaylistOrManager();
+                var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
+                if (File.Exists(playlistPath))
+                {
+                    playlistsListView.viewModel.CurrentManager.DeletePlaylist(coverViewModel.playlist);
+                }
+                playlistsListView.viewModel.SearchResults.Remove(coverViewModel);
+            }
+        }
+
+        private void CopyClick(object? sender, RoutedEventArgs e)
+        {
+            clipboard ??= Locator.Current.GetService<Application>()?.Clipboard;
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: true, playlist:{}} coverViewModel && playlistsListView is {viewModel:{CurrentManager:{}}})
+            {
+                var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
+                var dragData = new DataObject();
+                dragData.Set(kPlaylistData, coverViewModel.playlist);
+                dragData.Set(DataFormats.FileNames, new string[1]
+                {
+                    playlistPath
+                });
+                _ = clipboard?.SetDataObjectAsync(dragData);
             }
         }
         
@@ -183,6 +214,7 @@ namespace PlaylistManager.UserControls
         }
         
         private bool AllowDrop => !isPlaylist;
+        private bool IsPlaylist => isPlaylist;
         
         public string Title
         {

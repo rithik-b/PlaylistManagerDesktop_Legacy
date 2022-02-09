@@ -19,8 +19,8 @@
         <DockPanel.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Open" Click="OpenClick" />
-                <MenuItem Header="Cut" />
-                <MenuItem Header="Copy" />
+                <MenuItem Header="Cut" Click="CutClick" IsVisible="{Binding IsPlaylist}" />
+                <MenuItem Header="Copy" Click="CopyClick" IsVisible="{Binding IsPlaylist}" />
                 <MenuItem Header="Rename" Click="RenameClick" />
                 <MenuItem Header="Delete" Click="DeleteClick" />
             </ContextMenu>
