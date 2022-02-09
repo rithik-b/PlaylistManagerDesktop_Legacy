@@ -37,20 +37,15 @@ namespace PlaylistManager.Views
         {
             if (viewModel.CurrentManager != null 
                 && e.Data.Contains(DataFormats.FileNames)
-                && !e.Data.Contains(PlaylistCoverView.kPlaylistData) 
                 && viewModel.CurrentManager.SupportsExtension(Path.GetExtension(e.Data.GetFileNames()?.FirstOrDefault() ?? "")))
             {
                 e.DragEffects = DragDropEffects.Link;
-            }
-            else
-            {
-                e.DragEffects = DragDropEffects.None;
             }
         }
 
         private async void Drop(object? sender, DragEventArgs e)
         {
-            if (e.Data.Contains(DataFormats.FileNames) && viewModel is {CurrentManager:{}})
+            if (e.Data.Contains(DataFormats.FileNames) && !e.Data.Contains(PlaylistCoverView.kPlaylistData) && viewModel is {CurrentManager:{}})
             {
                 await PlaylistLibUtils.OnPlaylistFileCopy(e.Data.GetFileNames()!, viewModel.CurrentManager);
                 viewModel.CurrentManager.RequestRefresh("PlaylistManager (desktop)");
@@ -75,6 +70,11 @@ namespace PlaylistManager.Views
             {
                 viewModel.CurrentManager = viewModel.SelectedPlaylistOrManager.playlistManager;
             }
+        }
+        
+        private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+        {
+            viewModel.SelectedPlaylistOrManager = null;
         }
 
         public class ViewModel : ViewModelBase

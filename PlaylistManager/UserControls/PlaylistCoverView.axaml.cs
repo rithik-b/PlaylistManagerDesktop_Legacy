@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -113,7 +112,7 @@ namespace PlaylistManager.UserControls
                 else if (current.isPlaylist && current is {playlist: {}})
                 {
                     playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-                    if (playlistsListView is {viewModel: {CurrentManager: { }}} && e.Data.Contains(DataFormats.FileNames))
+                    if (playlistsListView is {viewModel: {CurrentManager: { }}} && e.Data.Contains(DataFormats.FileNames) && !e.Data.Contains(kPlaylistData))
                     {
                         await PlaylistLibUtils.OnPlaylistFileCopy(e.Data.GetFileNames()!, playlistsListView.viewModel.CurrentManager);
                         playlistsListView.viewModel.CurrentManager.RequestRefresh("PlaylistManager (desktop)");

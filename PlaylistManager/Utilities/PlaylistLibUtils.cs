@@ -85,12 +85,15 @@ namespace PlaylistManager.Utilities
                 var handler = playlistManager.GetHandlerForExtension(Path.GetExtension(file));
                 if (handler != null)
                 {
-                    var playlist = await Task.Run(async () =>
+                    if (File.Exists(file))
                     {
-                        await using Stream fileStream = new FileStream(file, FileMode.Open);
-                        return handler.Deserialize(fileStream);
-                    });
-                    playlistManager.StorePlaylist(playlist);
+                        var playlist = await Task.Run(async () =>
+                        {
+                            await using Stream fileStream = new FileStream(file, FileMode.Open);
+                            return handler.Deserialize(fileStream);
+                        });
+                        playlistManager.StorePlaylist(playlist);
+                    }
                 }
             }
         }
