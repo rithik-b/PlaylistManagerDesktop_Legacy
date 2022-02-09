@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -191,7 +192,17 @@ namespace PlaylistManager.UserControls
                 }
                 else if (!isPlaylist && playlistManager != null)
                 {
-                    playlistManager.RenameManager(value);
+                    var input = value;
+                    foreach (var c in Path.GetInvalidPathChars())
+                    {
+                        input = input.Replace($"{c}", "");
+                    }
+                    input = input.Replace("/", "");
+                    input = input.Replace("\\", "");
+                    if (Path.GetFileName(playlistManager?.PlaylistPath) != input)
+                    {
+                        playlistManager?.RenameManager(input);
+                    }
                 }
                 NotifyPropertyChanged();
             }
