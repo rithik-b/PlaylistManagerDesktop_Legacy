@@ -130,7 +130,8 @@ namespace PlaylistManager.UserControls
                 // I am sorry but I gotta wait a tick
                 await Task.Delay(1);
                 renameBox.Focus();
-                renameBox.CaretIndex = Int32.MaxValue;
+                renameBox.SelectionStart = 0;
+                renameBox.SelectionEnd = Int32.MaxValue;
             }
         }
 
@@ -273,7 +274,7 @@ namespace PlaylistManager.UserControls
                 }
                 else
                 {
-                    if (Title != RenameTitle)
+                    if (Title != RenameTitle && !string.IsNullOrWhiteSpace(RenameTitle))
                     {
                         Title = RenameTitle;
                     }
@@ -284,7 +285,7 @@ namespace PlaylistManager.UserControls
         }
         private bool IsNotRenaming => !isRenaming;
 
-        private string renameTitle;
+        private string renameTitle = "";
         public string RenameTitle
         {
             get => renameTitle;
