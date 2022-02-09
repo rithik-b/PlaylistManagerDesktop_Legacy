@@ -9,12 +9,14 @@
             <Button Padding="20" HorizontalAlignment="Left" Click="OnClick">&lt;</Button>
             <TextBlock Text="{Binding FolderTitle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
-        <ListBox Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-        </ListBox>
+        <Border DragDrop.AllowDrop="True">
+            <ListBox Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </Border>
     </DockPanel>
 </UserControl>

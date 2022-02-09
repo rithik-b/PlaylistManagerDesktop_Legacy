@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using BeatSaberPlaylistsLib.Blist;
 using BeatSaberPlaylistsLib.Legacy;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Types;
+using PlaylistManager.UserControls;
 using PlaylistManager.Views;
 
 namespace PlaylistManager.Utilities
@@ -16,7 +18,6 @@ namespace PlaylistManager.Utilities
         private readonly ConfigModel configModel;
         private BeatSaberPlaylistsLib.PlaylistManager playlistManager;
         public event Action<BeatSaberPlaylistsLib.PlaylistManager>? PlaylistManagerChanged;
-        public event Action? PlaylistManagerRefreshed;
         
         private const string ICON_PATH = "PlaylistManager.Icons.DefaultIcon.png";
 
@@ -31,21 +32,15 @@ namespace PlaylistManager.Utilities
                 Path.Combine(configModel.BeatSaberDir, "Playlists"), 
                 legacyPlaylistHandler, blistPlaylistHandler);
             
-            playlistManager.PlaylistsRefreshRequested += RaiseRefresh;
-
             configModel.DirectoryChanged += dir =>
             {
-                playlistManager.PlaylistsRefreshRequested -= RaiseRefresh;
                 playlistManager = new BeatSaberPlaylistsLib.PlaylistManager(
                     Path.Combine(dir, "Playlists"),
                     legacyPlaylistHandler, blistPlaylistHandler);
                 PlaylistManagerChanged?.Invoke(playlistManager);
-                playlistManager.PlaylistsRefreshRequested += RaiseRefresh;
             };
         }
-
-        private void RaiseRefresh(object? sender, string source) => PlaylistManagerRefreshed?.Invoke();
-
+        
         public BeatSaberPlaylistsLib.PlaylistManager PlaylistManager => playlistManager;
 
         public BeatSaberPlaylistsLib.Types.IPlaylist CreatePlaylist(string playlistName, string playlistAuthorName, BeatSaberPlaylistsLib.PlaylistManager playlistManager, 
@@ -75,6 +70,29 @@ namespace PlaylistManager.Utilities
         public async Task<IPlaylist[]> GetPlaylistsAsync(BeatSaberPlaylistsLib.PlaylistManager playlistManager, bool includeChildren = false)
         {
             return await Task.Run(() => playlistManager.GetAllPlaylists(includeChildren));
+        }
+
+        public static void OnPlaylistMove(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager playlistManager)
+        {
+            playlist.Filename = "";
+            playlistManager?.StorePlaylist(playlist); 
+        }
+
+        public static async Task OnPlaylistFileCopy(IEnumerable<string> files, BeatSaberPlaylistsLib.PlaylistManager playlistManager)
+        {
+            foreach (var file in files)
+            {
+                var handler = playlistManager.GetHandlerForExtension(Path.GetExtension(file));
+                if (handler != null)
+                {
+                    var playlist = await Task.Run(async () =>
+                    {
+                        await using Stream fileStream = new FileStream(file, FileMode.Open);
+                        return handler.Deserialize(fileStream);
+                    });
+                    playlistManager.StorePlaylist(playlist);
+                }
+            }
         }
     }
 

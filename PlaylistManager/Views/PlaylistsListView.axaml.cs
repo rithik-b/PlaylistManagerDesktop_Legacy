@@ -1,7 +1,10 @@
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using PlaylistManager.Types;
@@ -26,6 +29,32 @@ namespace PlaylistManager.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            AddHandler(DragDrop.DragOverEvent, DragOver!);
+            AddHandler(DragDrop.DropEvent, Drop!);
+        }
+
+        private void DragOver(object? sender, DragEventArgs e)
+        {
+            if (viewModel.CurrentManager != null 
+                && e.Data.Contains(DataFormats.FileNames)
+                && !e.Data.Contains(PlaylistCoverView.kPlaylistData) 
+                && viewModel.CurrentManager.SupportsExtension(Path.GetExtension(e.Data.GetFileNames()?.FirstOrDefault() ?? "")))
+            {
+                e.DragEffects = DragDropEffects.Link;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
+        }
+
+        private async void Drop(object? sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(DataFormats.FileNames) && viewModel is {CurrentManager:{}})
+            {
+                await PlaylistLibUtils.OnPlaylistFileCopy(e.Data.GetFileNames()!, viewModel.CurrentManager);
+                viewModel.CurrentManager.RequestRefresh("PlaylistManager (desktop)");
+            }
         }
 
         private void OnClick(object? sender, RoutedEventArgs e)
@@ -63,7 +92,15 @@ namespace PlaylistManager.Views
                 get => currentManager;
                 set
                 {
+                    if (currentManager != null)
+                    {
+                        currentManager.PlaylistsRefreshRequested -= OnRefresh;
+                    }
                     currentManager = value;
+                    if (value != null)
+                    {
+                        value.PlaylistsRefreshRequested += OnRefresh;
+                    }
                     _ = LoadPlaylistsAsync();
                     NotifyPropertyChanged(nameof(IsSubfolder));
                     NotifyPropertyChanged(nameof(FolderTitle));
@@ -83,15 +120,15 @@ namespace PlaylistManager.Views
             public ViewModel()
             {
                 playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
-                currentManager = playlistLibUtils?.PlaylistManager;
-                _ = LoadPlaylistsAsync();
-
-                playlistLibUtils.PlaylistManagerChanged += manager =>
+                CurrentManager = playlistLibUtils?.PlaylistManager;
+                
+                playlistLibUtils!.PlaylistManagerChanged += manager =>
                 {
-                    currentManager = manager;
-                    _ = LoadPlaylistsAsync();
+                    CurrentManager = manager;
                 };
             }
+
+            private void OnRefresh(object? args, string source) => _ = LoadPlaylistsAsync();
 
             private async Task LoadPlaylistsAsync()
             {
