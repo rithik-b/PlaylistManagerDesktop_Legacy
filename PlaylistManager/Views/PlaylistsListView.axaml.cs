@@ -34,6 +34,8 @@ namespace PlaylistManager.Views
             copyTarget.AddHandler(DragDrop.DropEvent, Drop!);
         }
 
+        #region Drag and Drop
+
         private void DragOver(object? sender, DragEventArgs e)
         {
             if (viewModel.CurrentManager != null 
@@ -58,7 +60,9 @@ namespace PlaylistManager.Views
             }
         }
 
-        private void OnClick(object? sender, RoutedEventArgs e)
+        #endregion
+
+        private void OnBackClick(object? sender, RoutedEventArgs e)
         {
             if (viewModel.CurrentManager != null)
             {
@@ -69,14 +73,8 @@ namespace PlaylistManager.Views
                 }
             }
         }
-        
-        private void OnDoubleTapped(object? sender, RoutedEventArgs e)
-        {
-            if (viewModel.SelectedPlaylistOrManager is {isPlaylist: false})
-            {
-                viewModel.CurrentManager = viewModel.SelectedPlaylistOrManager.playlistManager;
-            }
-        }
+
+        private void OnDoubleTapped(object? sender, RoutedEventArgs e) => OpenSelectedPlaylistOrManager();
 
         private void LoseFocus(object? sender, PointerPressedEventArgs e)
         {
@@ -85,6 +83,14 @@ namespace PlaylistManager.Views
                 viewModel.SelectedPlaylistOrManager.IsRenaming = false;
             }
             viewModel.SelectedPlaylistOrManager = null;
+        }
+
+        public void OpenSelectedPlaylistOrManager()
+        {
+            if (viewModel.SelectedPlaylistOrManager is {isPlaylist: false})
+            {
+                viewModel.CurrentManager = viewModel.SelectedPlaylistOrManager.playlistManager;
+            }
         }
 
         public class ViewModel : ViewModelBase

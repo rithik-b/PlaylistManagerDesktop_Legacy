@@ -6,7 +6,7 @@
              x:Class="PlaylistManager.Views.PlaylistsListView">
     <DockPanel>
         <Grid Background="#808080" DockPanel.Dock="Top" IsVisible="{Binding IsSubfolder}">
-            <Button Padding="20" HorizontalAlignment="Left" Click="OnClick">&lt;</Button>
+            <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick">&lt;</Button>
             <TextBlock Text="{Binding FolderTitle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
         <Border DragDrop.AllowDrop="True" Name="CopyTarget" PointerPressed="LoseFocus">

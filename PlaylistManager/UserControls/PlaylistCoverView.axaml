@@ -18,7 +18,7 @@
         
         <DockPanel.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Open"  />
+                <MenuItem Header="Open" Click="OpenClick" />
                 <MenuItem Header="Cut" />
                 <MenuItem Header="Copy" />
                 <MenuItem Header="Rename" Click="RenameClick" />

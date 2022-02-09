@@ -110,6 +110,17 @@ namespace PlaylistManager.UserControls
         }
         #endregion
 
+        #region Context Menu
+
+        private void OpenClick(object? sender, RoutedEventArgs e)
+        {
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            if (playlistsListView != null)
+            {
+                playlistsListView.OpenSelectedPlaylistOrManager();
+            }
+        }
+        
         private async void RenameClick(object? sender, RoutedEventArgs e)
         {
             if (DataContext is PlaylistCoverViewModel viewModel)
@@ -130,6 +141,8 @@ namespace PlaylistManager.UserControls
                 viewModel.IsRenaming = false;
             }
         }
+
+        #endregion
     }
     
     public class PlaylistCoverViewModel : ViewModelBase
