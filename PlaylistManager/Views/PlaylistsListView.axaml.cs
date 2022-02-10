@@ -6,7 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using PlaylistManager.Types;
+using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
 using Splat;

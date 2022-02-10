@@ -2,7 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using PlaylistManager.Types;
+using PlaylistManager.Models;
 using Splat;
 
 namespace PlaylistManager.Views

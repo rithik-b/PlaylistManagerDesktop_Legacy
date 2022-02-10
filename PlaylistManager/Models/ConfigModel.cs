@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using PlaylistManager.Utilities;
 
-namespace PlaylistManager.Types
+namespace PlaylistManager.Models
 {
     public class ConfigModel
     {

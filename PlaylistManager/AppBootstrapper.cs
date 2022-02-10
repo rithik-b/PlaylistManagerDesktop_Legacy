@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Avalonia;
-using PlaylistManager.Types;
+using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
 using PlaylistManager.Windows;

@@ -8,7 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
-using PlaylistManager.Types;
+using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
 using Splat;
