@@ -2,20 +2,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
              x:Class="PlaylistManager.Views.PlaylistsDetailView">
     <DockPanel>
         <Border Background="#80808080" DockPanel.Dock="Top">
-            <StackPanel>
+            <Grid ColumnDefinitions="1*, 4*" RowDefinitions="Auto, Auto">
                 <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick">&lt;</Button>
-                <StackPanel Orientation="Horizontal" Spacing="30">
-                    <Image Width="256" Stretch="Uniform" Source="{Binding CoverImage}" />
-                    <StackPanel VerticalAlignment="Bottom" Spacing="10">
-                        <TextBlock Text="{Binding Title}" FontSize="50" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Author}" FontSize="25" FontWeight="Light" />
+                <Image Width="256" Height="256" Stretch="Uniform" Source="{Binding CoverImage}" HorizontalAlignment="Left" Grid.Row="1" />
+                <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" Grid.Row="1" MaxHeight="256" Margin="20,0">
+                    <TextBlock Text="{Binding Title}" FontSize="50" FontWeight="Bold" TextWrapping="Wrap" />
+                    <TextBox Text="{Binding Description}" IsEnabled="False" IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="{Binding Author}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Regular" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding NumSongs}" FontSize="18" VerticalAlignment="Bottom" FontWeight="Thin" TextWrapping="Wrap" />
                     </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Border>
-        
-    </DockPanel></UserControl>
+    </DockPanel>
+</UserControl>

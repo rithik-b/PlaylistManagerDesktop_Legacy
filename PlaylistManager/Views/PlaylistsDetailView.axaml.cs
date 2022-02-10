@@ -31,6 +31,11 @@ namespace PlaylistManager.Views
         public PlaylistsDetailView()
         {
             InitializeComponent();
+#if DEBUG
+            var utils = Locator.Current.GetService<PlaylistLibUtils>();
+            var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
+            ViewModel = new PlaylistsDetailViewModel(playlist!);
+#endif
         }
 
         private void InitializeComponent()
@@ -53,8 +58,10 @@ namespace PlaylistManager.Views
         }
 
         public string Title => playlist.Title;
-        public string Author => playlist.Author ?? "";
-        
+        public string Author => playlist.Author ?? "Unknown";
+        public string? Description => playlist.Description;
+        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")}";
+
         public Bitmap? CoverImage
         {
             get
