@@ -5,6 +5,7 @@ using System.Reflection;
 using Avalonia;
 using PlaylistManager.Types;
 using PlaylistManager.Utilities;
+using PlaylistManager.Views;
 using PlaylistManager.Windows;
 using Splat;
 
@@ -21,6 +22,7 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<CoverImageLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(ConfigModel.Factory);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistsDetailView>);
         }
 
         public T? DiFactory<T>() => DiFactory<T>(Locator.Current);

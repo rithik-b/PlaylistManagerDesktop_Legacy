@@ -18,6 +18,7 @@
                 </ListBox.ItemsPanel>
             </ListBox>
             <Border.ContextMenu>
+                <!-- TODO: Implement the features of this ContextMenu -->
                 <ContextMenu>
                     <MenuItem Header="New">
                         <MenuItem Header="Playlist" />

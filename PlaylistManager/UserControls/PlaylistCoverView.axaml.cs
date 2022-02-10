@@ -167,6 +167,10 @@ namespace PlaylistManager.UserControls
         #endregion
     }
     
+    /*
+     * I really really wanted to use abstraction and inheritance for this but because of the ViewLocator (I Hardly Know
+     * Her!) I can't. Maybe someday I'll figure this stuff out 😔
+     */
     public class PlaylistCoverViewModel : ViewModelBase
     {
         public readonly IPlaylist? playlist;

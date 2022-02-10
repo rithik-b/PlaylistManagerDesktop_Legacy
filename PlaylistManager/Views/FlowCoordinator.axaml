@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:local="using:PlaylistManager.Views"
+             xmlns:userControls="clr-namespace:PlaylistManager.UserControls"
              x:Class="PlaylistManager.Views.FlowCoordinator">
     <Grid ColumnDefinitions="1*,10*">
         <ListBox Grid.Column="0" Name="MenuItems" Items="{Binding MenuItems}" SelectedIndex="{Binding SelectedIndex}" VerticalAlignment="Center" />
-        <Panel Grid.Column="1" IsVisible="{Binding PlaylistsVisible}">
+        <userControls:NavigationPanel Name="PlaylistsTabNavigationPanel" Grid.Column="1" IsVisible="{Binding PlaylistsVisible}">
             <local:PlaylistsListView />
-        </Panel>
+        </userControls:NavigationPanel>
         <Panel Grid.Column="1" IsVisible="{Binding SettingsVisible}">
             <local:SettingsView />
         </Panel>
