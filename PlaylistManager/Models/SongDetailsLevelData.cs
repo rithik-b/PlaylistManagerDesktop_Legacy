@@ -21,6 +21,7 @@ namespace PlaylistManager.Models
         public string SongAuthorName => song.songAuthorName;
         public string LevelAuthorName => song.levelAuthorName;
         public string Hash => song.hash;
+        public bool Downloaded => false;
         public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
         
         public SongDetailsLevelData(Song song)

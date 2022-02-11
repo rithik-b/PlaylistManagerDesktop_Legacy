@@ -88,7 +88,7 @@ namespace PlaylistManager.Models
         public string SongAuthorName => _songAuthorName ?? "";
         public string LevelAuthorName => _levelAuthorName ?? "";
         public string Hash => hash ?? "";
-        
+        public bool Downloaded => true;
         public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
         
         [OnDeserialized]
