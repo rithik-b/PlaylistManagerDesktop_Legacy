@@ -18,8 +18,10 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterConstant(app, typeof(App));
             // ReSharper disable once ConvertClosureToMethodGroup (Reason: We want PlaylistManager's Assembly)
             Locator.CurrentMutable.RegisterLazySingleton(() => Assembly.GetExecutingAssembly());
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<HttpClientService>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistLibUtils>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelLoader>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<SongDetailsLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<CoverImageLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(ConfigModel.Factory);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);

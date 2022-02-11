@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace PlaylistManager.Models
 {
+    /// <summary>
+    /// A Custom Level stored in a local file
+    /// </summary>
     public class CustomLevel
     {
         private const string kInfoFile = "Info.dat";
@@ -53,6 +56,9 @@ namespace PlaylistManager.Models
         }
     }
     
+    /// <summary>
+    /// A wrapper for Custom Levels that implements the ICustomLevelData interface
+    /// </summary>
     public class CustomLevelData : ICustomLevelData
     {
         [JsonProperty]

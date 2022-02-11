@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using SongDetailsCache;
 using Splat;
 
 namespace PlaylistManager.Utilities
@@ -11,6 +12,7 @@ namespace PlaylistManager.Utilities
         public Benchmarks()
         {
             // _ = LevelBenchmark();
+            // _ = SongDetailsBenchmark();
             // _ = PlaylistBenchmark();
         }
         
@@ -37,6 +39,21 @@ namespace PlaylistManager.Utilities
                     time = stopwatch.ElapsedMilliseconds;
                     Console.WriteLine($"Level parse time: {time}ms");
                 }
+            }
+        }
+
+        public async Task SongDetailsBenchmark()
+        {
+            var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>();
+            if (songDetailsLoader != null)
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                await songDetailsLoader.Init();
+                var result = songDetailsLoader.TryGetLevelByKey("25f", out var level);
+                stopwatch.Stop();
+                var time = stopwatch.ElapsedMilliseconds;
+                Console.WriteLine($"SongDetails init and search took {time}ms");
             }
         }
         
