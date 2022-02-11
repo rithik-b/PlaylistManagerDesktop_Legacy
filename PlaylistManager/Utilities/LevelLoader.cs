@@ -7,7 +7,7 @@ using PlaylistManager.Models;
 
 namespace PlaylistManager.Utilities
 {
-    public class SongLoader
+    public class LevelLoader
     {
         // TODO (Maybe): Add support for SongCore custom directories and ignore WIP directories
         private string kBeatSaberDataDir = "Beat Saber_Data";
@@ -18,7 +18,7 @@ namespace PlaylistManager.Utilities
         private readonly ConfigModel configModel;
         private bool needsRefresh;
 
-        public SongLoader(ConfigModel configModel)
+        public LevelLoader(ConfigModel configModel)
         {
             customLevels = new ConcurrentDictionary<string, CustomLevel>();
             hasher = new Hasher();
