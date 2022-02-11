@@ -67,7 +67,7 @@ namespace PlaylistManager.Utilities
 
         public async Task<IPlaylist[]> GetPlaylistsAsync(BeatSaberPlaylistsLib.PlaylistManager playlistManager, bool includeChildren = false)
         {
-            return await Task.Run(() => playlistManager.GetAllPlaylists(includeChildren));
+            return await Task.Run(() => playlistManager.GetAllPlaylists(includeChildren)).ConfigureAwait(false);
         }
 
         public static void OnPlaylistMove(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager playlistManager)
