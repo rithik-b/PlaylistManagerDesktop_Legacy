@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Splat;
 
@@ -13,6 +14,32 @@ namespace PlaylistManager.Utilities
             // _ = PlaylistBenchmark();
         }
         
+        public async Task SongBenchmark()
+        {
+            var songLoader = Locator.Current.GetService<SongLoader>();
+            if (songLoader != null)
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var songs = await songLoader.GetCustomLevelsAsync();
+                stopwatch.Stop();
+                var time = stopwatch.ElapsedMilliseconds;
+                Console.WriteLine($"All songs load time: {time}ms");
+
+                if (songs.Count > 0)
+                {
+                    stopwatch.Reset();
+                    var song = songs.First().Value;
+                    stopwatch.Start();
+                    var levelData = await song.GetLevelDataAsync();
+                    var cover = await levelData!.GetCoverImageAsync();
+                    stopwatch.Stop();
+                    time = stopwatch.ElapsedMilliseconds;
+                    Console.WriteLine($"Song parse time: {time}ms");
+                }
+            }
+        }
+        
         public async Task PlaylistBenchmark()
         {
             var playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
@@ -24,20 +51,6 @@ namespace PlaylistManager.Utilities
                 stopwatch.Stop();
                 var time = stopwatch.ElapsedMilliseconds;
                 Console.WriteLine($"Playlist load time: {time}ms");
-            }
-        }
-        
-        public async Task SongBenchmark()
-        {
-            var songLoader = Locator.Current.GetService<SongLoader>();
-            if (songLoader != null)
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var songs = await songLoader.GetCustomLevelsAsync();
-                stopwatch.Stop();
-                var time = stopwatch.ElapsedMilliseconds;
-                Console.WriteLine($"Song load time: {time}ms");
             }
         }
     }

@@ -40,7 +40,7 @@ namespace PlaylistManager.Models
         /// <summary>
         /// Asynchronously loads and parses the cover image of a level
         /// </summary>
-        public Task<Bitmap> GetCoverImageAsync(CancellationToken? cancellationToken = null);
+        public Task<Bitmap?> GetCoverImageAsync(CancellationToken? cancellationToken = null);
     }
     
     public enum Difficulty
