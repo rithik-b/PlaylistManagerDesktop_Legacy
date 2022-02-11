@@ -10,9 +10,9 @@ namespace PlaylistManager.Utilities
 
         public async Task Init() => songDetails = await SongDetails.Init();
 
-        public bool TryGetLevelByHash(string hash, out SongDetailsLevelData? level)
+        public bool TryGetLevelByHash(string hash, out SongDetailsLevelData level)
         {
-            level = null;
+            level = null!;
             
             // No returning anything if we weren't initialized
             if (songDetails == null)
@@ -28,9 +28,9 @@ namespace PlaylistManager.Utilities
             return returnVal;
         }
         
-        public bool TryGetLevelByKey(string key, out SongDetailsLevelData? level)
+        public bool TryGetLevelByKey(string key, out SongDetailsLevelData level)
         {
-            level = null;
+            level = null!;
             
             // No returning anything if we weren't initialized
             if (songDetails == null)

@@ -31,6 +31,7 @@ namespace PlaylistManager.Utilities
         {
             if (needsRefresh || this.needsRefresh)
             {
+                this.needsRefresh = false;
                 customLevels.Clear();
                 await Task.Run(() =>
                 {
@@ -40,7 +41,7 @@ namespace PlaylistManager.Utilities
                         var hash = hasher.HashDirectory(songDirectory, cancellationToken ?? CancellationToken.None);
                         if (hash.Hash != null && hash.ResultType is HashResultType.Success or HashResultType.Warn)
                         {
-                            customLevels[songDirectory] = new CustomLevel(hash.Hash, songDirectory);
+                            customLevels[hash.Hash] = new CustomLevel(hash.Hash, songDirectory);
                         }
                     }
                 }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);

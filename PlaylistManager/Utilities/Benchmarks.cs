@@ -13,6 +13,7 @@ namespace PlaylistManager.Utilities
         {
             // _ = LevelBenchmark();
             // _ = SongDetailsBenchmark();
+            // _ = LevelLookupBenchmark();
             // _ = PlaylistBenchmark();
         }
         
@@ -55,6 +56,20 @@ namespace PlaylistManager.Utilities
                 var time = stopwatch.ElapsedMilliseconds;
                 Console.WriteLine($"SongDetails init and search took {time}ms");
             }
+        }
+
+        public async Task LevelLookupBenchmark()
+        {
+            var levelLookup = Locator.Current.GetService<LevelLookup>();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            if (levelLookup != null)
+            {
+                var level = await levelLookup.GetLevelByKey("25f");
+            }
+            stopwatch.Stop();
+            var time = stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"Key lookup on owned level took {time}ms");
         }
         
         public async Task PlaylistBenchmark()
