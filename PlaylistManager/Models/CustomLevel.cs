@@ -62,16 +62,16 @@ namespace PlaylistManager.Models
         private string? _songSubName { get; set; }
         
         [JsonProperty]
-        private string _songAuthorName { get; set; }
+        private string? _songAuthorName { get; set; }
         
         [JsonProperty]
-        private string _levelAuthorName { get; set; }
+        private string? _levelAuthorName { get; set; }
         
         [JsonProperty]
-        private string _coverImageFilename { get; set; }
+        private string? _coverImageFilename { get; set; }
         
         [JsonProperty]
-        private List<DifficultyBeatmapSet> _difficultyBeatmapSets { get; set; }
+        private List<DifficultyBeatmapSet>? _difficultyBeatmapSets { get; set; }
 
         private string? hash;
         private string? path;
@@ -88,17 +88,23 @@ namespace PlaylistManager.Models
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            foreach (var difficultyBeatmapSet in _difficultyBeatmapSets)
+            if (_difficultyBeatmapSets != null)
             {
-                if (!Difficulties.ContainsKey(difficultyBeatmapSet.beatmapCharacteristicName))
+                foreach (var difficultyBeatmapSet in _difficultyBeatmapSets)
                 {
-                    Difficulties[difficultyBeatmapSet.beatmapCharacteristicName] = new List<Difficulty>();
-                }
-                
-                foreach (var difficultyBeatmap in difficultyBeatmapSet.difficultyBeatmaps)
-                {
-                    Difficulties[difficultyBeatmapSet.beatmapCharacteristicName].Add(difficultyBeatmap.difficulty);
-                }
+                    if (!Difficulties.ContainsKey(difficultyBeatmapSet.beatmapCharacteristicName))
+                    {
+                        Difficulties[difficultyBeatmapSet.beatmapCharacteristicName] = new List<Difficulty>();
+                    }
+
+                    foreach (var difficultyBeatmap in difficultyBeatmapSet.difficultyBeatmaps)
+                    {
+                        Difficulties[difficultyBeatmapSet.beatmapCharacteristicName].Add(difficultyBeatmap.difficulty);
+                    }
+                    
+                    // Throwing away the pointer to the original list should hopefully save memory
+                    _difficultyBeatmapSets = null;
+                }   
             }
         }
         
@@ -106,7 +112,7 @@ namespace PlaylistManager.Models
         {
             if (coverImage == null)
             {
-                var imagePath = Path.Combine(path ?? "", _coverImageFilename);
+                var imagePath = Path.Combine(path ?? "", _coverImageFilename ?? "");
                 
                 if (!File.Exists(imagePath))
                 {
