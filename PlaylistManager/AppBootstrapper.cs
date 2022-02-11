@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Avalonia;
-using PlaylistManager.Types;
+using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
 using PlaylistManager.Windows;
@@ -18,11 +18,19 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterConstant(app, typeof(App));
             // ReSharper disable once ConvertClosureToMethodGroup (Reason: We want PlaylistManager's Assembly)
             Locator.CurrentMutable.RegisterLazySingleton(() => Assembly.GetExecutingAssembly());
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<HttpClientService>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistLibUtils>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelLoader>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<SongDetailsLoader>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelLookup>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<CoverImageLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(ConfigModel.Factory);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistsDetailView>);
+            
+#if DEBUG
+            Locator.CurrentMutable.RegisterConstant(new Benchmarks(), typeof(Benchmarks));
+#endif
         }
 
         public T? DiFactory<T>() => DiFactory<T>(Locator.Current);
