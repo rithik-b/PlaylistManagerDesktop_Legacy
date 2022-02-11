@@ -45,10 +45,10 @@ namespace PlaylistManager.Models
     
     public enum Difficulty
     {
-        Easy,
-        Normal,
-        Hard,
-        Expert,
-        ExpertPlus 
+        Easy = 1,
+        Normal = 3,
+        Hard = 5,
+        Expert = 7,
+        ExpertPlus = 9
     }
 }

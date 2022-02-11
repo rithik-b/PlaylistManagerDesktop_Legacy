@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
@@ -68,6 +69,9 @@ namespace PlaylistManager.Models
         
         [JsonProperty]
         private string _coverImageFilename { get; set; }
+        
+        [JsonProperty]
+        private List<DifficultyBeatmapSet> _difficultyBeatmapSets { get; set; }
 
         private string? hash;
         private string? path;
@@ -79,8 +83,25 @@ namespace PlaylistManager.Models
         public string LevelAuthorName => _levelAuthorName ?? "";
         public string Hash => hash ?? "";
         
-        // TODO: Implement diffs
         public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
+        
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            foreach (var difficultyBeatmapSet in _difficultyBeatmapSets)
+            {
+                if (!Difficulties.ContainsKey(difficultyBeatmapSet.beatmapCharacteristicName))
+                {
+                    Difficulties[difficultyBeatmapSet.beatmapCharacteristicName] = new List<Difficulty>();
+                }
+                
+                foreach (var difficultyBeatmap in difficultyBeatmapSet.difficultyBeatmaps)
+                {
+                    Difficulties[difficultyBeatmapSet.beatmapCharacteristicName].Add(difficultyBeatmap.difficulty);
+                }
+            }
+        }
+        
         public async Task<Bitmap?> GetCoverImageAsync(CancellationToken? cancellationToken = null)
         {
             if (coverImage == null)
@@ -108,6 +129,21 @@ namespace PlaylistManager.Models
         {
             this.hash = hash;
             this.path = path;
+        }
+    }
+
+    public class DifficultyBeatmapSet
+    {
+        [JsonProperty("_beatmapCharacteristicName")]
+        public string beatmapCharacteristicName;
+        
+        [JsonProperty("_difficultyBeatmaps")]
+        public List<DifficultyBeatmap> difficultyBeatmaps;
+        
+        public class DifficultyBeatmap
+        {
+            [JsonProperty("_difficultyRank")]
+            public Difficulty difficulty;
         }
     }
 }
