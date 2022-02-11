@@ -99,21 +99,30 @@ namespace PlaylistManager.Utilities
 
     public static class PlaylistLibExtensions
     {
-        public static string? GetIdentifierForPlaylistSong(this IPlaylistSong playlistSong)
+        public static bool TryGetIdentifierForPlaylistSong(this IPlaylistSong playlistSong, out string? identifier, out Identifier identifierType)
         {
             if (playlistSong.Identifiers.HasFlag(Identifier.Hash))
             {
-                return playlistSong.Hash;
+                identifier = playlistSong.Hash;
+                identifierType = Identifier.Hash;
             }
             if (playlistSong.Identifiers.HasFlag(Identifier.Key))
             {
-                return playlistSong.Key;
+                identifier = playlistSong.Key;
+                identifierType = Identifier.Key;
             }
             if (playlistSong.Identifiers.HasFlag(Identifier.LevelId))
             {
-                return playlistSong.LevelId;
+                identifier = playlistSong.LevelId;
+                identifierType = Identifier.LevelId;
             }
-            return null;
+            else
+            {
+                identifier = null;
+                identifierType = Identifier.None;
+                return false;
+            }
+            return true;
         }
         
         public static string GetPlaylistPath(this IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
