@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -49,18 +50,25 @@ namespace PlaylistManager.Views
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         private readonly IPlaylist playlist;
+        private readonly List<PlaylistSongWrapper> playlistSongs;
+        private readonly LevelLookup? levelLookup;
+        private int ownedSongs;
+        private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         
         public PlaylistsDetailViewModel(IPlaylist playlist)
         {
             this.playlist = playlist;
+            playlistSongs = new List<PlaylistSongWrapper>();
+            levelLookup = Locator.Current.GetService<LevelLookup>();
+            _ = FetchSongs();
         }
 
         public string Title => playlist.Title;
         public string Author => playlist.Author ?? "Unknown";
         public string? Description => playlist.Description;
-        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")}";
+        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({ownedSongs} owned)" : "")}";
 
         public Bitmap? CoverImage
         {
@@ -88,6 +96,31 @@ namespace PlaylistManager.Views
             if (bitmap != null)
             {
                 CoverImage = bitmap;
+            }
+        }
+
+        private async Task FetchSongs()
+        {
+            if (levelLookup != null)
+            {
+                foreach (var playlistSong in playlist)
+                {
+                    if (playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var identifierType))
+                    {
+                        var levelData = identifierType == Identifier.Hash ? await levelLookup.GetLevelByHash(identifier!) :
+                                identifierType == Identifier.Key ? await levelLookup.GetLevelByKey(identifier!) : null;
+                        if (levelData != null)
+                        {
+                            playlistSongs.Add(new PlaylistSongWrapper(playlistSong, levelData));
+                            if (levelData.Downloaded)
+                            {
+                                ownedSongs++;
+                            }
+                        }
+                    }
+                }
+                songsLoaded = true;
+                NotifyPropertyChanged(nameof(NumSongs));
             }
         }
     }

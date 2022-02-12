@@ -106,12 +106,12 @@ namespace PlaylistManager.Utilities
                 identifier = playlistSong.Hash;
                 identifierType = Identifier.Hash;
             }
-            if (playlistSong.Identifiers.HasFlag(Identifier.Key))
+            else if (playlistSong.Identifiers.HasFlag(Identifier.Key))
             {
                 identifier = playlistSong.Key;
                 identifierType = Identifier.Key;
             }
-            if (playlistSong.Identifiers.HasFlag(Identifier.LevelId))
+            else if (playlistSong.Identifiers.HasFlag(Identifier.LevelId))
             {
                 identifier = playlistSong.LevelId;
                 identifierType = Identifier.LevelId;
