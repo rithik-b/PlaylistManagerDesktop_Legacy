@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -11,6 +12,7 @@ using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
+using ReactiveUI;
 using Splat;
 
 namespace PlaylistManager.UserControls
@@ -279,7 +281,7 @@ namespace PlaylistManager.UserControls
             var bitmap = await Task.Run(() => Bitmap.DecodeToWidth(imageStream, 400));
             if (bitmap != null)
             {
-                CoverImage = bitmap;
+                RxApp.MainThreadScheduler.Schedule(() => CoverImage = bitmap);
             }
         }
         

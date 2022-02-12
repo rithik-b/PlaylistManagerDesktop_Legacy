@@ -10,7 +10,7 @@
                 <Image Width="50" Stretch="Uniform" Source="{Binding CoverImage}" />
             </Panel>
         </Border>
-        <StackPanel Grid.Column="1" Margin="10,0">
+        <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center">
             <TextBlock Text="{Binding SongName}" />
             <TextBlock Text="{Binding AuthorName}" />
         </StackPanel>

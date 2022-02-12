@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
+using ReactiveUI;
 using Splat;
 
 namespace PlaylistManager.UserControls
@@ -79,7 +81,7 @@ namespace PlaylistManager.UserControls
             var bitmap = await playlistSong.customLevelData.GetCoverImageAsync();
             if (bitmap != null)
             {
-                CoverImage = bitmap;
+                RxApp.MainThreadScheduler.Schedule(() => CoverImage = bitmap);
             }
         }
     }
