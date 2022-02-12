@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PlaylistManager.UserControls.LevelListItemView">
+    <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto">
+        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top">
+            <Panel>
+                <Image Width="50" Stretch="Uniform" Source="{Binding CoverImage}" />
+            </Panel>
+        </Border>
+        <StackPanel Grid.Column="1" Margin="10,0">
+            <TextBlock Text="{Binding SongName}" />
+            <TextBlock Text="{Binding AuthorName}" />
+        </StackPanel>
+        <ComboBox Grid.Column="2" Items="{Binding Characteristics}" SelectedItem="{Binding SelectedCharacteristic}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        <Grid Column="3">
+            
+        </Grid>
+        <Grid Column="4">
+            <StackPanel Orientation="Horizontal">
+                <!-- TODO: Make icons for buttons -->
+                <!-- TODO: Implement button functionality -->
+                <Button>-</Button>
+                <Button>P</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

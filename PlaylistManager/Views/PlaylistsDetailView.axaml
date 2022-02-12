@@ -19,5 +19,8 @@
                 </StackPanel>
             </Grid>
         </Border>
+        <Border DockPanel.Dock="Bottom">
+            <ListBox Items="{Binding Levels}" Background="Transparent" Margin="0 20" />
+        </Border>
     </DockPanel>
 </UserControl>

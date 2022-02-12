@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -50,7 +50,6 @@ namespace PlaylistManager.Views
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         private readonly IPlaylist playlist;
-        private readonly List<PlaylistSongWrapper> playlistSongs;
         private readonly LevelLookup? levelLookup;
         private int ownedSongs;
         private bool songsLoaded;
@@ -60,7 +59,6 @@ namespace PlaylistManager.Views
         public PlaylistsDetailViewModel(IPlaylist playlist)
         {
             this.playlist = playlist;
-            playlistSongs = new List<PlaylistSongWrapper>();
             levelLookup = Locator.Current.GetService<LevelLookup>();
             _ = FetchSongs();
         }
@@ -69,6 +67,7 @@ namespace PlaylistManager.Views
         public string Author => playlist.Author ?? "Unknown";
         public string? Description => playlist.Description;
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({ownedSongs} owned)" : "")}";
+        public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
         public Bitmap? CoverImage
         {
@@ -111,7 +110,7 @@ namespace PlaylistManager.Views
                                 identifierType == Identifier.Key ? await levelLookup.GetLevelByKey(identifier!) : null;
                         if (levelData != null)
                         {
-                            playlistSongs.Add(new PlaylistSongWrapper(playlistSong, levelData));
+                            Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
                             if (levelData.Downloaded)
                             {
                                 ownedSongs++;

@@ -8,6 +8,7 @@
         <entry key="PlaylistManager/PlaylistsListView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/FileSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/FileSettingView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/UserControls/LevelListItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/PlaylistCoverView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/SideBarItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/Views/FlowCoordinator.axaml" value="PlaylistManager/PlaylistManager.csproj" />
