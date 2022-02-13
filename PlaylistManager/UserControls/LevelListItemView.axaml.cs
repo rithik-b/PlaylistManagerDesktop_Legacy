@@ -44,6 +44,7 @@ namespace PlaylistManager.UserControls
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         private string? selectedCharacteristic;
+        private List<Difficulty>? difficulties;
 
         public LevelListItemViewModel(PlaylistSongWrapper playlistSong)
         {
@@ -54,7 +55,7 @@ namespace PlaylistManager.UserControls
                 Characteristics.Add(characteristic);
             }
 
-            selectedCharacteristic = Characteristics.FirstOrDefault();
+            SelectedCharacteristic = Characteristics.FirstOrDefault();
         }
 
         public string SongName => $"{playlistSong.customLevelData.SongName} {playlistSong.customLevelData.SongSubName}";
@@ -79,16 +80,29 @@ namespace PlaylistManager.UserControls
                 NotifyPropertyChanged();
             }
         }
-
         public string? SelectedCharacteristic
         {
             get => selectedCharacteristic;
             set
             {
                 selectedCharacteristic = value;
+                if (selectedCharacteristic != null && playlistSong.customLevelData.Difficulties.TryGetValue(selectedCharacteristic, out var difficulties))
+                {
+                    this.difficulties = difficulties;
+                }
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(IsEasy));
+                NotifyPropertyChanged(nameof(IsNormal));
+                NotifyPropertyChanged(nameof(IsHard));
+                NotifyPropertyChanged(nameof(IsExpert));
+                NotifyPropertyChanged(nameof(IsExpertPlus));
             }
         }
+        public bool IsEasy => difficulties != null && difficulties.Contains(Difficulty.Easy);
+        public bool IsNormal => difficulties != null && difficulties.Contains(Difficulty.Normal);
+        public bool IsHard => difficulties != null && difficulties.Contains(Difficulty.Hard);
+        public bool IsExpert => difficulties != null && difficulties.Contains(Difficulty.Expert);
+        public bool IsExpertPlus => difficulties != null && difficulties.Contains(Difficulty.ExpertPlus);
 
         private async Task LoadCoverAsync()
         {

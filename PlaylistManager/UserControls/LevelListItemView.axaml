@@ -10,14 +10,22 @@
                 <Image Width="50" Stretch="Uniform" Source="{Binding CoverImage}" />
             </Panel>
         </Border>
+        
         <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center">
             <TextBlock Text="{Binding SongName}" />
             <TextBlock Text="{Binding AuthorName}" />
         </StackPanel>
-        <ComboBox Grid.Column="2" Items="{Binding Characteristics}" SelectedItem="{Binding SelectedCharacteristic}" HorizontalAlignment="Right" VerticalAlignment="Center" />
-        <Grid Column="3">
-            
-        </Grid>
+        
+        <ComboBox Grid.Column="2" Items="{Binding Characteristics}" SelectedItem="{Binding SelectedCharacteristic}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10,0" />
+        
+        <StackPanel Orientation="Horizontal" Grid.Column="3" Margin="10,0" Width="175">
+            <Button Background="#67AC5B" IsVisible="{Binding IsEasy}">E</Button>
+            <Button Background="#4795EC" IsVisible="{Binding IsNormal}">N</Button>
+            <Button Background="#E15241" IsVisible="{Binding IsHard}">H</Button>
+            <Button Background="#E15241" IsVisible="{Binding IsExpert}">Ex</Button>
+            <Button Background="#8F34AA" IsVisible="{Binding IsExpertPlus}">Ex+</Button>
+        </StackPanel>
+        
         <Grid Column="4">
             <StackPanel Orientation="Horizontal">
                 <!-- TODO: Make icons for buttons -->
