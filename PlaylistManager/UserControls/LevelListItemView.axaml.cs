@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
+using PlaylistManager.Views;
 using ReactiveUI;
 using Splat;
 
@@ -16,8 +17,6 @@ namespace PlaylistManager.UserControls
 {
     public class LevelListItemView : UserControl
     {
-        private const string kRabbitPreviewerIHardlyKnowHer = "https://skystudioapps.com/bs-viewer/?id=";
-        
         public LevelListItemView()
         {
             InitializeComponent();
@@ -27,19 +26,13 @@ namespace PlaylistManager.UserControls
         {
             AvaloniaXamlLoader.Load(this);
         }
-
-        private async void PreviewClick(object? sender, RoutedEventArgs e)
-        {
-            if (DataContext is LevelListItemViewModel {Key: { }} viewModel)
-            {
-                Utils.OpenBrowser(kRabbitPreviewerIHardlyKnowHer + viewModel.Key);
-            }
-        }
     }
 
     public class LevelListItemViewModel : ViewModelBase
     {
-        private readonly PlaylistSongWrapper playlistSong;
+        private const string kRabbitPreviewerIHardlyKnowHer = "https://skystudioapps.com/bs-viewer/?id=";
+
+        public readonly PlaylistSongWrapper playlistSong;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         private string? selectedCharacteristic;
@@ -309,6 +302,25 @@ namespace PlaylistManager.UserControls
                 }
             }
         }
+
+        #endregion
+
+        #region Action Buttons
+
+        private void RemoveLevel()
+        {
+            // TODO: Show popup before deletion
+            var detailView = Locator.Current.GetService<PlaylistsDetailView>();
+            if (detailView is {ViewModel: { }})
+            {
+                var viewModel = detailView.ViewModel;
+                viewModel.playlist.Remove(playlistSong.playlistSong);
+                viewModel.Levels.Remove(this);
+                viewModel.UpdateNumSongs();
+            }
+        }
+        
+        private void OpenPreview() => Utils.OpenBrowser(kRabbitPreviewerIHardlyKnowHer + Key);
 
         #endregion
 

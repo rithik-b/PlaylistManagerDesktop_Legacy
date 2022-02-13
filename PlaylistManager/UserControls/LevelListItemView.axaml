@@ -32,9 +32,8 @@
         <Grid Column="4">
             <StackPanel Orientation="Horizontal">
                 <!-- TODO: Make icons for buttons -->
-                <!-- TODO: Implement button functionality -->
-                <Button>-</Button>
-                <Button Click="PreviewClick" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">P</Button>
+                <Button Command="{Binding RemoveLevel}">-</Button>
+                <Button Command="{Binding OpenPreview}" IsEnabled="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">P</Button>
             </StackPanel>
         </Grid>
     </Grid>

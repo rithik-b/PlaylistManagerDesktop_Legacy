@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -51,9 +52,8 @@ namespace PlaylistManager.Views
 
     public class PlaylistsDetailViewModel : ViewModelBase
     {
-        private readonly IPlaylist playlist;
+        public readonly IPlaylist playlist;
         private readonly LevelLookup? levelLookup;
-        private int ownedSongs;
         private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
@@ -68,7 +68,8 @@ namespace PlaylistManager.Views
         public string Title => playlist.Title;
         public string Author => playlist.Author ?? "Unknown";
         public string? Description => playlist.Description;
-        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({ownedSongs} owned)" : "")}";
+        public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
+        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
@@ -100,6 +101,8 @@ namespace PlaylistManager.Views
                 RxApp.MainThreadScheduler.Schedule(() => CoverImage = bitmap);
             }
         }
+        
+        public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
 
         private async Task FetchSongs()
         {
@@ -114,16 +117,12 @@ namespace PlaylistManager.Views
                         if (levelData != null)
                         {
                             Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
-                            if (levelData.Downloaded)
-                            {
-                                ownedSongs++;
-                            }
                         }
                     }
                 }
                 songsLoaded = true;
-                NotifyPropertyChanged(nameof(NumSongs));
                 NotifyPropertyChanged(nameof(SongsLoading));
+                UpdateNumSongs();
             }
         }
     }
