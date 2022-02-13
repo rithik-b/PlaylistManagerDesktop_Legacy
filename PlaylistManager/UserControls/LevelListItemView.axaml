@@ -23,7 +23,7 @@
                 <!-- TODO: Make icons for buttons -->
                 <!-- TODO: Implement button functionality -->
                 <Button>-</Button>
-                <Button>P</Button>
+                <Button Click="PreviewClick" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">P</Button>
             </StackPanel>
         </Grid>
     </Grid>
