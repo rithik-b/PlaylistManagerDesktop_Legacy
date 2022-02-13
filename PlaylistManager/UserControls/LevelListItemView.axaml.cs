@@ -101,26 +101,23 @@ namespace PlaylistManager.UserControls
                         {
                             if (difficulty.Characteristic.Equals(SelectedCharacteristic, StringComparison.OrdinalIgnoreCase))
                             {
-                                if (Enum.TryParse<Difficulty>(difficulty.Name, out var playlistManagerDiff))
+                                switch (difficulty.GetDifficulty())
                                 {
-                                    switch (playlistManagerDiff)
-                                    {
-                                        case Difficulty.Easy:
-                                            easyHighlighted = true;
-                                            break;
-                                        case Difficulty.Normal:
-                                            normalHighlighted = true;
-                                            break;
-                                        case Difficulty.Hard:
-                                            hardHighlighted = true;
-                                            break;
-                                        case Difficulty.Expert:
-                                            expertHighlighted = true;
-                                            break;
-                                        case Difficulty.ExpertPlus:
-                                            expertPlusHighlighted = true;
-                                            break;
-                                    }
+                                    case Difficulty.Easy:
+                                        easyHighlighted = true;
+                                        break;
+                                    case Difficulty.Normal:
+                                        normalHighlighted = true;
+                                        break;
+                                    case Difficulty.Hard:
+                                        hardHighlighted = true;
+                                        break;
+                                    case Difficulty.Expert:
+                                        expertHighlighted = true;
+                                        break;
+                                    case Difficulty.ExpertPlus:
+                                        expertPlusHighlighted = true;
+                                        break;
                                 }
                             }
                         }
@@ -145,17 +142,17 @@ namespace PlaylistManager.UserControls
 
         #region Difficulties
         
-        private const string kEasyBackground = "#8067AC5B";
-        private const string kNormalBackground = "#804795EC";
-        private const string kHardBackground = "#80F19C38";
-        private const string kExpertBackground = "#80E15241";
-        private const string kExpertPlusBackground = "#808F34AA";
+        private const string kEasyBackground = "#6067AC5B";
+        private const string kNormalBackground = "#604795EC";
+        private const string kHardBackground = "#60F19C38";
+        private const string kExpertBackground = "#60E15241";
+        private const string kExpertPlusBackground = "#60BF40BF";
         
         private const string kEasyHighlightedBackground = "#FF67AC5B";
         private const string kNormalHighlightedBackground = "#FF4795EC";
         private const string kHardHighlightedBackground = "#FFF19C38";
         private const string kExpertHighlightedBackground = "#FFE15241";
-        private const string kExpertPlusHighlightedBackground = "#FF8F34AA";
+        private const string kExpertPlusHighlightedBackground = "#FFBF40BF";
 
         public bool IsEasy => difficulties != null && difficulties.Contains(Difficulty.Easy);
         public bool IsNormal => difficulties != null && difficulties.Contains(Difficulty.Normal);

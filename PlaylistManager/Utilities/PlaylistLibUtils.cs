@@ -7,6 +7,7 @@ using BeatSaberPlaylistsLib.Blist;
 using BeatSaberPlaylistsLib.Legacy;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
+using Difficulty = PlaylistManager.Models.Difficulty;
 
 namespace PlaylistManager.Utilities
 {
@@ -135,6 +136,24 @@ namespace PlaylistManager.Utilities
             var file = playlist.GetPlaylistPath(parentManager);
             var handler = parentManager.GetHandlerForExtension(Path.GetExtension(file));
             return handler;
+        }
+
+        public static Difficulty? GetDifficulty(this BeatSaberPlaylistsLib.Types.Difficulty plDifficulty)
+        {
+            switch (plDifficulty.DifficultyValue)
+            {
+                case 0:
+                    return Difficulty.Easy;
+                case 1:
+                    return Difficulty.Normal;
+                case 2:
+                    return Difficulty.Hard;
+                case 3:
+                    return Difficulty.Expert;
+                case 4:
+                    return Difficulty.ExpertPlus;
+            }
+            return null;
         }
     }
 }
