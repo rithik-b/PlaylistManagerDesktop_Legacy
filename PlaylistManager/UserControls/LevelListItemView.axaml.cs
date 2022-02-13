@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
-using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 

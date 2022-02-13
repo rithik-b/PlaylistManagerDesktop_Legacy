@@ -16,9 +16,9 @@
             <TextBlock Text="{Binding AuthorName}" />
         </StackPanel>
         
-        <Panel Grid.Column="2" VerticalAlignment="Center" Margin="10,0">
-            <TextBlock Text="{Binding SelectedCharacteristic}" IsVisible="{Binding MultipleCharacteristics, Converter={x:Static BoolConverters.Not}}" HorizontalAlignment="Center" />
-            <ComboBox Items="{Binding Characteristics}" SelectedItem="{Binding SelectedCharacteristic}" IsVisible="{Binding MultipleCharacteristics}" HorizontalAlignment="Right" />
+        <Panel Grid.Column="2" VerticalAlignment="Center" Margin="10,0" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding SelectedCharacteristic}" IsVisible="{Binding MultipleCharacteristics, Converter={x:Static BoolConverters.Not}}" />
+            <ComboBox Items="{Binding Characteristics}" SelectedItem="{Binding SelectedCharacteristic}" IsVisible="{Binding MultipleCharacteristics}" />
         </Panel>
         
         <StackPanel Orientation="Horizontal" Grid.Column="3" Margin="10,0" Width="175" Spacing="2">
