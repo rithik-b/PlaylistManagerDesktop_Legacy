@@ -22,11 +22,11 @@
         </Panel>
         
         <StackPanel Orientation="Horizontal" Grid.Column="3" Margin="10,0" Width="175" Spacing="2">
-            <Button Background="{Binding EasyBackground}" IsVisible="{Binding IsEasy}">E</Button>
-            <Button Background="{Binding NormalBackground}" IsVisible="{Binding IsNormal}">N</Button>
-            <Button Background="{Binding HardBackground}" IsVisible="{Binding IsHard}">H</Button>
-            <Button Background="{Binding ExpertBackground}" IsVisible="{Binding IsExpert}">Ex</Button>
-            <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}">Ex+</Button>
+            <Button Background="{Binding EasyBackground}" IsVisible="{Binding IsEasy}" Command="{Binding ToggleEasy}">E</Button>
+            <Button Background="{Binding NormalBackground}" IsVisible="{Binding IsNormal}" Command="{Binding ToggleNormal}">N</Button>
+            <Button Background="{Binding HardBackground}" IsVisible="{Binding IsHard}" Command="{Binding ToggleHard}">H</Button>
+            <Button Background="{Binding ExpertBackground}" IsVisible="{Binding IsExpert}" Command="{Binding ToggleExpert}">Ex</Button>
+            <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}" Command="{Binding ToggleExpertPlus}">Ex+</Button>
         </StackPanel>
         
         <Grid Column="4">

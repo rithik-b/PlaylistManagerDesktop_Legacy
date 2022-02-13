@@ -91,11 +91,11 @@ namespace PlaylistManager.UserControls
                 {
                     this.difficulties = difficulties;
 
-                    EasyHighlighted = false;
-                    NormalHighlighted = false;
-                    HardHighlighted = false;
-                    ExpertHighlighted = false;
-                    ExpertPlusHighlighted = false;
+                    easyHighlighted = false;
+                    normalHighlighted = false;
+                    hardHighlighted = false;
+                    expertHighlighted = false;
+                    expertPlusHighlighted = false;
                     
                     if (playlistSong.playlistSong.Difficulties != null)
                     {
@@ -103,23 +103,26 @@ namespace PlaylistManager.UserControls
                         {
                             if (difficulty.Characteristic.Equals(SelectedCharacteristic, StringComparison.OrdinalIgnoreCase))
                             {
-                                switch (difficulty.DifficultyValue)
+                                if (Enum.TryParse<Difficulty>(difficulty.Name, out var playlistManagerDiff))
                                 {
-                                    case (int)Difficulty.Easy:
-                                        EasyHighlighted = true;
-                                        break;
-                                    case (int)Difficulty.Normal:
-                                        NormalHighlighted = true;
-                                        break;
-                                    case (int)Difficulty.Hard:
-                                        HardHighlighted = true;
-                                        break;
-                                    case (int)Difficulty.Expert:
-                                        ExpertHighlighted = true;
-                                        break;
-                                    case (int)Difficulty.ExpertPlus:
-                                        ExpertPlusHighlighted = true;
-                                        break;
+                                    switch (playlistManagerDiff)
+                                    {
+                                        case Difficulty.Easy:
+                                            easyHighlighted = true;
+                                            break;
+                                        case Difficulty.Normal:
+                                            normalHighlighted = true;
+                                            break;
+                                        case Difficulty.Hard:
+                                            hardHighlighted = true;
+                                            break;
+                                        case Difficulty.Expert:
+                                            expertHighlighted = true;
+                                            break;
+                                        case Difficulty.ExpertPlus:
+                                            expertPlusHighlighted = true;
+                                            break;
+                                    }
                                 }
                             }
                         }
@@ -132,6 +135,12 @@ namespace PlaylistManager.UserControls
                 NotifyPropertyChanged(nameof(IsHard));
                 NotifyPropertyChanged(nameof(IsExpert));
                 NotifyPropertyChanged(nameof(IsExpertPlus));
+                
+                NotifyPropertyChanged(nameof(EasyBackground));
+                NotifyPropertyChanged(nameof(NormalBackground));
+                NotifyPropertyChanged(nameof(HardBackground));
+                NotifyPropertyChanged(nameof(ExpertBackground));
+                NotifyPropertyChanged(nameof(ExpertPlusBackground));
             }
         }
         public bool MultipleCharacteristics => playlistSong.customLevelData.Difficulties.Keys.Count > 1;
@@ -272,14 +281,22 @@ namespace PlaylistManager.UserControls
         public string ExpertBackground => ExpertHighlighted ? kExpertHighlightedBackground : kExpertBackground;
         public string ExpertPlusBackground => ExpertPlusHighlighted ? kExpertPlusHighlightedBackground :  kExpertPlusBackground;
 
+        private void ToggleEasy() => EasyHighlighted = !EasyHighlighted; 
+        private void ToggleNormal() => NormalHighlighted = !NormalHighlighted; 
+        private void ToggleHard() => HardHighlighted = !HardHighlighted; 
+        private void ToggleExpert() => ExpertHighlighted = !ExpertHighlighted; 
+        private void ToggleExpertPlus() => ExpertPlusHighlighted = !ExpertPlusHighlighted;
+
         private void HighlightDifficulty(Difficulty difficulty)
         {
             if (SelectedCharacteristic != null)
             {
                 playlistSong.playlistSong.Difficulties ??= new List<BeatSaberPlaylistsLib.Types.Difficulty>();
-                var diffToHighlight = new BeatSaberPlaylistsLib.Types.Difficulty();
-                diffToHighlight.Characteristic = SelectedCharacteristic;
-                diffToHighlight.Name = difficulty.ToString();
+                var diffToHighlight = new BeatSaberPlaylistsLib.Types.Difficulty
+                {
+                    Characteristic = SelectedCharacteristic,
+                    Name = difficulty.ToString()
+                };
                 playlistSong.playlistSong.Difficulties.Add(diffToHighlight);
             }
         }
@@ -290,8 +307,11 @@ namespace PlaylistManager.UserControls
             {
                 var diffToDelete = playlistSong.playlistSong.Difficulties.FindIndex(d =>
                     d.Characteristic.Equals(SelectedCharacteristic, StringComparison.OrdinalIgnoreCase) &&
-                    d.DifficultyValue == (int) difficulty);
-                playlistSong.playlistSong.Difficulties.RemoveAt(diffToDelete);
+                    d.Name.Equals(difficulty.ToString(), StringComparison.OrdinalIgnoreCase));
+                if (diffToDelete != -1)
+                {
+                    playlistSong.playlistSong.Difficulties.RemoveAt(diffToDelete);
+                }
             }
         }
 
