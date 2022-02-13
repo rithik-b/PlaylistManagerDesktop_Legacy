@@ -33,7 +33,12 @@ namespace PlaylistManager.Models
         public string Hash { get; }
         
         /// <summary>
-        /// Is the map downloaded (locally availaible)?
+        /// The BeatSaver ID of the level
+        /// </summary>
+        public string? Key { get; }
+        
+        /// <summary>
+        /// Is the map downloaded (locally available)?
         /// </summary>
         public bool Downloaded { get; }
 
