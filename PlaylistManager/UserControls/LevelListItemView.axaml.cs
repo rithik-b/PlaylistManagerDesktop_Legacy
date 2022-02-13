@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
+using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 
@@ -14,6 +17,8 @@ namespace PlaylistManager.UserControls
 {
     public class LevelListItemView : UserControl
     {
+        private const string kRabbitPreviewerIHardlyKnowHer = "https://skystudioapps.com/bs-viewer/?id=";
+        
         public LevelListItemView()
         {
             InitializeComponent();
@@ -22,6 +27,14 @@ namespace PlaylistManager.UserControls
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private async void PreviewClick(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is LevelListItemViewModel {Key: { }} viewModel)
+            {
+                Utils.OpenBrowser(kRabbitPreviewerIHardlyKnowHer + viewModel.Key);
+            }
         }
     }
 
@@ -46,6 +59,7 @@ namespace PlaylistManager.UserControls
 
         public string SongName => $"{playlistSong.customLevelData.SongName} {playlistSong.customLevelData.SongSubName}";
         public string AuthorName => $"{playlistSong.customLevelData.SongAuthorName} [{playlistSong.customLevelData.LevelAuthorName}]";
+        public string? Key => playlistSong.customLevelData.Key;
         public List<string> Characteristics { get; } = new();
         public Bitmap? CoverImage
         {

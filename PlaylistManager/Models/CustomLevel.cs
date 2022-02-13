@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -6,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using Newtonsoft.Json;
+using PlaylistManager.Utilities;
+using Splat;
 
 namespace PlaylistManager.Models
 {
@@ -82,6 +83,8 @@ namespace PlaylistManager.Models
 
         private string? hash;
         private string? path;
+        private string? key;
+        private bool attemptedSongDetailsLookup;
         private Bitmap? coverImage;
 
         public string SongName => _songName ?? "";
@@ -89,6 +92,22 @@ namespace PlaylistManager.Models
         public string SongAuthorName => _songAuthorName ?? "";
         public string LevelAuthorName => _levelAuthorName ?? "";
         public string Hash => hash ?? "";
+        public string? Key
+        {
+            get
+            {
+                if (!attemptedSongDetailsLookup)
+                {
+                    var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>();
+                    if (hash != null && songDetailsLoader != null && songDetailsLoader.TryGetLevelByHash(hash, out var songDetailsLevel))
+                    {
+                        key = songDetailsLevel.Key;
+                    }
+                    attemptedSongDetailsLookup = true;
+                }
+                return key;
+            }
+        }
         public bool Downloaded => true;
         public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
         
