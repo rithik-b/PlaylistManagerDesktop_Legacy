@@ -69,6 +69,7 @@ namespace PlaylistManager.Views
         public string Author => playlist.Author ?? "Unknown";
         public string? Description => playlist.Description;
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({ownedSongs} owned)" : "")}";
+        public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
         public Bitmap? CoverImage
@@ -122,6 +123,7 @@ namespace PlaylistManager.Views
                 }
                 songsLoaded = true;
                 NotifyPropertyChanged(nameof(NumSongs));
+                NotifyPropertyChanged(nameof(SongsLoading));
             }
         }
     }

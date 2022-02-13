@@ -19,8 +19,9 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <Border DockPanel.Dock="Bottom">
+        <Panel DockPanel.Dock="Bottom">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding SongsLoading}" />
             <ListBox Items="{Binding Levels}" Background="Transparent" Margin="0 20" />
-        </Border>
+        </Panel>
     </DockPanel>
 </UserControl>
