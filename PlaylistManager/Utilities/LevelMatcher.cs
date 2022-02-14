@@ -4,13 +4,13 @@ using PlaylistManager.Models;
 
 namespace PlaylistManager.Utilities
 {
-    public class LevelLookup
+    public class LevelMatcher
     {
         // TODO: Potentially add BeatSaver song lookup as a final fallback?
         private readonly LevelLoader levelLoader;
         private readonly SongDetailsLoader songDetailsLoader;
         
-        public LevelLookup(LevelLoader levelLoader, SongDetailsLoader songDetailsLoader)
+        public LevelMatcher(LevelLoader levelLoader, SongDetailsLoader songDetailsLoader)
         {
             this.levelLoader = levelLoader;
             this.songDetailsLoader = songDetailsLoader;

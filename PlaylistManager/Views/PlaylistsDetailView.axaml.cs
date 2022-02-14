@@ -68,7 +68,7 @@ namespace PlaylistManager.Views
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         public readonly IPlaylist playlist;
-        private readonly LevelLookup? levelLookup;
+        private readonly LevelMatcher? levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
@@ -76,7 +76,7 @@ namespace PlaylistManager.Views
         public PlaylistsDetailViewModel(IPlaylist playlist)
         {
             this.playlist = playlist;
-            levelLookup = Locator.Current.GetService<LevelLookup>();
+            levelMatcher = Locator.Current.GetService<LevelMatcher>();
             _ = FetchSongs();
         }
 
@@ -121,14 +121,14 @@ namespace PlaylistManager.Views
 
         private async Task FetchSongs()
         {
-            if (levelLookup != null)
+            if (levelMatcher != null)
             {
                 foreach (var playlistSong in playlist)
                 {
                     if (playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var identifierType))
                     {
-                        var levelData = identifierType == Identifier.Hash ? await levelLookup.GetLevelByHash(identifier!) :
-                                identifierType == Identifier.Key ? await levelLookup.GetLevelByKey(identifier!) : null;
+                        var levelData = identifierType == Identifier.Hash ? await levelMatcher.GetLevelByHash(identifier!) :
+                                identifierType == Identifier.Key ? await levelMatcher.GetLevelByKey(identifier!) : null;
                         if (levelData != null)
                         {
                             Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
