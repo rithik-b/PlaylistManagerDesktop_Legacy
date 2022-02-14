@@ -6,8 +6,8 @@
         x:Class="PlaylistManager.Windows.LevelSearchWindow"
         Title="LevelSearchWindow" SystemDecorations="None" SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner" KeyDown="InputElement_OnKeyDown">
-    <DockPanel Width="600">
-        <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Search (Esc to close)" FontSize="25" />
+    <DockPanel Width="600" Margin="5">
+        <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Add level (Esc to close)" FontSize="25" />
         <ListBox Items="{Binding Levels}" Background="Transparent" />
     </DockPanel>
 </Window>
