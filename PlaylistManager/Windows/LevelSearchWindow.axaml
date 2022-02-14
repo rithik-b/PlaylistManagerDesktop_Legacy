@@ -1,0 +1,13 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PlaylistManager.Windows.LevelSearchWindow"
+        Title="LevelSearchWindow" SystemDecorations="None" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner" KeyDown="InputElement_OnKeyDown">
+    <DockPanel Width="600">
+        <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Search (Esc to close)" FontSize="25" />
+        <ListBox Items="{Binding Levels}" Background="Transparent" />
+    </DockPanel>
+</Window>

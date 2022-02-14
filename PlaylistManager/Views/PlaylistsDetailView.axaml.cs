@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
@@ -10,6 +11,7 @@ using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
+using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 
@@ -20,8 +22,13 @@ namespace PlaylistManager.Views
         private NavigationPanel? navigationPanel;
         private NavigationPanel? NavigationPanel => navigationPanel ??= Locator.Current.GetService<NavigationPanel>("PlaylistsTab");
 
+        private MainWindow? mainWindow;
+        private MainWindow? MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>();
+        
+        private LevelSearchWindow? levelSearchWindow;
+        private LevelSearchWindow? LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>();
+        
         private PlaylistsDetailViewModel? viewModel;
-
         public PlaylistsDetailViewModel? ViewModel
         {
             get => viewModel;
@@ -48,6 +55,14 @@ namespace PlaylistManager.Views
         }
 
         private void OnBackClick(object? sender, RoutedEventArgs e) => NavigationPanel?.Pop();
+
+        private async void OnAddClick(object? sender, RoutedEventArgs e)
+        {
+            if (LevelSearchWindow != null)
+            {
+                await LevelSearchWindow.ShowDialog(MainWindow);
+            }
+        }
     }
 
     public class PlaylistsDetailViewModel : ViewModelBase
