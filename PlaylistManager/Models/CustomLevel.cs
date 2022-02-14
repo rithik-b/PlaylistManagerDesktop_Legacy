@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -144,16 +145,9 @@ namespace PlaylistManager.Models
                 {
                     return null;
                 }
-
-                try
-                {
-                    await using var fileStream = new FileStream(imagePath, FileMode.Open);
-                    coverImage = Bitmap.DecodeToHeight(fileStream, 512);
-                }
-                catch
-                {
-                    // ignored
-                }
+                
+                await using var fileStream = new FileStream(imagePath, FileMode.Open);
+                coverImage = Bitmap.DecodeToHeight(fileStream, 50);
             }
             return coverImage;
         }
