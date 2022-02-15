@@ -22,8 +22,9 @@ namespace PlaylistManager.Windows
         private readonly LevelSearchWindowModel viewModel;
         private readonly TextBox searchBox;
         private readonly ListBox listBox;
+        private readonly SemaphoreSlim openSemaphore;
 
-        public PlaylistSongWrapper? searchedSong { get; private set; }
+        private SearchItemViewModel? SearchedSong => viewModel.SelectedResult;
         
         public LevelSearchWindow()
         {
@@ -35,6 +36,7 @@ namespace PlaylistManager.Windows
             DataContext = viewModel;
             searchBox = this.FindControl<TextBox>("SearchBox");
             listBox = this.FindControl<ListBox>("ListBox");
+            openSemaphore = new SemaphoreSlim(0, 1);
         }
 
         private void InitializeComponent()
@@ -42,10 +44,20 @@ namespace PlaylistManager.Windows
             AvaloniaXamlLoader.Load(this);
         }
 
+        public async Task<SearchItemViewModel?> SearchSong(Window parent)
+        {
+            _ = ShowDialog(parent);
+            await openSemaphore.WaitAsync();
+            Hide();
+            return SearchedSong;
+        }
+
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
-            searchedSong = null;
+            viewModel.SelectedResult = null;
+            viewModel.SearchText = String.Empty;
+            viewModel.SearchResults.Clear();
             searchBox.Focus();
         }
         
@@ -54,7 +66,7 @@ namespace PlaylistManager.Windows
             switch (e.Key)
             {
                 case Key.Escape:
-                    Hide();
+                    openSemaphore.Release();
                     break;
                 case Key.Up:
                     listBox.SelectedIndex--;
@@ -63,9 +75,9 @@ namespace PlaylistManager.Windows
                     listBox.SelectedIndex++;
                     break;
                 case Key.Enter:
-                    if (viewModel.SelectedResult != null)
+                    if (SearchedSong != null)
                     {
-                        Hide();
+                        openSemaphore.Release();
                     }
                     break;
             }
@@ -87,7 +99,7 @@ namespace PlaylistManager.Windows
         private LevelMatcher? LevelMatcher => levelMatcher ??= Locator.Current.GetService<LevelMatcher>();
 
         private string searchText = "";
-        private string SearchText
+        public string SearchText
         {
             get => searchText;
             set
@@ -108,7 +120,7 @@ namespace PlaylistManager.Windows
             }
         }
         
-        private ObservableCollection<SearchItemViewModel> SearchResults { get; } = new();
+        public ObservableCollection<SearchItemViewModel> SearchResults { get; } = new();
 
         public LevelSearchWindowModel()
         {

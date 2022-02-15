@@ -58,9 +58,22 @@ namespace PlaylistManager.Views
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)
         {
-            if (LevelSearchWindow != null)
+            if (LevelSearchWindow != null && ViewModel != null)
             {
-                await LevelSearchWindow.ShowDialog(MainWindow);
+                var searchedSong = await LevelSearchWindow.SearchSong(MainWindow);
+                if (searchedSong is {level: { }})
+                {
+                    var levelToAdd = searchedSong.level;
+                    var playlistSong = ViewModel.playlist.Add(levelToAdd.Hash, levelToAdd.SongName, levelToAdd.Key,
+                        levelToAdd.LevelAuthorName);
+                    if (playlistSong != null)
+                    {
+                        var modelToAdd = new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelToAdd));
+                        ViewModel.Levels.Add(modelToAdd);
+                        ViewModel.SelectedLevel = modelToAdd;   
+                        ViewModel.UpdateNumSongs();
+                    }
+                }
             }
         }
     }
@@ -87,6 +100,17 @@ namespace PlaylistManager.Views
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
+
+        private LevelListItemViewModel? selectedLevel;
+        public LevelListItemViewModel? SelectedLevel
+        {
+            get => selectedLevel;
+            set
+            {
+                selectedLevel = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public Bitmap? CoverImage
         {

@@ -27,6 +27,8 @@ namespace PlaylistManager.UserControls
 
     public class SearchItemViewModel : ViewModelBase
     {
+        public readonly ICustomLevelData? level;
+        
         public string Name { get; }
         public string SubName { get; }
         
@@ -65,6 +67,7 @@ namespace PlaylistManager.UserControls
         {
             Name = $"{level.SongName} {level.SongSubName}";
             SubName = $"{level.SongAuthorName} [{level.LevelAuthorName}]";
+            this.level = level;
             loadingTokenSource = new CancellationTokenSource();
             imageFactory = level.GetCoverImageAsync(loadingTokenSource.Token);
         }

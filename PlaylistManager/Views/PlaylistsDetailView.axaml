@@ -22,7 +22,7 @@
         </Border>
         <Panel DockPanel.Dock="Bottom">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding SongsLoading}" />
-            <ListBox Items="{Binding Levels}" Background="Transparent" Margin="0 20" />
+            <ListBox Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" Background="Transparent" Margin="0 20" AutoScrollToSelectedItem="True" />
         </Panel>
     </DockPanel>
 </UserControl>
