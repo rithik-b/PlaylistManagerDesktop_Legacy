@@ -6,7 +6,7 @@ namespace PlaylistManager.Models
 {
     public class BeatSaverIDProtocol : ILevelEncodedIDProtocol
     {
-        private string kPattern = @"^(https:\/\/)?(www.)?beatsaver.com\/maps\/([a-fA-F0-9]+)$";
+        private const string kPattern = @"^(https:\/\/)?(www.)?beatsaver.com\/maps\/([a-fA-F0-9]+)$";
         
         public async Task<SearchResult?> Result(string input, CancellationToken? cancellationToken)
         {

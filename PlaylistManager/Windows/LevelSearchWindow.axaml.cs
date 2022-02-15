@@ -59,6 +59,7 @@ namespace PlaylistManager.Windows
         {
             new BeatSaverIDProtocol(),
             new BeastSaberIDProtocol(),
+            new ScoreSaberIDProtocol(),
             new IDProtocol()
         };
 

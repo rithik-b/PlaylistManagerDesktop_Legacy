@@ -25,6 +25,11 @@ namespace PlaylistManager.Models
                 }
             }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
 
+            if (cancellationToken is {IsCancellationRequested: true})
+            {
+                toReturn = false;
+            }
+            
             if (toReturn)
             {
                 return new SearchResult(input, input.Length == 40 ? IDType.Hash : IDType.Key);
