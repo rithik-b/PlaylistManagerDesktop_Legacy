@@ -8,6 +8,6 @@
         WindowStartupLocation="CenterOwner" KeyDown="InputElement_OnKeyDown">
     <DockPanel Width="600" Margin="5">
         <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Add level (Esc to close)" Text="{Binding SearchText}" FontSize="25" />
-        <ListBox Items="{Binding SearchResults}" Background="Transparent" />
+        <ListBox Items="{Binding SearchResults}" SelectedItem="{Binding SelectedResult}" Background="Transparent" />
     </DockPanel>
 </Window>

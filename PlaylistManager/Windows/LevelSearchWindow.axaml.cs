@@ -6,12 +6,10 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
-using PlaylistManager.Views;
 using ReactiveUI;
 using Splat;
 
@@ -19,7 +17,10 @@ namespace PlaylistManager.Windows
 {
     public class LevelSearchWindow : Window
     {
+        private readonly LevelSearchWindowModel viewModel;
         private readonly TextBox searchBox;
+
+        public PlaylistSongWrapper? searchedSong { get; private set; }
         
         public LevelSearchWindow()
         {
@@ -27,8 +28,9 @@ namespace PlaylistManager.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
+            viewModel = new LevelSearchWindowModel();
+            DataContext = viewModel;
             searchBox = this.FindControl<TextBox>("SearchBox");
-            DataContext = new LevelSearchWindowModel();
         }
 
         private void InitializeComponent()
@@ -39,12 +41,17 @@ namespace PlaylistManager.Windows
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
+            searchedSong = null;
             searchBox.Focus();
         }
         
         private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
+            {
+                Hide();
+            }
+            else if (e.Key == Key.Enter && viewModel.SelectedResult != null)
             {
                 Hide();
             }
@@ -73,8 +80,19 @@ namespace PlaylistManager.Windows
                 NotifyPropertyChanged();
             }
         }
+
+        private SearchItemViewModel? selectedResult;
+        public SearchItemViewModel? SelectedResult
+        {
+            get => selectedResult;
+            set
+            {
+                selectedResult = value;
+                NotifyPropertyChanged();
+            }
+        }
         
-        public ObservableCollection<SearchItemViewModel> SearchResults { get; } = new();
+        private ObservableCollection<SearchItemViewModel> SearchResults { get; } = new();
 
         public LevelSearchWindowModel()
         {
@@ -109,11 +127,12 @@ namespace PlaylistManager.Windows
                         
                         if (level != null)
                         {
-                            SearchResults.Add(new SearchItemViewModel(level));
+                            var resultToAdd = new SearchItemViewModel(level);
+                            SearchResults.Add(resultToAdd);
+                            SelectedResult = resultToAdd;
+                            break;
                         }
                     }
-                    
-                    break;
                 }
             }
         }
