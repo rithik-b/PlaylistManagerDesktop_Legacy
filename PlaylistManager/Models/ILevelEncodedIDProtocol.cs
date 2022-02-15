@@ -1,3 +1,6 @@
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace PlaylistManager.Models
 {
     /// <summary>
@@ -10,7 +13,7 @@ namespace PlaylistManager.Models
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public SearchResult? Result(string input);
+        public Task<SearchResult?> Result(string input, CancellationToken? cancellationToken = null);
     }
     
     public enum IDType

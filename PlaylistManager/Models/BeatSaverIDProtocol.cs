@@ -1,19 +1,27 @@
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PlaylistManager.Models
 {
     public class BeatSaverIDProtocol : ILevelEncodedIDProtocol
     {
-        private string kPattern = @"^(https:\/\/)?(www.)?beatsaver.com\/maps\/([1234567890aAbBcCdDeEfF]+)$";
+        private string kPattern = @"^(https:\/\/)?(www.)?beatsaver.com\/maps\/([a-fA-F0-9]+)$";
         
-        public SearchResult? Result(string input)
+        public async Task<SearchResult?> Result(string input, CancellationToken? cancellationToken)
         {
-            if (Regex.IsMatch(input, kPattern))
+            SearchResult? toReturn = null;
+            
+            await Task.Run(() =>
             {
-                var key = Regex.Replace(input, kPattern, "$3");
-                return new SearchResult(key, IDType.Key);
-            }
-            return null;
+                if (Regex.IsMatch(input, kPattern))
+                {
+                    var key = Regex.Replace(input, kPattern, "$3");
+                    toReturn = new SearchResult(key, IDType.Key);
+                }
+            }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+            
+            return toReturn;
         }
     }
 }
