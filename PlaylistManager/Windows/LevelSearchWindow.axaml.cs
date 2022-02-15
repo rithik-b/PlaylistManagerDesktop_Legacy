@@ -21,6 +21,7 @@ namespace PlaylistManager.Windows
     {
         private readonly LevelSearchWindowModel viewModel;
         private readonly TextBox searchBox;
+        private readonly ListBox listBox;
 
         public PlaylistSongWrapper? searchedSong { get; private set; }
         
@@ -33,6 +34,7 @@ namespace PlaylistManager.Windows
             viewModel = new LevelSearchWindowModel();
             DataContext = viewModel;
             searchBox = this.FindControl<TextBox>("SearchBox");
+            listBox = this.FindControl<ListBox>("ListBox");
         }
 
         private void InitializeComponent()
@@ -49,13 +51,23 @@ namespace PlaylistManager.Windows
         
         private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            switch (e.Key)
             {
-                Hide();
-            }
-            else if (e.Key == Key.Enter && viewModel.SelectedResult != null)
-            {
-                Hide();
+                case Key.Escape:
+                    Hide();
+                    break;
+                case Key.Up:
+                    listBox.SelectedIndex--;
+                    break;
+                case Key.Down:
+                    listBox.SelectedIndex++;
+                    break;
+                case Key.Enter:
+                    if (viewModel.SelectedResult != null)
+                    {
+                        Hide();
+                    }
+                    break;
             }
         }
     }
