@@ -1,4 +1,6 @@
+using System;
 using System.Reactive.Concurrency;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -31,6 +33,7 @@ namespace PlaylistManager.UserControls
         private Bitmap? image;
         private bool HasImage => imageFactory != null;
         private readonly Task<Bitmap?>? imageFactory;
+        private readonly CancellationTokenSource? loadingTokenSource;
         private CoverImageLoader? coverImageLoader;
         public Bitmap? Image
         {
@@ -62,7 +65,8 @@ namespace PlaylistManager.UserControls
         {
             Name = $"{level.SongName} {level.SongSubName}";
             SubName = $"{level.SongAuthorName} [{level.LevelAuthorName}]";
-            imageFactory = level.GetCoverImageAsync();
+            loadingTokenSource = new CancellationTokenSource();
+            imageFactory = level.GetCoverImageAsync(loadingTokenSource.Token);
         }
 
         private async Task LoadImageAsync()
@@ -76,5 +80,8 @@ namespace PlaylistManager.UserControls
                 }
             }
         }
+
+        // Finalizer
+        ~SearchItemViewModel() => loadingTokenSource?.Cancel();
     }
 }

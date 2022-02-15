@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -109,49 +110,53 @@ namespace PlaylistManager.Windows
         {
             tokenSource?.Cancel();
             tokenSource = new CancellationTokenSource();
-            SearchResults.Clear();
 
-            if (LevelMatcher != null)
+            await Task.Run(async () =>
             {
-                // Do smart ID parsing
-                foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
+                SearchResults.Clear();
+                
+                if (LevelMatcher != null)
                 {
-                    var searchResult = await levelEncodedIDProtocol.Result(searchText, tokenSource.Token);
-                    if (searchResult != null)
+                    // Do smart ID parsing
+                    foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
                     {
-                        ICustomLevelData? level = null;
-                        if (searchResult.Value.Type == IDType.Key)
+                        var searchResult = await levelEncodedIDProtocol.Result(searchText, tokenSource.Token);
+                        if (searchResult != null)
                         {
-                            level = await LevelMatcher.GetLevelByKey(searchResult.Value.ID);
-                        }
-                        else
-                        {
-                            level = await LevelMatcher.GetLevelByHash(searchResult.Value.ID);
-                        }
-
-                        if (level != null)
-                        {
-                            var resultToAdd = new SearchItemViewModel(level);
-                            SearchResults.Add(resultToAdd);
-                            SelectedResult = resultToAdd;
-                            break;
+                            ICustomLevelData? level = null;
+                            if (searchResult.Value.Type == IDType.Key)
+                            {
+                                level = await LevelMatcher.GetLevelByKey(searchResult.Value.ID);
+                            }
+                            else
+                            {
+                                level = await LevelMatcher.GetLevelByHash(searchResult.Value.ID);
+                            }
+                
+                            if (level != null)
+                            {
+                                var resultToAdd = new SearchItemViewModel(level);
+                                SearchResults.Add(resultToAdd);
+                                SelectedResult = resultToAdd;
+                                break;
+                            }
                         }
                     }
+                                
+                    // Perform search
+                    var searchResults = await LevelMatcher.SearchLevelsAsync(searchText, tokenSource.Token);
+                    foreach (var searchResult in searchResults)
+                    {
+                        SearchResults.Add(new SearchItemViewModel(searchResult));
+                    }
+                                
+                    // Select a map if not selected already
+                    if (SelectedResult == null)
+                    {
+                        SelectedResult = SearchResults.FirstOrDefault();
+                    }
                 }
-                
-                // Perform search
-                var searchResults = await LevelMatcher.SearchLevelsAsync(searchText, tokenSource.Token);
-                foreach (var searchResult in searchResults)
-                {
-                    SearchResults.Add(new SearchItemViewModel(searchResult));
-                }
-                
-                // Select a map if not selected already
-                if (SelectedResult == null)
-                {
-                    SelectedResult = SearchResults.FirstOrDefault();
-                }
-            }
+            }, tokenSource.Token).ConfigureAwait(false);
         }
     }
 }
