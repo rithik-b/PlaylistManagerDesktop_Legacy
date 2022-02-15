@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using Avalonia;
@@ -60,8 +61,7 @@ namespace PlaylistManager.Windows
 
     public class LevelSearchWindowModel : ViewModelBase
     {
-        private CancellationTokenSource? tokenSource;
-        private LevelMatcher? levelMatcher;
+        private CancellationTokenSource? tokenSource; 
         private readonly List<ILevelEncodedIDProtocol> levelEncodedIDProtocols = new()
         {
             new BeatSaverIDProtocol(),
@@ -69,6 +69,9 @@ namespace PlaylistManager.Windows
             new ScoreSaberIDProtocol(),
             new IDProtocol()
         };
+        
+        private LevelMatcher? levelMatcher;
+        private LevelMatcher? LevelMatcher => levelMatcher ??= Locator.Current.GetService<LevelMatcher>();
 
         private string searchText = "";
         private string SearchText
@@ -107,24 +110,25 @@ namespace PlaylistManager.Windows
             tokenSource?.Cancel();
             tokenSource = new CancellationTokenSource();
             SearchResults.Clear();
-            foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
+
+            if (LevelMatcher != null)
             {
-                var searchResult = await levelEncodedIDProtocol.Result(searchText, tokenSource.Token);
-                if (searchResult != null)
+                // Do smart ID parsing
+                foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
                 {
-                    levelMatcher ??= Locator.Current.GetService<LevelMatcher>();
-                    if (levelMatcher != null)
+                    var searchResult = await levelEncodedIDProtocol.Result(searchText, tokenSource.Token);
+                    if (searchResult != null)
                     {
                         ICustomLevelData? level = null;
                         if (searchResult.Value.Type == IDType.Key)
                         {
-                            level = await levelMatcher.GetLevelByKey(searchResult.Value.ID);
+                            level = await LevelMatcher.GetLevelByKey(searchResult.Value.ID);
                         }
                         else
                         {
-                            level = await levelMatcher.GetLevelByHash(searchResult.Value.ID);
+                            level = await LevelMatcher.GetLevelByHash(searchResult.Value.ID);
                         }
-                        
+
                         if (level != null)
                         {
                             var resultToAdd = new SearchItemViewModel(level);
@@ -133,6 +137,19 @@ namespace PlaylistManager.Windows
                             break;
                         }
                     }
+                }
+                
+                // Perform search
+                var searchResults = await LevelMatcher.SearchLevelsAsync(searchText, tokenSource.Token);
+                foreach (var searchResult in searchResults)
+                {
+                    SearchResults.Add(new SearchItemViewModel(searchResult));
+                }
+                
+                // Select a map if not selected already
+                if (SelectedResult == null)
+                {
+                    SelectedResult = SearchResults.FirstOrDefault();
                 }
             }
         }
