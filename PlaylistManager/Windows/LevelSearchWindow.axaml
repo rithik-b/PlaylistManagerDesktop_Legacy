@@ -7,7 +7,7 @@
         Title="LevelSearchWindow" SystemDecorations="None" SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner" KeyDown="InputElement_OnKeyDown">
     <DockPanel Width="600" Margin="5">
-        <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Add level (Esc to close)" FontSize="25" />
-        <ListBox Items="{Binding Levels}" Background="Transparent" />
+        <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Add level (Esc to close)" Text="{Binding SearchText}" FontSize="25" />
+        <ListBox Items="{Binding SearchResults}" Background="Transparent" />
     </DockPanel>
 </Window>
