@@ -7,11 +7,11 @@
     <DockPanel>
         <Border Background="#80808080" DockPanel.Dock="Top">
             <Grid ColumnDefinitions="1*, 4*" RowDefinitions="Auto, Auto" Margin="0,0,0,20">
-                <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick">&lt;</Button>
-                <Image Width="256" Height="256" Stretch="Uniform" Source="{Binding CoverImage}" HorizontalAlignment="Left" Grid.Row="1" />
+                <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick" Margin="0,0,0,20">&lt;</Button>
+                <Image Stretch="Uniform" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
                 <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" Grid.Row="1" MaxHeight="256" Margin="20,0">
-                    <TextBlock Text="{Binding Title}" FontSize="80" FontWeight="Bold" />
-                    <TextBox Text="{Binding Description}" IsEnabled="False" IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" />
+                    <TextBox Text="{Binding Description}" IsEnabled="True" Height="50" IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <TextBlock Text="{Binding Author}" FontSize="25" VerticalAlignment="Bottom" FontWeight="Regular" />
                         <TextBlock Text="{Binding NumSongs}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Thin" />
