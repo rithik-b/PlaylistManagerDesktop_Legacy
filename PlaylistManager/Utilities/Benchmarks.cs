@@ -13,7 +13,7 @@ namespace PlaylistManager.Utilities
         {
             // _ = LevelBenchmark();
             // _ = SongDetailsBenchmark();
-            // _ = LevelLookupBenchmark();
+            // _ = LevelMatchBenchmark();
             // _ = PlaylistBenchmark();
         }
         
@@ -58,14 +58,14 @@ namespace PlaylistManager.Utilities
             }
         }
 
-        public async Task LevelLookupBenchmark()
+        public async Task LevelMatchBenchmark()
         {
-            var levelLookup = Locator.Current.GetService<LevelLookup>();
+            var levelMatcher = Locator.Current.GetService<LevelMatcher>();
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            if (levelLookup != null)
+            if (levelMatcher != null)
             {
-                var level = await levelLookup.GetLevelByKey("25f");
+                var level = await levelMatcher.GetLevelByKey("25f");
             }
             stopwatch.Stop();
             var time = stopwatch.ElapsedMilliseconds;

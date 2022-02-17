@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
@@ -10,6 +11,7 @@ using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
+using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 
@@ -20,8 +22,13 @@ namespace PlaylistManager.Views
         private NavigationPanel? navigationPanel;
         private NavigationPanel? NavigationPanel => navigationPanel ??= Locator.Current.GetService<NavigationPanel>("PlaylistsTab");
 
+        private MainWindow? mainWindow;
+        private MainWindow? MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>();
+        
+        private LevelSearchWindow? levelSearchWindow;
+        private LevelSearchWindow? LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>();
+        
         private PlaylistsDetailViewModel? viewModel;
-
         public PlaylistsDetailViewModel? ViewModel
         {
             get => viewModel;
@@ -48,12 +55,33 @@ namespace PlaylistManager.Views
         }
 
         private void OnBackClick(object? sender, RoutedEventArgs e) => NavigationPanel?.Pop();
+
+        private async void OnAddClick(object? sender, RoutedEventArgs e)
+        {
+            if (LevelSearchWindow != null && ViewModel != null)
+            {
+                var searchedSong = await LevelSearchWindow.SearchSong(MainWindow);
+                if (searchedSong is {level: { }})
+                {
+                    var levelToAdd = searchedSong.level;
+                    var playlistSong = ViewModel.playlist.Add(levelToAdd.Hash, levelToAdd.SongName, levelToAdd.Key,
+                        levelToAdd.LevelAuthorName);
+                    if (playlistSong != null)
+                    {
+                        var modelToAdd = new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelToAdd));
+                        ViewModel.Levels.Add(modelToAdd);
+                        ViewModel.SelectedLevel = modelToAdd;   
+                        ViewModel.UpdateNumSongs();
+                    }
+                }
+            }
+        }
     }
 
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         public readonly IPlaylist playlist;
-        private readonly LevelLookup? levelLookup;
+        private readonly LevelMatcher? levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
@@ -61,7 +89,7 @@ namespace PlaylistManager.Views
         public PlaylistsDetailViewModel(IPlaylist playlist)
         {
             this.playlist = playlist;
-            levelLookup = Locator.Current.GetService<LevelLookup>();
+            levelMatcher = Locator.Current.GetService<LevelMatcher>();
             _ = FetchSongs();
         }
 
@@ -72,6 +100,17 @@ namespace PlaylistManager.Views
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
+
+        private LevelListItemViewModel? selectedLevel;
+        public LevelListItemViewModel? SelectedLevel
+        {
+            get => selectedLevel;
+            set
+            {
+                selectedLevel = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public Bitmap? CoverImage
         {
@@ -106,14 +145,14 @@ namespace PlaylistManager.Views
 
         private async Task FetchSongs()
         {
-            if (levelLookup != null)
+            if (levelMatcher != null)
             {
                 foreach (var playlistSong in playlist)
                 {
                     if (playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var identifierType))
                     {
-                        var levelData = identifierType == Identifier.Hash ? await levelLookup.GetLevelByHash(identifier!) :
-                                identifierType == Identifier.Key ? await levelLookup.GetLevelByKey(identifier!) : null;
+                        var levelData = identifierType == Identifier.Hash ? await levelMatcher.GetLevelByHash(identifier!) :
+                                identifierType == Identifier.Key ? await levelMatcher.GetLevelByKey(identifier!) : null;
                         if (levelData != null)
                         {
                             Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
