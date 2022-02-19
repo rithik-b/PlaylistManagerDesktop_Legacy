@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PlaylistManager.Windows.PlaylistEditWindow"
+        Title="Edit Playlist Metadata" Width="600" Height="300" CanResize="False"
+        WindowStartupLocation="CenterOwner" Icon="/Icons/Logo.ico">
+        <StackPanel Orientation="Horizontal">
+                <Button Margin="20,40" Height="210" Width="210" Background="Transparent" Click="Button_OnClick">
+                        <Panel>
+                                <PathIcon Data="{StaticResource edit_regular}" Height="75" Width="75" />
+                                <Image Stretch="UniformToFill" Source="{Binding CoverImage}" Opacity="0.30" Height="210" Width="210" />
+                        </Panel>
+                </Button>
+                <StackPanel VerticalAlignment="Center" Width="325" Spacing="20">
+                        <TextBox Text="{Binding Title}" Watermark="Title" />
+                        <TextBox Text="{Binding Author}" Watermark="Author" />
+                        <TextBox Text="{Binding Description}" Height="100" TextWrapping="Wrap" Watermark="Description" />
+                </StackPanel>
+        </StackPanel>
+</Window>

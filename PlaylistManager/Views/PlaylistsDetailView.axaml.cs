@@ -29,6 +29,10 @@ namespace PlaylistManager.Views
         private LevelSearchWindow? levelSearchWindow;
         private LevelSearchWindow? LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>();
         
+                
+        private PlaylistEditWindow? playlistEditWindow;
+        private PlaylistEditWindow? PlaylistEditWindow => playlistEditWindow ??= Locator.Current.GetService<PlaylistEditWindow>();
+        
         private PlaylistsDetailViewModel? viewModel;
         public PlaylistsDetailViewModel? ViewModel
         {
@@ -49,7 +53,7 @@ namespace PlaylistManager.Views
 #if DEBUG
             var utils = Locator.Current.GetService<PlaylistLibUtils>();
             var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
-            ViewModel = new PlaylistsDetailViewModel(playlist!);
+            ViewModel = new PlaylistsDetailViewModel(playlist!, utils?.PlaylistManager!);
 #endif
         }
 
@@ -58,11 +62,15 @@ namespace PlaylistManager.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OnBackClick(object? sender, RoutedEventArgs e) => NavigationPanel?.Pop();
+        private void OnBackClick(object? sender, RoutedEventArgs e)
+        {
+            ViewModel?.Save();
+            NavigationPanel?.Pop();
+        }
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)
         {
-            if (LevelSearchWindow != null && ViewModel != null)
+            if (LevelSearchWindow != null && MainWindow != null && ViewModel != null)
             {
                 var searchedSong = await LevelSearchWindow.SearchSong(MainWindow);
                 if (searchedSong is {level: { }})
@@ -80,35 +88,52 @@ namespace PlaylistManager.Views
                 }
             }
         }
+        
+        private async void OnEditClick(object? sender, RoutedEventArgs e)
+        {
+            if (MainWindow != null && ViewModel != null && PlaylistEditWindow != null)
+            {
+                await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist);
+                ViewModel.UpdateMetadata();
+            }
+        }
 
         private void FloatingBarHoverStart(object? sender, PointerEventArgs e)
         {
-            floatingButtonBar.IsExpanded = true;
+            if (!floatingButtonBar.IsExpanded)
+            {
+                floatingButtonBar.IsExpanded = true;
+            }
         }
 
         private void FloatingBarHoverLeave(object? sender, PointerEventArgs e)
         {
-            floatingButtonBar.IsExpanded = false;
+            if (floatingButtonBar.IsExpanded)
+            {
+                floatingButtonBar.IsExpanded = false;
+            }
         }
     }
 
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         public readonly IPlaylist playlist;
+        private readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
         private readonly LevelMatcher? levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         
-        public PlaylistsDetailViewModel(IPlaylist playlist)
+        public PlaylistsDetailViewModel(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             this.playlist = playlist;
+            this.parentManager = parentManager;
             levelMatcher = Locator.Current.GetService<LevelMatcher>();
             _ = FetchSongs();
         }
 
         public string Title => playlist.Title;
-        public string Author => playlist.Author ?? "Unknown";
+        public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
         public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
@@ -154,9 +179,18 @@ namespace PlaylistManager.Views
                 RxApp.MainThreadScheduler.Schedule(() => CoverImage = bitmap);
             }
         }
-        
-        public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
 
+        public void UpdateMetadata()
+        {
+            NotifyPropertyChanged(nameof(Title));
+            NotifyPropertyChanged(nameof(Author));
+            NotifyPropertyChanged(nameof(Description));
+            _ = LoadCoverAsync();
+        }
+
+        public void Save() => parentManager.StorePlaylist(playlist);
+
+        public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
         private async Task FetchSongs()
         {
             if (levelMatcher != null)
@@ -178,5 +212,7 @@ namespace PlaylistManager.Views
                 UpdateNumSongs();
             }
         }
+        
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out object _);
     }
 }

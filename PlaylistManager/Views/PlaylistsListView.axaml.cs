@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -26,7 +27,7 @@ namespace PlaylistManager.Views
         public PlaylistsListView()
         {
             InitializeComponent();
-            viewModel = new ViewModel();
+            viewModel = new ViewModel(this.FindControl<ListBox>("ListBox"));
             DataContext = viewModel;
             Locator.CurrentMutable.RegisterConstant(this, typeof(PlaylistsListView));
         }
@@ -120,11 +121,11 @@ namespace PlaylistManager.Views
             {
                 viewModel.CurrentManager = viewModel.SelectedPlaylistOrManager.playlistManager;
             }
-            else if (viewModel.SelectedPlaylistOrManager is {isPlaylist: true, playlist:{}})
+            else if (viewModel.SelectedPlaylistOrManager is {isPlaylist: true, playlist:{}} && viewModel.CurrentManager != null)
             {
                 if (PlaylistsDetailView != null)
                 {
-                    PlaylistsDetailView.ViewModel = new PlaylistsDetailViewModel(viewModel.SelectedPlaylistOrManager.playlist);
+                    PlaylistsDetailView.ViewModel = new PlaylistsDetailViewModel(viewModel.SelectedPlaylistOrManager.playlist, viewModel.CurrentManager);
                     NavigationPanel?.Push(PlaylistsDetailView);
                 }
             }
@@ -132,6 +133,7 @@ namespace PlaylistManager.Views
 
         public class ViewModel : ViewModelBase
         {
+            private readonly ListBox listBox;
             private readonly PlaylistLibUtils? playlistLibUtils;
             private BeatSaberPlaylistsLib.PlaylistManager? currentManager;
             private PlaylistCoverViewModel? selectedPlaylistOrManager;
@@ -174,8 +176,9 @@ namespace PlaylistManager.Views
                 }
             }
             
-            public ViewModel()
+            public ViewModel(ListBox listBox)
             {
+                this.listBox = listBox;
                 playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
                 CurrentManager = playlistLibUtils?.PlaylistManager;
                 
@@ -191,9 +194,12 @@ namespace PlaylistManager.Views
             {
                 if (playlistLibUtils != null && currentManager != null)
                 {
+                    var scrollable = listBox.Scroll;
+                    var offset = scrollable?.Offset ?? new Vector(0,0);
                     SearchResults.Clear();
                     var folders = currentManager.GetChildManagers();
                     var playlists = await playlistLibUtils.GetPlaylistsAsync(currentManager);
+                    
                     foreach (var folder in folders)
                     {
                         SearchResults.Add(new PlaylistCoverViewModel(folder));
@@ -201,6 +207,13 @@ namespace PlaylistManager.Views
                     foreach (var playlist in playlists)
                     {
                         SearchResults.Add(new PlaylistCoverViewModel(playlist));
+                    }
+
+                    await Task.Delay(1); // I have to wait a tick and do this I am sorry
+                    
+                    if (scrollable != null && scrollable.Extent.Height > offset.Y)
+                    {
+                        scrollable.Offset = offset;
                     }
                 }
             }
