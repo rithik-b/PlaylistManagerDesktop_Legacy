@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
@@ -16,14 +17,22 @@ namespace PlaylistManager.UserControls
 {
     public class LevelListItemView : UserControl
     {
+        private readonly ContextMenu contextMenu;
+        
         public LevelListItemView()
         {
             InitializeComponent();
+            contextMenu = this.Find<ContextMenu>("ContextMenu");
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void ContextButtonClick(object? sender, RoutedEventArgs e)
+        {
+            contextMenu.Open();
         }
     }
 

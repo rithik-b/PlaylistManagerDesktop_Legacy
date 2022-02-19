@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.UserControls.LevelListItemView">
-    <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto">
+    <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto" ClipToBounds="True">
         <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top" HorizontalAlignment="Left">
             <Image Width="50" Height="50" Stretch="UniformToFill" Source="{Binding CoverImage}" />
         </Border>
@@ -27,12 +27,19 @@
             <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}" Command="{Binding ToggleExpertPlus}">Ex+</Button>
         </StackPanel>
         
-        <Grid Column="4">
-            <StackPanel Orientation="Horizontal">
-                <!-- TODO: Make icons for buttons -->
-                <Button Command="{Binding RemoveLevel}">-</Button>
-                <Button Command="{Binding OpenPreview}" IsEnabled="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">P</Button>
-            </StackPanel>
-        </Grid>
+        <Button Grid.Column="4" Click="ContextButtonClick">···
+            <Button.ContextMenu>
+                <ContextMenu Name="ContextMenu">
+                    <MenuItem Header="Preview Map" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <MenuItem Header="Remove Level" Command="{Binding RemoveLevel}" />
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
     </Grid>
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Preview Map" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <MenuItem Header="Remove Level" Command="{Binding RemoveLevel}" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
 </UserControl>
