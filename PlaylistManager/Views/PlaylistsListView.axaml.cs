@@ -121,11 +121,11 @@ namespace PlaylistManager.Views
             {
                 viewModel.CurrentManager = viewModel.SelectedPlaylistOrManager.playlistManager;
             }
-            else if (viewModel.SelectedPlaylistOrManager is {isPlaylist: true, playlist:{}})
+            else if (viewModel.SelectedPlaylistOrManager is {isPlaylist: true, playlist:{}} && viewModel.CurrentManager != null)
             {
                 if (PlaylistsDetailView != null)
                 {
-                    PlaylistsDetailView.ViewModel = new PlaylistsDetailViewModel(viewModel.SelectedPlaylistOrManager.playlist);
+                    PlaylistsDetailView.ViewModel = new PlaylistsDetailViewModel(viewModel.SelectedPlaylistOrManager.playlist, viewModel.CurrentManager);
                     NavigationPanel?.Push(PlaylistsDetailView);
                 }
             }

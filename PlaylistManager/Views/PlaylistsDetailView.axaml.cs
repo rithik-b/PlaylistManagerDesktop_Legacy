@@ -53,7 +53,7 @@ namespace PlaylistManager.Views
 #if DEBUG
             var utils = Locator.Current.GetService<PlaylistLibUtils>();
             var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
-            ViewModel = new PlaylistsDetailViewModel(playlist!);
+            ViewModel = new PlaylistsDetailViewModel(playlist!, utils?.PlaylistManager!);
 #endif
         }
 
@@ -62,7 +62,11 @@ namespace PlaylistManager.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OnBackClick(object? sender, RoutedEventArgs e) => NavigationPanel?.Pop();
+        private void OnBackClick(object? sender, RoutedEventArgs e)
+        {
+            ViewModel?.Save();
+            NavigationPanel?.Pop();
+        }
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)
         {
@@ -96,26 +100,34 @@ namespace PlaylistManager.Views
 
         private void FloatingBarHoverStart(object? sender, PointerEventArgs e)
         {
-            floatingButtonBar.IsExpanded = true;
+            if (!floatingButtonBar.IsExpanded)
+            {
+                floatingButtonBar.IsExpanded = true;
+            }
         }
 
         private void FloatingBarHoverLeave(object? sender, PointerEventArgs e)
         {
-            floatingButtonBar.IsExpanded = false;
+            if (floatingButtonBar.IsExpanded)
+            {
+                floatingButtonBar.IsExpanded = false;
+            }
         }
     }
 
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         public readonly IPlaylist playlist;
+        private readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
         private readonly LevelMatcher? levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         
-        public PlaylistsDetailViewModel(IPlaylist playlist)
+        public PlaylistsDetailViewModel(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             this.playlist = playlist;
+            this.parentManager = parentManager;
             levelMatcher = Locator.Current.GetService<LevelMatcher>();
             _ = FetchSongs();
         }
@@ -175,7 +187,9 @@ namespace PlaylistManager.Views
             NotifyPropertyChanged(nameof(Description));
             _ = LoadCoverAsync();
         }
-        
+
+        public void Save() => parentManager.StorePlaylist(playlist);
+
         public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
         private async Task FetchSongs()
         {
