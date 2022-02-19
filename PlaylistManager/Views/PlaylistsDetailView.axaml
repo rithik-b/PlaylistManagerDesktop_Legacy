@@ -26,7 +26,7 @@
                         <FloatingButton Background="#606060">
                             <PathIcon Data="{StaticResource arrow_download_regular}" />
                         </FloatingButton>
-                        <FloatingButton Background="#606060">
+                        <FloatingButton Background="#606060" IsVisible="{Binding IsSyncable}">
                             <PathIcon Data="{StaticResource arrow_sync_regular}" />
                         </FloatingButton>
                     </FloatingButtonBar>

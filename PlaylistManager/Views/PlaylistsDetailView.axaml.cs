@@ -121,7 +121,7 @@ namespace PlaylistManager.Views
         }
 
         public string Title => playlist.Title;
-        public string Author => playlist.Author ?? "Unknown";
+        public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
         public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
@@ -177,7 +177,6 @@ namespace PlaylistManager.Views
         }
         
         public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
-
         private async Task FetchSongs()
         {
             if (levelMatcher != null)
@@ -199,5 +198,7 @@ namespace PlaylistManager.Views
                 UpdateNumSongs();
             }
         }
+        
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out object _);
     }
 }
