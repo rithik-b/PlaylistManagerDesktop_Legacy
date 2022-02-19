@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="PlaylistManager.Windows.PlaylistEditWindow"
         Title="Edit Playlist Metadata" Width="600" Height="300" CanResize="False"
-        WindowStartupLocation="CenterOwner" Icon="/Icons/Logo.ico">
+        WindowStartupLocation="CenterOwner" Icon="/Icons/Logo.ico" PointerPressed="LoseFocus">
         <StackPanel Orientation="Horizontal">
                 <Button Margin="20,40" Height="210" Width="210" Background="Transparent" Click="EditButtonClick">
                         <Panel>

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -138,6 +137,15 @@ namespace PlaylistManager.Views
             if (floatingButtonBar.IsExpanded)
             {
                 floatingButtonBar.IsExpanded = false;
+            }
+        }
+
+        private void LoseFocus(object? sender, PointerPressedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.SelectedLevel = null;
+                Focus();
             }
         }
     }
