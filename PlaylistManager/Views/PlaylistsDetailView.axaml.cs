@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
+using Aura.UI.Controls;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -38,10 +39,13 @@ namespace PlaylistManager.Views
                 DataContext = value;
             }
         }
+
+        private readonly FloatingButtonBar floatingButtonBar;
         
         public PlaylistsDetailView()
         {
             InitializeComponent();
+            floatingButtonBar = this.FindControl<FloatingButtonBar>("FloatingButtonBar");
 #if DEBUG
             var utils = Locator.Current.GetService<PlaylistLibUtils>();
             var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
@@ -75,6 +79,16 @@ namespace PlaylistManager.Views
                     }
                 }
             }
+        }
+
+        private void FloatingBarHoverStart(object? sender, PointerEventArgs e)
+        {
+            floatingButtonBar.IsExpanded = true;
+        }
+
+        private void FloatingBarHoverLeave(object? sender, PointerEventArgs e)
+        {
+            floatingButtonBar.IsExpanded = false;
         }
     }
 

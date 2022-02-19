@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="PlaylistManager/App.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/Icons/Icons.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/MainWindow.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/PlaylistsListView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/FileSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />

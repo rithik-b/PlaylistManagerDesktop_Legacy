@@ -5,7 +5,7 @@
              xmlns:userControls="clr-namespace:PlaylistManager.UserControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.Views.SettingsView">
-        <ScrollViewer Background="#80808080">
+        <ScrollViewer Background="#202020">
             <StackPanel VerticalAlignment="Center" Margin="20">
                 <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
             </StackPanel>

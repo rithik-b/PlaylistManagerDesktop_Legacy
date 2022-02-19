@@ -4,6 +4,8 @@
              x:Class="PlaylistManager.App">
     <Application.Styles>
         <FluentTheme Mode="Dark"/>
+        <StyleInclude Source="avares://Aura.UI.FluentTheme/AuraUI.xaml"/>
+        <StyleInclude Source="avares://PlaylistManager/Icons/Icons.axaml" />
     </Application.Styles>
     <Application.DataTemplates>
         <utilities:ViewLocator/>

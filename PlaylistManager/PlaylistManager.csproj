@@ -9,6 +9,8 @@
         <None Remove=".gitignore" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="Aura.UI" Version="0.1.5-dev-04" />
+        <PackageReference Include="Aura.UI.FluentTheme" Version="0.1.5-dev-04" />
         <PackageReference Include="Avalonia" Version="0.10.12" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->

@@ -9,15 +9,6 @@
         Background="Transparent"
         Icon="/Icons/Logo.ico">
         <Panel>
-                <ExperimentalAcrylicBorder IsHitTestVisible="False">
-                        <ExperimentalAcrylicBorder.Material>
-                                <ExperimentalAcrylicMaterial
-                                        BackgroundSource="Digger"
-                                        TintColor="Black"
-                                        TintOpacity="1"
-                                        MaterialOpacity="0.35" />
-                        </ExperimentalAcrylicBorder.Material>
-                </ExperimentalAcrylicBorder>
                 <local:FlowCoordinator />
         </Panel>
 </Window>
