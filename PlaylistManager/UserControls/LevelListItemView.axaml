@@ -6,7 +6,7 @@
              x:Class="PlaylistManager.UserControls.LevelListItemView">
     <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto">
         <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top" HorizontalAlignment="Left">
-            <Image Width="50" Stretch="Uniform" Source="{Binding CoverImage}" />
+            <Image Width="50" Height="50" Stretch="UniformToFill" Source="{Binding CoverImage}" />
         </Border>
         
         <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Left">

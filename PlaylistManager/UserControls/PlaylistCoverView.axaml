@@ -7,7 +7,7 @@
     <DockPanel Width="200" DragDrop.AllowDrop="{Binding AllowDrop}" PointerPressed="DoDrag" PointerReleased="OnPointerReleased">
         <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top">
             <Panel>
-                <Image Width="200" Stretch="Uniform" Source="{Binding CoverImage}" />
+                <Image Width="200" Height="200" Stretch="UniformToFill" Source="{Binding CoverImage}" />
             </Panel>
         </Border>
         <StackPanel Spacing="5" DockPanel.Dock="Bottom">

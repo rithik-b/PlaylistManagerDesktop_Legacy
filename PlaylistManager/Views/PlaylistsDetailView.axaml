@@ -8,7 +8,7 @@
         <Border Background="#202020" DockPanel.Dock="Top" PointerLeave="FloatingBarHoverLeave">
             <Grid ColumnDefinitions="1*, 4*" RowDefinitions="Auto, Auto" Margin="0,0,0,20">
                 <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick" Margin="0,0,0,20">&lt;</Button>
-                <Image Stretch="Uniform" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
+                <Image Stretch="UniformToFill" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
                 <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" Grid.Row="1" MaxHeight="256" Margin="20,0">
                     <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" />
                     <TextBox Text="{Binding Description}" IsReadOnly="True" Height="50" IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
