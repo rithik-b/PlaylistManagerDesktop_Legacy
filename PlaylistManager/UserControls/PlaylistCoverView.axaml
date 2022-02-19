@@ -11,9 +11,9 @@
             </Panel>
         </Border>
         <StackPanel Spacing="5" DockPanel.Dock="Bottom">
-            <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" FontSize="16" FontWeight="Light" IsVisible="{Binding IsNotRenaming}" />
+            <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" FontSize="16" FontWeight="Light" IsVisible="{Binding IsNotRenaming}" TextTrimming="CharacterEllipsis" />
             <TextBox Name="RenameBox" Text="{Binding RenameTitle}" HorizontalAlignment="Center" FontSize="16" FontWeight="Light" IsVisible="{Binding IsRenaming}" KeyDown="RenameKeyDown" />
-            <TextBlock Text="{Binding Author}" HorizontalAlignment="Center" FontSize="14" FontWeight="Light" />
+            <TextBlock Text="{Binding Author}" HorizontalAlignment="Center" FontSize="14" FontWeight="Light" TextTrimming="CharacterEllipsis" />
         </StackPanel>
         
         <DockPanel.ContextMenu>

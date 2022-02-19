@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Aura.UI.Controls;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -45,11 +46,14 @@ namespace PlaylistManager.Views
         }
 
         private readonly FloatingButtonBar floatingButtonBar;
+        private readonly ListBox listBox;
         
         public PlaylistsDetailView()
         {
             InitializeComponent();
             floatingButtonBar = this.FindControl<FloatingButtonBar>("FloatingButtonBar");
+            listBox = this.Find<ListBox>("ListBox");
+            listBox.AddHandler(DragDrop.DragOverEvent, DragOverList!);
 #if DEBUG
             var utils = Locator.Current.GetService<PlaylistLibUtils>();
             var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
@@ -60,6 +64,28 @@ namespace PlaylistManager.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void DragOverList(object sender, DragEventArgs e)
+        {
+            if (e.GetPosition(listBox).Y <= 40)
+            {
+                Scroll(-0.2);
+            }
+            else if(listBox.Scroll != null && (e.GetPosition(listBox).Y / listBox.Scroll.Viewport.Height) >= 70)
+            {
+                Scroll(0.2);
+            }
+        }
+
+        public void Scroll(double offset)
+        {
+            if (listBox.Scroll != null)
+            {
+                var x = listBox.Scroll.Offset.X;
+                var y = listBox.Scroll.Offset.Y;
+                listBox.Scroll.Offset = new Vector(x, y + offset);
+            }
         }
 
         private void OnBackClick(object? sender, RoutedEventArgs e)
@@ -113,6 +139,15 @@ namespace PlaylistManager.Views
                 floatingButtonBar.IsExpanded = false;
             }
         }
+
+        private void LoseFocus(object? sender, PointerPressedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.SelectedLevel = null;
+                Focus();
+            }
+        }
     }
 
     public class PlaylistsDetailViewModel : ViewModelBase
@@ -136,7 +171,7 @@ namespace PlaylistManager.Views
         public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
         public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
-        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
+        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
@@ -213,6 +248,14 @@ namespace PlaylistManager.Views
             }
         }
         
-        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out object _);
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+
+        public void MoveLevel(LevelListItemViewModel source, LevelListItemViewModel destination)
+        {
+            playlist.Remove(source.playlistSong.playlistSong);
+            playlist.Insert(playlist.IndexOf(destination.playlistSong.playlistSong), source.playlistSong.playlistSong);
+            Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
+            SelectedLevel = source;
+        }
     }
 }

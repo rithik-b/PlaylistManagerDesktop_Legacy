@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
@@ -11,19 +13,83 @@ using PlaylistManager.Utilities;
 using PlaylistManager.Views;
 using ReactiveUI;
 using Splat;
+using Difficulty = PlaylistManager.Models.Difficulty;
 
 namespace PlaylistManager.UserControls
 {
     public class LevelListItemView : UserControl
     {
+        private readonly ContextMenu contextMenu;
+
+        private PlaylistsDetailView? playlistsDetailView;
+
+        private PlaylistsDetailView? PlaylistsDetailView =>
+            playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>();
+        
         public LevelListItemView()
         {
             InitializeComponent();
+            contextMenu = this.Find<ContextMenu>("ContextMenu");
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            AddHandler(DragDrop.DragOverEvent, DragOver!);
+            AddHandler(DragDrop.DropEvent, Drop!);
+        }
+
+        #region Drag and Drop
+
+        public const string kPlaylistSongData = "application/com.rithik-b.PlaylistManager.PlaylistSong";
+        private bool pointerHeld;
+
+        private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            pointerHeld = true;
+
+            await Task.Delay(Utils.kHoldDelay);
+            if (!pointerHeld)
+            {
+                return;
+            }
+
+            if (DataContext is LevelListItemViewModel viewModel)
+            {
+                var dragData = new DataObject();
+                dragData.Set(kPlaylistSongData, viewModel);
+                var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
+            }
+        }
+
+        // Tracks if pointer is released to prevent a drag operation
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) => pointerHeld = false;
+        
+        private void DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.Contains(kPlaylistSongData))
+            {
+                e.DragEffects = DragDropEffects.Move;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
+        }
+        
+        private async void Drop(object sender, DragEventArgs e)
+        {
+            if (DataContext is LevelListItemViewModel destination && e.Data.Get(kPlaylistSongData) is LevelListItemViewModel source && source != destination)
+            {
+                PlaylistsDetailView?.ViewModel?.MoveLevel(source, destination);
+            }
+        }
+
+        #endregion
+
+        private void ContextButtonClick(object? sender, RoutedEventArgs e)
+        {
+            contextMenu.Open();
         }
     }
 
@@ -52,6 +118,7 @@ namespace PlaylistManager.UserControls
         public string SongName => $"{playlistSong.customLevelData.SongName} {playlistSong.customLevelData.SongSubName}";
         public string AuthorName => $"{playlistSong.customLevelData.SongAuthorName} [{playlistSong.customLevelData.LevelAuthorName}]";
         public string? Key => playlistSong.customLevelData.Key;
+        public float Opacity => playlistSong.customLevelData.Downloaded ? 1f: 0.5f;
         public List<string> Characteristics { get; } = new();
         public Bitmap? CoverImage
         {

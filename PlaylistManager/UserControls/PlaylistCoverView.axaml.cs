@@ -39,14 +39,13 @@ namespace PlaylistManager.UserControls
         #region Drag and Drop
         
         public const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
-        private const int kHoldDelay = 300;
         private bool pointerHeld;
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
             pointerHeld = true;
 
-            await Task.Delay(kHoldDelay);
+            await Task.Delay(Utils.kHoldDelay);
             if (!pointerHeld)
             {
                 return;
