@@ -21,6 +21,7 @@ namespace PlaylistManager.Windows
     {
         private readonly SemaphoreSlim openSemaphore;
         private readonly OpenFileDialog openFileDialog;
+        private readonly MainWindow? mainWindow;
         private readonly PlaylistLibUtils? playlistLibUtils;
         
         private PlaylistEditWindowModel? viewModel;
@@ -34,8 +35,9 @@ namespace PlaylistManager.Windows
             }
         }
 
-        public PlaylistEditWindow(PlaylistLibUtils playlistLibUtils) : this()
+        public PlaylistEditWindow(MainWindow mainWindow, PlaylistLibUtils playlistLibUtils) : this()
         {
+            this.mainWindow = mainWindow;
             this.playlistLibUtils = playlistLibUtils;
         }
         
@@ -88,11 +90,11 @@ namespace PlaylistManager.Windows
             playlistLibUtils?.PlaylistManager.RequestRefresh("PlaylistManager (desktop)");
         }
 
-        private async void Button_OnClick(object? sender, RoutedEventArgs e)
+        private async void EditButtonClick(object? sender, RoutedEventArgs e)
         {
-            if (ViewModel != null)
+            if (ViewModel != null && mainWindow != null)
             {
-                var filePaths = await openFileDialog.ShowAsync(this);
+                var filePaths = await openFileDialog.ShowAsync(mainWindow);
                 if (filePaths is {Length: > 0})
                 {
                     var filePath = filePaths.First();
