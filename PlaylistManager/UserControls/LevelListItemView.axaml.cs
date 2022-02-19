@@ -8,7 +8,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
-using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
@@ -21,6 +20,11 @@ namespace PlaylistManager.UserControls
     public class LevelListItemView : UserControl
     {
         private readonly ContextMenu contextMenu;
+
+        private PlaylistsDetailView? playlistsDetailView;
+
+        private PlaylistsDetailView? PlaylistsDetailView =>
+            playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>();
         
         public LevelListItemView()
         {
@@ -49,19 +53,36 @@ namespace PlaylistManager.UserControls
             {
                 return;
             }
-            
-            
+
+            if (DataContext is LevelListItemViewModel viewModel)
+            {
+                var dragData = new DataObject();
+                dragData.Set(kPlaylistSongData, viewModel);
+                var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
+            }
         }
-        
+
         // Tracks if pointer is released to prevent a drag operation
         private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) => pointerHeld = false;
         
         private void DragOver(object sender, DragEventArgs e)
         {
+            if (e.Data.Contains(kPlaylistSongData))
+            {
+                e.DragEffects = DragDropEffects.Move;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+            }
         }
         
         private async void Drop(object sender, DragEventArgs e)
         {
+            if (DataContext is LevelListItemViewModel destination && e.Data.Get(kPlaylistSongData) is LevelListItemViewModel source)
+            {
+                PlaylistsDetailView?.ViewModel?.MoveLevel(source, destination);
+            }
         }
 
         #endregion

@@ -213,6 +213,14 @@ namespace PlaylistManager.Views
             }
         }
         
-        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out object _);
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+
+        public void MoveLevel(LevelListItemViewModel source, LevelListItemViewModel destination)
+        {
+            playlist.Remove(source.playlistSong.playlistSong);
+            playlist.Insert(playlist.IndexOf(destination.playlistSong.playlistSong), source.playlistSong.playlistSong);
+            Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
+            SelectedLevel = source;
+        }
     }
 }
