@@ -4,13 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.UserControls.LevelListItemView"
-             DragDrop.AllowDrop="True" PointerPressed="DoDrag" PointerReleased="OnPointerReleased">
-    <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto" ClipToBounds="True" Background="Transparent">
-        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top" HorizontalAlignment="Left">
+             DragDrop.AllowDrop="True" PointerPressed="DoDrag" PointerReleased="OnPointerReleased"
+             Background="Transparent">
+    <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto">
+        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top" HorizontalAlignment="Left" Opacity="{Binding Opacity}">
             <Image Width="50" Height="50" Stretch="UniformToFill" Source="{Binding CoverImage}" />
         </Border>
         
-        <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Left">
+        <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Left" Opacity="{Binding Opacity}">
             <TextBlock Text="{Binding SongName}" TextTrimming="CharacterEllipsis" />
             <TextBlock Text="{Binding AuthorName}" TextTrimming="CharacterEllipsis" />
         </StackPanel>

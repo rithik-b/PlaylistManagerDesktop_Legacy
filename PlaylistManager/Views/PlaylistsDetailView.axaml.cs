@@ -171,7 +171,7 @@ namespace PlaylistManager.Views
         public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
         public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
-        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} owned)" : "")}";
+        public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 

@@ -118,6 +118,7 @@ namespace PlaylistManager.UserControls
         public string SongName => $"{playlistSong.customLevelData.SongName} {playlistSong.customLevelData.SongSubName}";
         public string AuthorName => $"{playlistSong.customLevelData.SongAuthorName} [{playlistSong.customLevelData.LevelAuthorName}]";
         public string? Key => playlistSong.customLevelData.Key;
+        public float Opacity => playlistSong.customLevelData.Downloaded ? 1f: 0.5f;
         public List<string> Characteristics { get; } = new();
         public Bitmap? CoverImage
         {
