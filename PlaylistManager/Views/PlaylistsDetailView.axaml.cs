@@ -85,11 +85,12 @@ namespace PlaylistManager.Views
             }
         }
         
-        private void OnEditClick(object? sender, RoutedEventArgs e)
+        private async void OnEditClick(object? sender, RoutedEventArgs e)
         {
-            if (MainWindow != null && viewModel != null)
+            if (MainWindow != null && ViewModel != null && PlaylistEditWindow != null)
             {
-                PlaylistEditWindow?.EditPlaylist(MainWindow, viewModel.playlist);
+                await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist);
+                ViewModel.UpdateMetadata();
             }
         }
 
@@ -165,6 +166,14 @@ namespace PlaylistManager.Views
             {
                 RxApp.MainThreadScheduler.Schedule(() => CoverImage = bitmap);
             }
+        }
+
+        public void UpdateMetadata()
+        {
+            NotifyPropertyChanged(nameof(Title));
+            NotifyPropertyChanged(nameof(Author));
+            NotifyPropertyChanged(nameof(Description));
+            _ = LoadCoverAsync();
         }
         
         public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));

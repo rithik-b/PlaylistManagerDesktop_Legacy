@@ -1,19 +1,19 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PlaylistManager.Windows.PlaylistEditWindow"
-        Title="PlaylistEditWindow">
-        <Grid ColumnDefinitions="1*, 4*" Margin="0,0,0,20">
-            <Image Stretch="Uniform" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" HorizontalAlignment="Left" />
-            <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" MaxHeight="256" Margin="20,0">
-                <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" />
-                <TextBox Text="{Binding Description}" IsReadOnly="True" Height="50" IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <TextBlock Text="{Binding Author}" FontSize="25" VerticalAlignment="Bottom" FontWeight="Regular" />
-                    <TextBlock Text="{Binding NumSongs}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Thin" />
+        Title="Edit Playlist Metadata" Width="600" Height="300" CanResize="False"
+        WindowStartupLocation="CenterOwner" Icon="/Icons/Logo.ico">
+        <StackPanel Orientation="Horizontal">
+                <Button Margin="20,40" Height="210" Width="210" Background="Transparent" Click="Button_OnClick">
+                        <Panel>
+                                <PathIcon Data="{StaticResource edit_regular}" Height="75" Width="75" />
+                                <Image Stretch="UniformToFill" Source="{Binding CoverImage}" Opacity="0.30" Height="210" Width="210" />
+                        </Panel>
+                </Button>
+                <StackPanel VerticalAlignment="Center" Width="325" Spacing="20">
+                        <TextBox Text="{Binding Title}" Watermark="Title" />
+                        <TextBox Text="{Binding Author}" Watermark="Author" />
+                        <TextBox Text="{Binding Description}" Height="100" TextWrapping="Wrap" Watermark="Description" />
                 </StackPanel>
-            </StackPanel>
-        </Grid>
+        </StackPanel>
 </Window>
