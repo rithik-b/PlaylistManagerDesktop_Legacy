@@ -20,6 +20,7 @@
         <entry key="PlaylistManager/Views/SidebarView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/Windows/LevelSearchWindow.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/Windows/MainWindow.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/Windows/PlaylistEditWindow.axaml" value="PlaylistManager/PlaylistManager.csproj" />
       </map>
     </option>
   </component>

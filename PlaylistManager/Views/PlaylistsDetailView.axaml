@@ -20,7 +20,7 @@
                         <FloatingButton Click="OnAddClick" Background="#606060">
                             <TextBlock Text="+" TextAlignment="Center" FontSize="18" VerticalAlignment="Center"></TextBlock>
                         </FloatingButton>
-                        <FloatingButton Background="#606060">
+                        <FloatingButton Click="OnEditClick" Background="#606060">
                             <PathIcon Data="{StaticResource edit_regular}" />
                         </FloatingButton>
                         <FloatingButton Background="#606060">

@@ -29,6 +29,10 @@ namespace PlaylistManager.Views
         private LevelSearchWindow? levelSearchWindow;
         private LevelSearchWindow? LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>();
         
+                
+        private PlaylistEditWindow? playlistEditWindow;
+        private PlaylistEditWindow? PlaylistEditWindow => playlistEditWindow ??= Locator.Current.GetService<PlaylistEditWindow>();
+        
         private PlaylistsDetailViewModel? viewModel;
         public PlaylistsDetailViewModel? ViewModel
         {
@@ -62,7 +66,7 @@ namespace PlaylistManager.Views
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)
         {
-            if (LevelSearchWindow != null && ViewModel != null)
+            if (LevelSearchWindow != null && MainWindow != null && ViewModel != null)
             {
                 var searchedSong = await LevelSearchWindow.SearchSong(MainWindow);
                 if (searchedSong is {level: { }})
@@ -78,6 +82,14 @@ namespace PlaylistManager.Views
                         ViewModel.UpdateNumSongs();
                     }
                 }
+            }
+        }
+        
+        private void OnEditClick(object? sender, RoutedEventArgs e)
+        {
+            if (MainWindow != null && viewModel != null)
+            {
+                PlaylistEditWindow?.EditPlaylist(MainWindow, viewModel.playlist);
             }
         }
 
