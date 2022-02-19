@@ -1,8 +1,10 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Aura.UI.Controls;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -45,11 +47,14 @@ namespace PlaylistManager.Views
         }
 
         private readonly FloatingButtonBar floatingButtonBar;
+        private readonly ListBox listBox;
         
         public PlaylistsDetailView()
         {
             InitializeComponent();
             floatingButtonBar = this.FindControl<FloatingButtonBar>("FloatingButtonBar");
+            listBox = this.Find<ListBox>("ListBox");
+            listBox.AddHandler(DragDrop.DragOverEvent, DragOverList!);
 #if DEBUG
             var utils = Locator.Current.GetService<PlaylistLibUtils>();
             var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
@@ -60,6 +65,28 @@ namespace PlaylistManager.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void DragOverList(object sender, DragEventArgs e)
+        {
+            if (e.GetPosition(listBox).Y <= 40)
+            {
+                Scroll(-0.2);
+            }
+            else if(listBox.Scroll != null && (e.GetPosition(listBox).Y / listBox.Scroll.Viewport.Height) >= 70)
+            {
+                Scroll(0.2);
+            }
+        }
+
+        public void Scroll(double offset)
+        {
+            if (listBox.Scroll != null)
+            {
+                var x = listBox.Scroll.Offset.X;
+                var y = listBox.Scroll.Offset.Y;
+                listBox.Scroll.Offset = new Vector(x, y + offset);
+            }
         }
 
         private void OnBackClick(object? sender, RoutedEventArgs e)

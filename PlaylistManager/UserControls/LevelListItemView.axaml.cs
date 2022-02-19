@@ -79,7 +79,7 @@ namespace PlaylistManager.UserControls
         
         private async void Drop(object sender, DragEventArgs e)
         {
-            if (DataContext is LevelListItemViewModel destination && e.Data.Get(kPlaylistSongData) is LevelListItemViewModel source)
+            if (DataContext is LevelListItemViewModel destination && e.Data.Get(kPlaylistSongData) is LevelListItemViewModel source && source != destination)
             {
                 PlaylistsDetailView?.ViewModel?.MoveLevel(source, destination);
             }
