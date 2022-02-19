@@ -5,13 +5,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.UserControls.LevelListItemView">
     <Grid ColumnDefinitions="Auto, 10*, 2*, Auto, Auto">
-        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top">
-            <Panel>
-                <Image Width="50" Stretch="Uniform" Source="{Binding CoverImage}" />
-            </Panel>
+        <Border CornerRadius="10" ClipToBounds="True" DockPanel.Dock="Top" HorizontalAlignment="Left">
+            <Image Width="50" Stretch="Uniform" Source="{Binding CoverImage}" />
         </Border>
         
-        <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center">
+        <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Left">
             <TextBlock Text="{Binding SongName}" />
             <TextBlock Text="{Binding AuthorName}" />
         </StackPanel>
