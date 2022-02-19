@@ -4,14 +4,17 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
 using ReactiveUI;
 using Splat;
+using Difficulty = PlaylistManager.Models.Difficulty;
 
 namespace PlaylistManager.UserControls
 {
@@ -28,7 +31,40 @@ namespace PlaylistManager.UserControls
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+            AddHandler(DragDrop.DragOverEvent, DragOver!);
+            AddHandler(DragDrop.DropEvent, Drop!);
         }
+
+        #region Drag and Drop
+
+        public const string kPlaylistSongData = "application/com.rithik-b.PlaylistManager.PlaylistSong";
+        private bool pointerHeld;
+
+        private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            pointerHeld = true;
+
+            await Task.Delay(Utils.kHoldDelay);
+            if (!pointerHeld)
+            {
+                return;
+            }
+            
+            
+        }
+        
+        // Tracks if pointer is released to prevent a drag operation
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) => pointerHeld = false;
+        
+        private void DragOver(object sender, DragEventArgs e)
+        {
+        }
+        
+        private async void Drop(object sender, DragEventArgs e)
+        {
+        }
+
+        #endregion
 
         private void ContextButtonClick(object? sender, RoutedEventArgs e)
         {

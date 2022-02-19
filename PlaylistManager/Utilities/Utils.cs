@@ -7,6 +7,8 @@ namespace PlaylistManager.Utilities
 {
     public static class Utils
     {
+        public const int kHoldDelay = 300;
+
         public static void Serialize(object value, Stream s)
         {
             using (StreamWriter writer = new StreamWriter(s))
