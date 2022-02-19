@@ -10,10 +10,10 @@
                 <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick" Margin="0,0,0,20">&lt;</Button>
                 <Image Stretch="UniformToFill" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
                 <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" Grid.Row="1" MaxHeight="256" Margin="20,0">
-                    <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
                     <TextBox Text="{Binding Description}" IsReadOnly="True" Height="50" IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
                     <StackPanel Orientation="Horizontal" Spacing="10">
-                        <TextBlock Text="{Binding Author}" FontSize="25" VerticalAlignment="Bottom" FontWeight="Regular" />
+                        <TextBlock Text="{Binding Author}" FontSize="25" VerticalAlignment="Bottom" FontWeight="Regular" TextTrimming="CharacterEllipsis" />
                         <TextBlock Text="{Binding NumSongs}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Thin" />
                     </StackPanel>
                     <FloatingButtonBar Name="FloatingButtonBar" Icon="···" IconBackground="#606060" ExpandDirection="ToRight" OpenLength="180" PointerEnter="FloatingBarHoverStart">

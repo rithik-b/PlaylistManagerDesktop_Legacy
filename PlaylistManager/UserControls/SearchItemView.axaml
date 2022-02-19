@@ -11,8 +11,8 @@
             </Panel>
         </Border>
         <StackPanel Margin="10,0" Spacing="5" VerticalAlignment="Center">
-            <TextBlock Text="{Binding Name}" />
-            <TextBlock Text="{Binding SubName}" IsVisible="{Binding SubName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Text="{Binding SubName}" IsVisible="{Binding SubName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextTrimming="CharacterEllipsis" />
         </StackPanel>
     </StackPanel>
 </UserControl>

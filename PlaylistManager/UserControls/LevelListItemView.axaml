@@ -11,8 +11,8 @@
         </Border>
         
         <StackPanel Grid.Column="1" Margin="10,0" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Left">
-            <TextBlock Text="{Binding SongName}" />
-            <TextBlock Text="{Binding AuthorName}" />
+            <TextBlock Text="{Binding SongName}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Text="{Binding AuthorName}" TextTrimming="CharacterEllipsis" />
         </StackPanel>
         
         <Panel Grid.Column="2" VerticalAlignment="Center" Margin="10,0" Width="120" HorizontalAlignment="Center">
