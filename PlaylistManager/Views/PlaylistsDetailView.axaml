@@ -17,16 +17,16 @@
                         <TextBlock Text="{Binding NumSongs}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Thin" />
                     </StackPanel>
                     <FloatingButtonBar Name="FloatingButtonBar" Icon="···" IconBackground="#606060" ExpandDirection="ToRight" OpenLength="180" PointerEnter="FloatingBarHoverStart">
-                        <FloatingButton Click="OnAddClick" Background="#606060">
-                            <TextBlock Text="+" TextAlignment="Center" FontSize="18" VerticalAlignment="Center"></TextBlock>
+                        <FloatingButton Click="OnAddClick" Background="#606060" ToolTip.Tip="Add a Song">
+                            <TextBlock Text="+" TextAlignment="Center" FontSize="18" VerticalAlignment="Center" />
                         </FloatingButton>
-                        <FloatingButton Click="OnEditClick" Background="#606060">
+                        <FloatingButton Click="OnEditClick" Background="#606060" ToolTip.Tip="Edit playlist">
                             <PathIcon Data="{StaticResource edit_regular}" />
                         </FloatingButton>
-                        <FloatingButton Background="#606060">
+                        <FloatingButton Background="#606060" ToolTip.Tip="Download all Songs">
                             <PathIcon Data="{StaticResource arrow_download_regular}" />
                         </FloatingButton>
-                        <FloatingButton Background="#606060" IsVisible="{Binding IsSyncable}">
+                        <FloatingButton Background="#606060" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
                             <PathIcon Data="{StaticResource arrow_sync_regular}" />
                         </FloatingButton>
                     </FloatingButtonBar>
