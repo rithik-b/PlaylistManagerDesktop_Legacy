@@ -1,0 +1,15 @@
+<ContentControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="PlaylistManager.UserControls.StringSetting"
+                xmlns:userControls="clr-namespace:PlaylistManager.UserControls">
+    <ContentControl.Styles>
+        <Style Selector="userControls|StringSetting">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Text="{TemplateBinding SettingName}" FontSize="30" FontWeight="SemiLight" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" />
+                        <TextBox DockPanel.Dock="Right" Text="{TemplateBinding SettingValue, Mode=TwoWay}" FontSize="30" FontWeight="Light" HorizontalAlignment="Right" />
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </ContentControl.Styles>
+</ContentControl>

@@ -41,6 +41,16 @@ namespace PlaylistManager.Views
                     NotifyPropertyChanged();
                 }
             }
+
+            public string AuthorName
+            {
+                get => configModel.AuthorName;
+                set
+                {
+                    configModel.AuthorName = value;
+                    NotifyPropertyChanged();
+                }
+            }
         }
     }
 }

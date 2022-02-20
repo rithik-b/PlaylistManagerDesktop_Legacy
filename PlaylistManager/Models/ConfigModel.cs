@@ -23,6 +23,8 @@ namespace PlaylistManager.Models
             }
         }
 
+        public string AuthorName { get; set; } = nameof(PlaylistManager);
+
         public static ConfigModel Factory()
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kConfigPath);
