@@ -6,9 +6,19 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.Views.SettingsView">
         <ScrollViewer Background="#202020">
-            <StackPanel VerticalAlignment="Center" Margin="20" Spacing="35">
-                <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
-                <userControls:StringSetting SettingName="Default Author Name" SettingValue="{Binding AuthorName}" />
+            <StackPanel VerticalAlignment="Center" Margin="20">
+                <TextBlock Text="Directory Settings" FontSize="30" FontWeight="Black" />
+                <GroupBox Margin="0,0,0,20">
+                    <StackPanel VerticalAlignment="Center" Spacing="35">
+                        <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
+                    </StackPanel>
+                </GroupBox>
+                <TextBlock Text="Default Playlist Settings" FontSize="30" FontWeight="Black" />
+                <GroupBox Margin="0,0,0,20">
+                    <StackPanel VerticalAlignment="Center" Spacing="35">
+                        <userControls:StringSetting SettingName="Author" SettingValue="{Binding AuthorName}" />
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </ScrollViewer>
 </UserControl>

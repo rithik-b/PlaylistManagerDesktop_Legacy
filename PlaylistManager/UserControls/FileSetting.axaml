@@ -5,9 +5,11 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Grid ColumnDefinitions="Auto, 10*, 0.1*, Auto">
-                        <TextBlock Grid.Column="0" Text="{TemplateBinding SettingName}" FontSize="30" FontWeight="SemiLight" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="1" Text="{TemplateBinding SettingValue}" FontSize="30" FontWeight="Light" HorizontalAlignment="Right" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                        <Button Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="25" Click="OnClick">📁</Button>
+                        <TextBlock Grid.Column="0" Text="{TemplateBinding SettingName}" FontSize="25" FontWeight="SemiLight" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="1" Text="{TemplateBinding SettingValue}" FontSize="25" FontWeight="Light" HorizontalAlignment="Right" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <Button Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" Click="OnClick">
+                            <PathIcon Data="{StaticResource folder_regular}" />
+                        </Button>
                     </Grid>
                 </ControlTemplate>
             </Setter>
