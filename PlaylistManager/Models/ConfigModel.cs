@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Extensions.Configuration;
 using PlaylistManager.Utilities;
 
@@ -24,18 +26,32 @@ namespace PlaylistManager.Models
         public static ConfigModel Factory()
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kConfigPath);
+
+            ConfigModel configModel;
             
             if (!File.Exists(path))
             {
-                var configModel = new ConfigModel();
+                configModel = new ConfigModel();
                 configModel.Save();
                 return configModel;
             }
+            else
+            {
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                    .AddJsonFile(kConfigPath).Build();
+                configModel = builder.Get<ConfigModel>();
+            }
+
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Exit += delegate(object? sender, ControlledApplicationLifetimeExitEventArgs args)
+                {
+                    configModel.Save();
+                };
+            }
             
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile(kConfigPath).Build();
-            return builder.Get<ConfigModel>();
+            return configModel;
         }
 
         public void Save()

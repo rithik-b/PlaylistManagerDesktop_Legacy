@@ -25,11 +25,11 @@ namespace PlaylistManager.Views
         
         public class ViewModel : ViewModelBase
         {
-            private readonly ConfigModel? configModel;
+            private readonly ConfigModel configModel;
 
             public ViewModel()
             {
-                configModel = Locator.Current.GetService<ConfigModel>();
+                configModel = Locator.Current.GetService<ConfigModel>()!;
             }
 
             public string BeatSaberDir
@@ -38,7 +38,6 @@ namespace PlaylistManager.Views
                 set
                 {
                     configModel.BeatSaberDir = value;
-                    configModel.Save();
                     NotifyPropertyChanged();
                 }
             }
