@@ -39,7 +39,9 @@ namespace PlaylistManager.Models
                 Difficulties[characteristic].Add(Enum.Parse<Difficulty>(difficulty.difficulty.ToString()));
             }
         }
-        
+
+        public Task<string?> GetKeyAsync() => Task.FromResult(Key)!;
+
         public async Task<Bitmap?> GetCoverImageAsync(CancellationToken? cancellationToken = null)
         {
             if (coverImage == null)

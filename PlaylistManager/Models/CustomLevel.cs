@@ -93,22 +93,6 @@ namespace PlaylistManager.Models
         public string SongAuthorName => _songAuthorName ?? "";
         public string LevelAuthorName => _levelAuthorName ?? "";
         public string Hash => hash ?? "";
-        public string? Key
-        {
-            get
-            {
-                if (!attemptedSongDetailsLookup)
-                {
-                    var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>();
-                    if (hash != null && songDetailsLoader != null && songDetailsLoader.TryGetLevelByHash(hash, out var songDetailsLevel))
-                    {
-                        key = songDetailsLevel.Key;
-                    }
-                    attemptedSongDetailsLookup = true;
-                }
-                return key;
-            }
-        }
         public bool Downloaded => true;
         public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
         
@@ -134,7 +118,22 @@ namespace PlaylistManager.Models
                 }   
             }
         }
-        
+
+        public async Task<string?> GetKeyAsync()
+        {
+            if (!attemptedSongDetailsLookup)
+            {
+                var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>();
+                if (hash != null && songDetailsLoader != null && songDetailsLoader.TryGetLevelByHash(hash, out var songDetailsLevel))
+                {
+                    await songDetailsLoader.Init();
+                    key = songDetailsLevel.Key;
+                }
+                attemptedSongDetailsLookup = true;
+            }
+            return key;
+        }
+
         public async Task<Bitmap?> GetCoverImageAsync(CancellationToken? cancellationToken = null)
         {
             if (coverImage == null)

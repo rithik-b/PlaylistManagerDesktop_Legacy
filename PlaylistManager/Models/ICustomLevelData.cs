@@ -31,12 +31,7 @@ namespace PlaylistManager.Models
         /// The SHA1 Hash of the level
         /// </summary>
         public string Hash { get; }
-        
-        /// <summary>
-        /// The BeatSaver ID of the level
-        /// </summary>
-        public string? Key { get; }
-        
+
         /// <summary>
         /// Is the map downloaded (locally available)?
         /// </summary>
@@ -46,6 +41,11 @@ namespace PlaylistManager.Models
         /// A dictionary that maps from Characteristic to a List of Difficulties in that Characteristic
         /// </summary>
         public Dictionary<string, List<Difficulty>> Difficulties { get; }
+        
+        /// <summary>
+        /// Asynchronously get the BeatSaver ID of the level
+        /// </summary>
+        public Task<string?> GetKeyAsync();
         
         /// <summary>
         /// Asynchronously loads and parses the cover image of a level

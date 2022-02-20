@@ -100,6 +100,7 @@ namespace PlaylistManager.UserControls
         public readonly PlaylistSongWrapper playlistSong;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
+        private string? key;
         private string? selectedCharacteristic;
         private List<Difficulty>? difficulties;
         
@@ -117,7 +118,22 @@ namespace PlaylistManager.UserControls
 
         public string SongName => $"{playlistSong.customLevelData.SongName} {playlistSong.customLevelData.SongSubName}";
         public string AuthorName => $"{playlistSong.customLevelData.SongAuthorName} [{playlistSong.customLevelData.LevelAuthorName}]";
-        public string? Key => playlistSong.customLevelData.Key;
+        public string? Key
+        {
+            get
+            {
+                if (key == null)
+                {
+                    _ = LoadKeyAsync();
+                }
+                return key;
+            }
+            private set
+            {
+                key = value;
+                NotifyPropertyChanged();
+            }
+        }
         public float Opacity => playlistSong.customLevelData.Downloaded ? 1f: 0.5f;
         public List<string> Characteristics { get; } = new();
         public Bitmap? CoverImage
@@ -390,6 +406,15 @@ namespace PlaylistManager.UserControls
 
         #endregion
 
+        private async Task LoadKeyAsync()
+        {
+            var key = await playlistSong.customLevelData.GetKeyAsync();
+            if (key != null)
+            {
+                RxApp.MainThreadScheduler.Schedule(() => Key = key);
+            }
+        }
+        
         private async Task LoadCoverAsync()
         {
             var bitmap = await playlistSong.customLevelData.GetCoverImageAsync();

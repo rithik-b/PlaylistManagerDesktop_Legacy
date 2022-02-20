@@ -102,7 +102,7 @@ namespace PlaylistManager.Views
                 if (searchedSong is {level: { }})
                 {
                     var levelToAdd = searchedSong.level;
-                    var playlistSong = ViewModel.playlist.Add(levelToAdd.Hash, levelToAdd.SongName, levelToAdd.Key,
+                    var playlistSong = ViewModel.playlist.Add(levelToAdd.Hash, levelToAdd.SongName, await levelToAdd.GetKeyAsync(),
                         levelToAdd.LevelAuthorName);
                     if (playlistSong != null)
                     {
