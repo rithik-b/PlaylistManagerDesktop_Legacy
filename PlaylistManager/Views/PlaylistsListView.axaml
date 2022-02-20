@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.Views.PlaylistsListView">
-    <DockPanel>
-        <Grid Background="#202020" DockPanel.Dock="Top" IsVisible="{Binding IsSubfolder}">
+    <DockPanel Background="#202020">
+        <Grid DockPanel.Dock="Top" IsVisible="{Binding IsSubfolder}">
             <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick">&lt;</Button>
             <TextBlock Text="{Binding FolderTitle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
