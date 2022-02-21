@@ -24,6 +24,9 @@ namespace PlaylistManager.Views
         private PlaylistsDetailView? playlistsDetailView;
         private PlaylistsDetailView? PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>();
 
+        private PlaylistLibUtils? playlistLibUtils;
+        private PlaylistLibUtils PlaylistLibUtils => playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>()!;
+
         public PlaylistsListView()
         {
             InitializeComponent();
@@ -130,6 +133,34 @@ namespace PlaylistManager.Views
                 }
             }
         }
+        
+        #region Context Menu
+        
+        private void NewPlaylistClick(object? sender, RoutedEventArgs e)
+        {
+            if (viewModel.CurrentManager != null)
+            {
+                var playlist = PlaylistLibUtils.CreatePlaylistWithConfig("New Playlist", viewModel.CurrentManager);
+                var playlistViewModel = new PlaylistCoverViewModel(playlist);
+                viewModel.SearchResults.Add(playlistViewModel);
+                viewModel.SelectedPlaylistOrManager = playlistViewModel;
+                playlistViewModel.IsRenaming = true;
+            }
+        }
+        
+        private void NewFolderClick(object? sender, RoutedEventArgs e)
+        {
+            if (viewModel.CurrentManager != null)
+            {
+                var folder = viewModel.CurrentManager.CreateChildManager("New Folder");
+                var playlistViewModel = new PlaylistCoverViewModel(folder);
+                viewModel.SearchResults.Add(playlistViewModel);
+                viewModel.SelectedPlaylistOrManager = playlistViewModel;
+                playlistViewModel.IsRenaming = true;
+            }
+        }
+        
+        #endregion
 
         public class ViewModel : ViewModelBase
         {

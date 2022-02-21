@@ -9,10 +9,12 @@
         <entry key="PlaylistManager/PlaylistsListView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/FileSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/FileSettingView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/UserControls/ImageSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/LevelListItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/PlaylistCoverView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/SearchItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/SideBarItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/UserControls/StringSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/Views/FlowCoordinator.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/Views/PlaylistsDetailView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/Views/PlaylistsListView.axaml" value="PlaylistManager/PlaylistManager.csproj" />

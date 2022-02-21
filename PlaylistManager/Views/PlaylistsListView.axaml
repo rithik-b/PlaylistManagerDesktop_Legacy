@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlaylistManager.Views.PlaylistsListView">
-    <DockPanel>
-        <Grid Background="#202020" DockPanel.Dock="Top" IsVisible="{Binding IsSubfolder}">
+    <DockPanel Background="#202020">
+        <Grid DockPanel.Dock="Top" IsVisible="{Binding IsSubfolder}">
             <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick">&lt;</Button>
             <TextBlock Text="{Binding FolderTitle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
         <Border DragDrop.AllowDrop="True" Name="CopyTarget" PointerPressed="LoseFocus">
-            <ListBox Name="ListBox" Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped" KeyDown="OnShortcut">
+            <ListBox Name="ListBox" Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped" KeyDown="OnShortcut" AutoScrollToSelectedItem="True">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -21,8 +21,8 @@
                 <!-- TODO: Implement the features of this ContextMenu -->
                 <ContextMenu>
                     <MenuItem Header="New">
-                        <MenuItem Header="Playlist" />
-                        <MenuItem Header="Folder" />
+                        <MenuItem Header="Playlist" Click="NewPlaylistClick" />
+                        <MenuItem Header="Folder" Click="NewFolderClick" />
                     </MenuItem>
                     <MenuItem Header="Paste" />
                 </ContextMenu>

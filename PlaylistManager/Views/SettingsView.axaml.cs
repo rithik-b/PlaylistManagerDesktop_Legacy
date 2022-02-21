@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
 using Splat;
 
@@ -25,11 +26,11 @@ namespace PlaylistManager.Views
         
         public class ViewModel : ViewModelBase
         {
-            private readonly ConfigModel? configModel;
+            private readonly ConfigModel configModel;
 
             public ViewModel()
             {
-                configModel = Locator.Current.GetService<ConfigModel>();
+                configModel = Locator.Current.GetService<ConfigModel>()!;
             }
 
             public string BeatSaberDir
@@ -38,7 +39,26 @@ namespace PlaylistManager.Views
                 set
                 {
                     configModel.BeatSaberDir = value;
-                    configModel.Save();
+                    NotifyPropertyChanged();
+                }
+            }
+
+            public Bitmap CoverImage
+            {
+                get => configModel.coverImage;
+                set
+                {
+                    configModel.coverImage = value;
+                    NotifyPropertyChanged();
+                }
+            }
+
+            public string AuthorName
+            {
+                get => configModel.AuthorName;
+                set
+                {
+                    configModel.AuthorName = value;
                     NotifyPropertyChanged();
                 }
             }

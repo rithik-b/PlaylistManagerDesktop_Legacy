@@ -18,12 +18,11 @@ namespace PlaylistManager.Utilities
         private BeatSaberPlaylistsLib.PlaylistManager playlistManager;
         public event Action<BeatSaberPlaylistsLib.PlaylistManager>? PlaylistManagerChanged;
         
-        private const string ICON_PATH = "PlaylistManager.Icons.DefaultIcon.png";
-
         public PlaylistLibUtils(Assembly assembly, ConfigModel configModel)
         {
             this.assembly = assembly;
             this.configModel = configModel;
+            
             var legacyPlaylistHandler = new LegacyPlaylistHandler();
             var blistPlaylistHandler = new BlistPlaylistHandler();
             
@@ -42,19 +41,18 @@ namespace PlaylistManager.Utilities
         
         public BeatSaberPlaylistsLib.PlaylistManager PlaylistManager => playlistManager;
 
-        public BeatSaberPlaylistsLib.Types.IPlaylist CreatePlaylist(string playlistName, string playlistAuthorName, BeatSaberPlaylistsLib.PlaylistManager playlistManager, 
-            bool defaultCover = true, bool allowDups = true)
+        public IPlaylist CreatePlaylistWithConfig(string playlistName, BeatSaberPlaylistsLib.PlaylistManager playlistManager)
         {
-            BeatSaberPlaylistsLib.Types.IPlaylist playlist = playlistManager.CreatePlaylist("", playlistName, playlistAuthorName, "");
+            var playlist = CreatePlaylist(playlistName, configModel.AuthorName, playlistManager);
+            using var coverStream = new MemoryStream();
+            configModel.coverImage.Save(coverStream);
+            playlist.SetCover(coverStream);
+            return playlist;
+        }
 
-            if (defaultCover)
-            {
-                using Stream? imageStream = assembly.GetManifestResourceStream(ICON_PATH);
-                if (imageStream != null)
-                {
-                    playlist.SetCover(imageStream);
-                }
-            }
+        public static IPlaylist CreatePlaylist(string playlistName, string playlistAuthorName, BeatSaberPlaylistsLib.PlaylistManager playlistManager, bool allowDups = true)
+        {
+            IPlaylist playlist = playlistManager.CreatePlaylist("", playlistName, playlistAuthorName, "");
 
             if (!allowDups)
             {
@@ -62,7 +60,6 @@ namespace PlaylistManager.Utilities
             }
 
             playlistManager.StorePlaylist(playlist);
-            playlistManager.RequestRefresh("PlaylistManager (Desktop)");
             return playlist;
         }
 

@@ -1,0 +1,20 @@
+<ContentControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="PlaylistManager.UserControls.ImageSetting"
+                xmlns:userControls="clr-namespace:PlaylistManager.UserControls">
+    <ContentControl.Styles>
+        <Style Selector="userControls|ImageSetting">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid ColumnDefinitions="Auto, 10*, 0.1*, Auto">
+                        <TextBlock Grid.Column="0" Text="{TemplateBinding SettingName}" FontSize="25" FontWeight="SemiLight" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <Button Grid.Column="3" Height="128" Width="128" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center" Click="OpenImage">
+                            <Panel>
+                                <PathIcon Data="{StaticResource edit_regular}" Height="32" Width="32" />
+                                <Image Stretch="UniformToFill" Source="{TemplateBinding Image}" Opacity="0.30" Height="128" Width="128" />
+                            </Panel>
+                        </Button>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </ContentControl.Styles>
+</ContentControl>

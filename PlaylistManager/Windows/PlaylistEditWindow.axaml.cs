@@ -100,9 +100,7 @@ namespace PlaylistManager.Windows
                 {
                     var filePath = filePaths.First();
                     await using var imageStream = File.Open(filePath, FileMode.Open);
-                    byte[] imageBytes = new byte[imageStream.Length];
-                    imageStream.Read(imageBytes, 0, (int)imageStream.Length);
-                    ViewModel.playlist.SetCover(imageBytes);
+                    ViewModel.playlist.SetCover(imageStream);
                     _ = ViewModel.LoadCoverAsync();
                 }
             }

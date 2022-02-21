@@ -7,7 +7,19 @@
              x:Class="PlaylistManager.Views.SettingsView">
         <ScrollViewer Background="#202020">
             <StackPanel VerticalAlignment="Center" Margin="20">
-                <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
+                <TextBlock Text="Directory Settings" FontSize="30" FontWeight="Black" />
+                <GroupBox Margin="0,0,0,20">
+                    <StackPanel VerticalAlignment="Center" Spacing="35">
+                        <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
+                    </StackPanel>
+                </GroupBox>
+                <TextBlock Text="Default Playlist Settings" FontSize="30" FontWeight="Black" />
+                <GroupBox Margin="0,0,0,20">
+                    <StackPanel VerticalAlignment="Center" Spacing="35">
+                        <userControls:ImageSetting SettingName="Cover" Image="{Binding CoverImage}" />
+                        <userControls:StringSetting SettingName="Author" SettingValue="{Binding AuthorName}" />
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </ScrollViewer>
 </UserControl>
