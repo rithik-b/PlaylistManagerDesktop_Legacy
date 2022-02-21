@@ -22,8 +22,10 @@ namespace PlaylistManager.UserControls
         // TODO: Use get fields for DI objects
         
         private PlaylistsListView? playlistsListView;
-        private TextBox? renameBox;
         
+        private TextBox? renameBox;
+        public TextBox RenameBox => renameBox ??= this.Find<TextBox>("RenameBox");
+
         public PlaylistCoverView()
         {
             InitializeComponent();
@@ -34,6 +36,15 @@ namespace PlaylistManager.UserControls
             AvaloniaXamlLoader.Load(this);
             AddHandler(DragDrop.DragOverEvent, DragOver!);
             AddHandler(DragDrop.DropEvent, Drop!);
+        }
+
+        protected override void OnDataContextChanged(EventArgs e)
+        {
+            base.OnDataContextChanged(e);
+            if (DataContext is PlaylistCoverViewModel viewModel)
+            {
+                viewModel.SetParentControl(this);
+            }
         }
 
         #region Drag and Drop
@@ -140,12 +151,6 @@ namespace PlaylistManager.UserControls
             if (DataContext is PlaylistCoverViewModel viewModel)
             {
                 viewModel.IsRenaming = true;
-                renameBox ??= this.Find<TextBox>("RenameBox");
-                // I am sorry but I gotta wait a tick
-                await Task.Delay(1);
-                renameBox.Focus();
-                renameBox.SelectionStart = 0;
-                renameBox.SelectionEnd = Int32.MaxValue;
             }
         }
 
@@ -164,7 +169,7 @@ namespace PlaylistManager.UserControls
                 viewModel.Delete();
             }
         }
-        
+
         #endregion
     }
     
@@ -177,6 +182,7 @@ namespace PlaylistManager.UserControls
         public readonly IPlaylist? playlist;
         public readonly BeatSaberPlaylistsLib.PlaylistManager? playlistManager;
         public readonly bool isPlaylist;
+        private PlaylistCoverView? control;
         private CoverImageLoader? coverImageLoader;
         private PlaylistLibUtils? playlistLibUtils;
         private PlaylistsListView? playlistsListView;
@@ -294,6 +300,15 @@ namespace PlaylistManager.UserControls
             }
         }
 
+        public void SetParentControl(PlaylistCoverView control)
+        {
+            this.control = control;
+            if (IsRenaming)
+            {
+                _ = StartRenaming();
+            }
+        }
+
         #region Context Menu
 
         public async Task Cut()
@@ -360,6 +375,7 @@ namespace PlaylistManager.UserControls
                 if (value)
                 {
                     RenameTitle = Title;
+                    _ = StartRenaming();
                 }
                 else
                 {
@@ -369,11 +385,9 @@ namespace PlaylistManager.UserControls
                     }
                 }
                 NotifyPropertyChanged();
-                NotifyPropertyChanged(nameof(IsNotRenaming));
             }
         }
-        private bool IsNotRenaming => !isRenaming;
-
+        
         private string renameTitle = "";
         public string RenameTitle
         {
@@ -382,6 +396,18 @@ namespace PlaylistManager.UserControls
             {
                 renameTitle = value;
                 NotifyPropertyChanged();
+            }
+        }
+
+        private async Task StartRenaming()
+        {
+            if (control != null)
+            {
+                // I am sorry but I gotta wait a tick
+                await Task.Delay(1);
+                control.RenameBox.Focus();
+                control.RenameBox.SelectionStart = 0;
+                control.RenameBox.SelectionEnd = Int32.MaxValue;
             }
         }
 
