@@ -1,15 +1,20 @@
 using System;
 using System.IO;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using PlaylistManager.Utilities;
+using Splat;
 
 namespace PlaylistManager.Models
 {
     public class ConfigModel
     {
         private const string kConfigPath = "PlaylistManager.json";
+        private const string kImagePath = "CoverImage";
         public event Action<string>? DirectoryChanged;
         
         private string beatSaberDir = "";
@@ -24,14 +29,17 @@ namespace PlaylistManager.Models
         }
 
         public string AuthorName { get; set; } = nameof(PlaylistManager);
+        
+        [JsonIgnore]
+        public Bitmap coverImage;
 
         public static ConfigModel Factory()
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kConfigPath);
+            var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kConfigPath);
 
             ConfigModel configModel;
             
-            if (!File.Exists(path))
+            if (!File.Exists(configPath))
             {
                 configModel = new ConfigModel();
                 configModel.Save();
@@ -44,6 +52,8 @@ namespace PlaylistManager.Models
                     .AddJsonFile(kConfigPath).Build();
                 configModel = builder.Get<ConfigModel>();
             }
+            
+            configModel.LoadImage();
 
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
@@ -56,11 +66,29 @@ namespace PlaylistManager.Models
             return configModel;
         }
 
+        private void LoadImage()
+        {
+            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kImagePath);
+            if (File.Exists(imagePath))
+            {
+                using Stream imageStream = File.Open(imagePath, FileMode.Open);
+                coverImage = Bitmap.DecodeToHeight(imageStream, 512);
+            }
+            else
+            {
+                using Stream? imageStream = Locator.Current.GetService<Assembly>()?.GetManifestResourceStream("PlaylistManager.Icons.DefaultIcon.png");
+                coverImage = Bitmap.DecodeToHeight(imageStream, 512);
+            }
+        }
+
         public void Save()
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kConfigPath);
-            using Stream fileStream = File.Create(path);
-            Utils.Serialize(this, fileStream);
+            var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kConfigPath);
+            using Stream configStream = File.Create(configPath);
+            Utils.Serialize(this, configStream);
+            
+            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kImagePath);
+            coverImage.Save(imagePath);
         }
     }
 }

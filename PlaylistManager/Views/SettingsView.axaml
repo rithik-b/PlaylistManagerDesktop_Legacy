@@ -16,6 +16,7 @@
                 <TextBlock Text="Default Playlist Settings" FontSize="30" FontWeight="Black" />
                 <GroupBox Margin="0,0,0,20">
                     <StackPanel VerticalAlignment="Center" Spacing="35">
+                        <userControls:ImageSetting SettingName="Cover" Image="{Binding CoverImage}" />
                         <userControls:StringSetting SettingName="Author" SettingValue="{Binding AuthorName}" />
                     </StackPanel>
                 </GroupBox>

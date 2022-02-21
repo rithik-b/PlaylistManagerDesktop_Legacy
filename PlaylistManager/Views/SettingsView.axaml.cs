@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
 using Splat;
 
@@ -38,6 +39,16 @@ namespace PlaylistManager.Views
                 set
                 {
                     configModel.BeatSaberDir = value;
+                    NotifyPropertyChanged();
+                }
+            }
+
+            public Bitmap CoverImage
+            {
+                get => configModel.coverImage;
+                set
+                {
+                    configModel.coverImage = value;
                     NotifyPropertyChanged();
                 }
             }
