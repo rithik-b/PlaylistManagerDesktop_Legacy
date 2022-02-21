@@ -14,16 +14,11 @@ namespace PlaylistManager.Views
         
         public SettingsView()
         {
-            InitializeComponent();
+            AvaloniaXamlLoader.Load(this);
             viewModel = new ViewModel();
             DataContext = viewModel;
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-        
         public class ViewModel : ViewModelBase
         {
             private readonly ConfigModel configModel;

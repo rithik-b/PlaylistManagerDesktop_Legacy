@@ -50,7 +50,7 @@ namespace PlaylistManager.Views
         
         public PlaylistsDetailView()
         {
-            InitializeComponent();
+            AvaloniaXamlLoader.Load(this);
             floatingButtonBar = this.FindControl<FloatingButtonBar>("FloatingButtonBar");
             listBox = this.Find<ListBox>("ListBox");
             listBox.AddHandler(DragDrop.DragOverEvent, DragOverList!);
@@ -59,11 +59,6 @@ namespace PlaylistManager.Views
             var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
             ViewModel = new PlaylistsDetailViewModel(playlist!, utils?.PlaylistManager!);
 #endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void DragOverList(object sender, DragEventArgs e)

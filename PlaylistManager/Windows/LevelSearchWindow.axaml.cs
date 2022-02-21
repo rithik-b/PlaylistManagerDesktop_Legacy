@@ -28,7 +28,7 @@ namespace PlaylistManager.Windows
         
         public LevelSearchWindow()
         {
-            InitializeComponent();
+            AvaloniaXamlLoader.Load(this);
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -37,11 +37,6 @@ namespace PlaylistManager.Windows
             searchBox = this.FindControl<TextBox>("SearchBox");
             listBox = this.FindControl<ListBox>("ListBox");
             openSemaphore = new SemaphoreSlim(0, 1);
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         public async Task<SearchItemViewModel?> SearchSong(Window parent)

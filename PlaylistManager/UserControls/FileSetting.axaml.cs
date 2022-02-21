@@ -19,14 +19,9 @@ namespace PlaylistManager.UserControls
         
         public FileSetting()
         {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
             AvaloniaXamlLoader.Load(this);
         }
-        
+
         public static readonly StyledProperty<string> SettingNameProperty =
             AvaloniaProperty.Register<FileSetting, string>(nameof(SettingName));
 

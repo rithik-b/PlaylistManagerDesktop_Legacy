@@ -16,11 +16,6 @@ namespace PlaylistManager.UserControls
     {
         public SearchItemView()
         {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
             AvaloniaXamlLoader.Load(this);
         }
     }

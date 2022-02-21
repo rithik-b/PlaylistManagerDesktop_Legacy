@@ -28,11 +28,6 @@ namespace PlaylistManager.UserControls
 
         public PlaylistCoverView()
         {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
             AvaloniaXamlLoader.Load(this);
             AddHandler(DragDrop.DragOverEvent, DragOver!);
             AddHandler(DragDrop.DropEvent, Drop!);

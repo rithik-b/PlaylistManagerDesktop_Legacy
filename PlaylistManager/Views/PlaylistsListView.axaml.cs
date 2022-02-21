@@ -29,18 +29,14 @@ namespace PlaylistManager.Views
 
         public PlaylistsListView()
         {
-            InitializeComponent();
-            viewModel = new ViewModel(this.FindControl<ListBox>("ListBox"));
-            DataContext = viewModel;
-            Locator.CurrentMutable.RegisterConstant(this, typeof(PlaylistsListView));
-        }
-
-        private void InitializeComponent()
-        {
             AvaloniaXamlLoader.Load(this);
             var copyTarget = this.Find<Border>("CopyTarget");
             copyTarget.AddHandler(DragDrop.DragOverEvent, DragOver!);
             copyTarget.AddHandler(DragDrop.DropEvent, Drop!);
+            
+            viewModel = new ViewModel(this.FindControl<ListBox>("ListBox"));
+            DataContext = viewModel;
+            Locator.CurrentMutable.RegisterConstant(this, typeof(PlaylistsListView));
         }
 
         #region Drag and Drop

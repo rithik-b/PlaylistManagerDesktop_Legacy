@@ -28,15 +28,10 @@ namespace PlaylistManager.UserControls
         
         public LevelListItemView()
         {
-            InitializeComponent();
-            contextMenu = this.Find<ContextMenu>("ContextMenu");
-        }
-
-        private void InitializeComponent()
-        {
             AvaloniaXamlLoader.Load(this);
             AddHandler(DragDrop.DragOverEvent, DragOver!);
             AddHandler(DragDrop.DropEvent, Drop!);
+            contextMenu = this.Find<ContextMenu>("ContextMenu");
         }
 
         #region Drag and Drop
