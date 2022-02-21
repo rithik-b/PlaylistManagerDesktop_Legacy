@@ -148,6 +148,18 @@ namespace PlaylistManager.Views
             }
         }
         
+        private void NewFolderClick(object? sender, RoutedEventArgs e)
+        {
+            if (viewModel.CurrentManager != null)
+            {
+                var folder = viewModel.CurrentManager.CreateChildManager("New Folder");
+                var playlistViewModel = new PlaylistCoverViewModel(folder);
+                viewModel.SearchResults.Add(playlistViewModel);
+                viewModel.SelectedPlaylistOrManager = playlistViewModel;
+                playlistViewModel.IsRenaming = true;
+            }
+        }
+        
         #endregion
 
         public class ViewModel : ViewModelBase

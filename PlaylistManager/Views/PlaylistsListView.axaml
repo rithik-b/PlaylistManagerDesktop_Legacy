@@ -22,7 +22,7 @@
                 <ContextMenu>
                     <MenuItem Header="New">
                         <MenuItem Header="Playlist" Click="NewPlaylistClick" />
-                        <MenuItem Header="Folder" />
+                        <MenuItem Header="Folder" Click="NewFolderClick" />
                     </MenuItem>
                     <MenuItem Header="Paste" />
                 </ContextMenu>

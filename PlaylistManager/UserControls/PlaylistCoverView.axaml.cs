@@ -216,6 +216,7 @@ namespace PlaylistManager.UserControls
             }
             set
             {
+                // TODO: Prevent renaming of folders to same name
                 if (isPlaylist && playlist != null)
                 {
                     playlist.Title = value;
@@ -229,9 +230,9 @@ namespace PlaylistManager.UserControls
                     {
                         input = input.Replace($"{c}", "");
                     }
-                    if (Path.GetFileName(playlistManager?.PlaylistPath) != input)
+                    if (Path.GetFileName(playlistManager.PlaylistPath) != input)
                     {
-                        playlistManager?.RenameManager(input);
+                        playlistManager.RenameManager(input);
                     }
                 }
                 NotifyPropertyChanged();
