@@ -51,8 +51,8 @@ namespace PlaylistManager.Windows
                 openSemaphore?.Release();
             };
 #if DEBUG
-            var utils = Locator.Current.GetService<PlaylistLibUtils>();
-            var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
+            var utils = Locator.Current.GetService<PlaylistLibUtils>()!;
+            var playlist = utils.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
             ViewModel = new PlaylistEditWindowModel(playlist!);
 #endif
 #if DEBUG
@@ -151,9 +151,9 @@ namespace PlaylistManager.Windows
                 {
                     return coverImage;
                 }
-                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>()!;
                 _ = LoadCoverAsync();
-                return coverImageLoader?.LoadingImage;
+                return coverImageLoader.LoadingImage;
             }
             set
             {

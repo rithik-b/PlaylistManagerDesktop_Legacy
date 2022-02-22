@@ -22,9 +22,9 @@ namespace PlaylistManager.UserControls
         private readonly ContextMenu contextMenu;
 
         private PlaylistsDetailView? playlistsDetailView;
-
-        private PlaylistsDetailView? PlaylistsDetailView =>
-            playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>();
+        
+        private PlaylistsDetailView PlaylistsDetailView =>
+            (playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>())!;
         
         public LevelListItemView()
         {
@@ -76,7 +76,7 @@ namespace PlaylistManager.UserControls
         {
             if (DataContext is LevelListItemViewModel destination && e.Data.Get(kPlaylistSongData) is LevelListItemViewModel source && source != destination)
             {
-                PlaylistsDetailView?.ViewModel?.MoveLevel(source, destination);
+                PlaylistsDetailView.ViewModel?.MoveLevel(source, destination);
             }
         }
 
@@ -139,9 +139,9 @@ namespace PlaylistManager.UserControls
                 {
                     return coverImage;
                 }
-                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>()!;
                 _ = LoadCoverAsync();
-                return coverImageLoader?.LoadingImage;
+                return coverImageLoader.LoadingImage;
             }
             private set
             {
@@ -387,8 +387,8 @@ namespace PlaylistManager.UserControls
         private void RemoveLevel()
         {
             // TODO: Show popup before deletion
-            var detailView = Locator.Current.GetService<PlaylistsDetailView>();
-            if (detailView is {ViewModel: { }})
+            var detailView = Locator.Current.GetService<PlaylistsDetailView>()!;
+            if (detailView.ViewModel != null)
             {
                 var viewModel = detailView.ViewModel;
                 viewModel.playlist.Remove(playlistSong.playlistSong);

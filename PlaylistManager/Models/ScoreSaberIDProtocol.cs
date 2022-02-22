@@ -13,8 +13,8 @@ namespace PlaylistManager.Models
         private const string kPattern = @"^(https:\/\/)?(www.)?scoresaber.com\/leaderboard\/([0-9]+)$";
         
         private HttpClientService? httpClientService;
-        private HttpClientService? HttpClientService =>
-            httpClientService ??= Locator.Current.GetService<HttpClientService>();
+        private HttpClientService HttpClientService =>
+            httpClientService ??= Locator.Current.GetService<HttpClientService>()!;
         
         public async Task<SearchResult?> FindResultAsync(string input, CancellationToken? cancellationToken = null)
         {
@@ -28,7 +28,7 @@ namespace PlaylistManager.Models
                 }
             }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
 
-            if (leaderboardID != null && HttpClientService != null)
+            if (leaderboardID != null)
             {
                 var webResponse = await HttpClientService.GetAsync(
                     $"https://scoresaber.com/api/leaderboard/by-id/{leaderboardID}/info",

@@ -40,9 +40,9 @@ namespace PlaylistManager.UserControls
                 {
                     return image;
                 }
-                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>()!;
                 _ = LoadImageAsync();
-                return coverImageLoader?.LoadingImage;
+                return coverImageLoader.LoadingImage;
             }
             private set
             {

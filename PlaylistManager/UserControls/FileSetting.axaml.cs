@@ -57,7 +57,7 @@ namespace PlaylistManager.UserControls
                 case Mode.FileRead:
                 {
                     openFileDialog ??= new OpenFileDialog();
-                    var paths = await openFileDialog.ShowAsync(mainWindow);
+                    var paths = await openFileDialog.ShowAsync(mainWindow!);
                     if (paths != null && paths.Length != 0)
                     {
                         SettingValue = paths.First();
@@ -67,7 +67,7 @@ namespace PlaylistManager.UserControls
                 case Mode.FileWrite:
                 {
                     saveFileDialog ??= new SaveFileDialog();
-                    var path = await saveFileDialog.ShowAsync(mainWindow);
+                    var path = await saveFileDialog.ShowAsync(mainWindow!);
                     if (path != null)
                     {
                         SettingValue = path;
@@ -77,7 +77,7 @@ namespace PlaylistManager.UserControls
                 case Mode.FolderRead:
                 {
                     openFolderDialog ??= new OpenFolderDialog();
-                    var path = await openFolderDialog.ShowAsync(mainWindow);
+                    var path = await openFolderDialog.ShowAsync(mainWindow!);
                     if (path != null)
                     {
                         SettingValue = path;

@@ -22,17 +22,17 @@ namespace PlaylistManager.Views
     public class PlaylistsDetailView : UserControl
     {
         private NavigationPanel? navigationPanel;
-        private NavigationPanel? NavigationPanel => navigationPanel ??= Locator.Current.GetService<NavigationPanel>("PlaylistsTab");
+        private NavigationPanel NavigationPanel => navigationPanel ??= Locator.Current.GetService<NavigationPanel>("PlaylistsTab")!;
 
         private MainWindow? mainWindow;
-        private MainWindow? MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>();
+        private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
         
         private LevelSearchWindow? levelSearchWindow;
-        private LevelSearchWindow? LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>();
+        private LevelSearchWindow LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>()!;
         
                 
         private PlaylistEditWindow? playlistEditWindow;
-        private PlaylistEditWindow? PlaylistEditWindow => playlistEditWindow ??= Locator.Current.GetService<PlaylistEditWindow>();
+        private PlaylistEditWindow PlaylistEditWindow => playlistEditWindow ??= Locator.Current.GetService<PlaylistEditWindow>()!;
         
         private PlaylistsDetailViewModel? viewModel;
         public PlaylistsDetailViewModel? ViewModel
@@ -55,9 +55,9 @@ namespace PlaylistManager.Views
             listBox = this.Find<ListBox>("ListBox");
             listBox.AddHandler(DragDrop.DragOverEvent, DragOverList!);
 #if DEBUG
-            var utils = Locator.Current.GetService<PlaylistLibUtils>();
-            var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
-            ViewModel = new PlaylistsDetailViewModel(playlist!, utils?.PlaylistManager!);
+            var utils = Locator.Current.GetService<PlaylistLibUtils>()!;
+            var playlist = utils.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
+            ViewModel = new PlaylistsDetailViewModel(playlist!, utils.PlaylistManager);
 #endif
         }
 
@@ -86,12 +86,12 @@ namespace PlaylistManager.Views
         private void OnBackClick(object? sender, RoutedEventArgs e)
         {
             ViewModel?.Save();
-            NavigationPanel?.Pop();
+            NavigationPanel.Pop();
         }
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)
         {
-            if (LevelSearchWindow != null && MainWindow != null && ViewModel != null)
+            if (ViewModel != null)
             {
                 var searchedSong = await LevelSearchWindow.SearchSong(MainWindow);
                 if (searchedSong is {level: { }})
@@ -112,7 +112,7 @@ namespace PlaylistManager.Views
         
         private async void OnEditClick(object? sender, RoutedEventArgs e)
         {
-            if (MainWindow != null && ViewModel != null && PlaylistEditWindow != null)
+            if (ViewModel != null)
             {
                 await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist);
                 ViewModel.UpdateMetadata();
@@ -149,7 +149,7 @@ namespace PlaylistManager.Views
     {
         public readonly IPlaylist playlist;
         private readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
-        private readonly LevelMatcher? levelMatcher;
+        private readonly LevelMatcher levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
@@ -158,7 +158,7 @@ namespace PlaylistManager.Views
         {
             this.playlist = playlist;
             this.parentManager = parentManager;
-            levelMatcher = Locator.Current.GetService<LevelMatcher>();
+            levelMatcher = Locator.Current.GetService<LevelMatcher>()!;
             _ = FetchSongs();
         }
 
@@ -189,9 +189,9 @@ namespace PlaylistManager.Views
                 {
                     return coverImage;
                 }
-                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>()!;
                 _ = LoadCoverAsync();
-                return coverImageLoader?.LoadingImage;
+                return coverImageLoader.LoadingImage;
             }
             set
             {
@@ -223,24 +223,21 @@ namespace PlaylistManager.Views
         public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
         private async Task FetchSongs()
         {
-            if (levelMatcher != null)
+            foreach (var playlistSong in playlist)
             {
-                foreach (var playlistSong in playlist)
+                if (playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var identifierType))
                 {
-                    if (playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var identifierType))
+                    var levelData = identifierType == Identifier.Hash ? await levelMatcher.GetLevelByHash(identifier) :
+                        identifierType == Identifier.Key ? await levelMatcher.GetLevelByKey(identifier) : null;
+                    if (levelData != null)
                     {
-                        var levelData = identifierType == Identifier.Hash ? await levelMatcher.GetLevelByHash(identifier!) :
-                                identifierType == Identifier.Key ? await levelMatcher.GetLevelByKey(identifier!) : null;
-                        if (levelData != null)
-                        {
-                            Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
-                        }
+                        Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
                     }
                 }
-                songsLoaded = true;
-                NotifyPropertyChanged(nameof(SongsLoading));
-                UpdateNumSongs();
             }
+            songsLoaded = true;
+            NotifyPropertyChanged(nameof(SongsLoading));
+            UpdateNumSongs();
         }
         
         private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);

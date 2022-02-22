@@ -91,7 +91,7 @@ namespace PlaylistManager.Windows
         };
         
         private LevelMatcher? levelMatcher;
-        private LevelMatcher? LevelMatcher => levelMatcher ??= Locator.Current.GetService<LevelMatcher>();
+        private LevelMatcher LevelMatcher => levelMatcher ??= Locator.Current.GetService<LevelMatcher>()!;
 
         private string searchText = "";
         public string SearchText
@@ -133,47 +133,44 @@ namespace PlaylistManager.Windows
             await Task.Run(async () =>
             {
                 SearchResults.Clear();
-                
-                if (LevelMatcher != null)
+
+                // Do smart ID parsing
+                foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
                 {
-                    // Do smart ID parsing
-                    foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
+                    var searchResult = await levelEncodedIDProtocol.FindResultAsync(searchText, tokenSource.Token);
+                    if (searchResult != null)
                     {
-                        var searchResult = await levelEncodedIDProtocol.FindResultAsync(searchText, tokenSource.Token);
-                        if (searchResult != null)
+                        ICustomLevelData? level = null;
+                        if (searchResult.Value.Type == IDType.Key)
                         {
-                            ICustomLevelData? level = null;
-                            if (searchResult.Value.Type == IDType.Key)
-                            {
-                                level = await LevelMatcher.GetLevelByKey(searchResult.Value.ID);
-                            }
-                            else
-                            {
-                                level = await LevelMatcher.GetLevelByHash(searchResult.Value.ID);
-                            }
-                
-                            if (level != null)
-                            {
-                                var resultToAdd = new SearchItemViewModel(level);
-                                SearchResults.Add(resultToAdd);
-                                SelectedResult = resultToAdd;
-                                break;
-                            }
+                            level = await LevelMatcher.GetLevelByKey(searchResult.Value.ID);
+                        }
+                        else
+                        {
+                            level = await LevelMatcher.GetLevelByHash(searchResult.Value.ID);
+                        }
+
+                        if (level != null)
+                        {
+                            var resultToAdd = new SearchItemViewModel(level);
+                            SearchResults.Add(resultToAdd);
+                            SelectedResult = resultToAdd;
+                            break;
                         }
                     }
-                                
-                    // Perform search
-                    var searchResults = await LevelMatcher.SearchLevelsAsync(searchText, tokenSource.Token);
-                    foreach (var searchResult in searchResults)
-                    {
-                        SearchResults.Add(new SearchItemViewModel(searchResult));
-                    }
-                                
-                    // Select a map if not selected already
-                    if (SelectedResult == null)
-                    {
-                        SelectedResult = SearchResults.FirstOrDefault();
-                    }
+                }
+
+                // Perform search
+                var searchResults = await LevelMatcher.SearchLevelsAsync(searchText, tokenSource.Token);
+                foreach (var searchResult in searchResults)
+                {
+                    SearchResults.Add(new SearchItemViewModel(searchResult));
+                }
+
+                // Select a map if not selected already
+                if (SelectedResult == null)
+                {
+                    SelectedResult = SearchResults.FirstOrDefault();
                 }
             }, tokenSource.Token).ConfigureAwait(false);
         }

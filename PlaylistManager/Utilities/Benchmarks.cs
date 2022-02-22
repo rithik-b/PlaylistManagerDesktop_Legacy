@@ -19,54 +19,45 @@ namespace PlaylistManager.Utilities
         
         public async Task LevelBenchmark()
         {
-            var levelLoader = Locator.Current.GetService<LevelLoader>();
-            if (levelLoader != null)
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var levels = await levelLoader.GetCustomLevelsAsync();
-                stopwatch.Stop();
-                var time = stopwatch.ElapsedMilliseconds;
-                Console.WriteLine($"All levels load time: {time}ms");
+            var levelLoader = Locator.Current.GetService<LevelLoader>()!;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var levels = await levelLoader.GetCustomLevelsAsync();
+            stopwatch.Stop();
+            var time = stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"All levels load time: {time}ms");
 
-                if (levels.Count > 0)
-                {
-                    stopwatch.Reset();
-                    var level = levels.First().Value;
-                    stopwatch.Start();
-                    var levelData = await level.GetLevelDataAsync();
-                    var cover = await levelData!.GetCoverImageAsync();
-                    stopwatch.Stop();
-                    time = stopwatch.ElapsedMilliseconds;
-                    Console.WriteLine($"Level parse time: {time}ms");
-                }
+            if (levels.Count > 0)
+            {
+                stopwatch.Reset();
+                var level = levels.First().Value;
+                stopwatch.Start();
+                var levelData = await level.GetLevelDataAsync();
+                var cover = await levelData!.GetCoverImageAsync();
+                stopwatch.Stop();
+                time = stopwatch.ElapsedMilliseconds;
+                Console.WriteLine($"Level parse time: {time}ms");
             }
         }
 
         public async Task SongDetailsBenchmark()
         {
-            var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>();
-            if (songDetailsLoader != null)
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                await songDetailsLoader.Init();
-                var result = songDetailsLoader.TryGetLevelByKey("25f", out var level);
-                stopwatch.Stop();
-                var time = stopwatch.ElapsedMilliseconds;
-                Console.WriteLine($"SongDetails init and search took {time}ms");
-            }
+            var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>()!;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            await songDetailsLoader.Init();
+            var result = songDetailsLoader.TryGetLevelByKey("25f", out var level);
+            stopwatch.Stop();
+            var time = stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"SongDetails init and search took {time}ms");
         }
 
         public async Task LevelMatchBenchmark()
         {
-            var levelMatcher = Locator.Current.GetService<LevelMatcher>();
+            var levelMatcher = Locator.Current.GetService<LevelMatcher>()!;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            if (levelMatcher != null)
-            {
-                var level = await levelMatcher.GetLevelByKey("25f");
-            }
+            var level = await levelMatcher.GetLevelByKey("25f");
             stopwatch.Stop();
             var time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine($"Key lookup on owned level took {time}ms");
@@ -74,16 +65,13 @@ namespace PlaylistManager.Utilities
         
         public async Task PlaylistBenchmark()
         {
-            var playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>();
-            if (playlistLibUtils != null)
-            {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var playlists = await playlistLibUtils.GetPlaylistsAsync(playlistLibUtils.PlaylistManager, true);
-                stopwatch.Stop();
-                var time = stopwatch.ElapsedMilliseconds;
-                Console.WriteLine($"Playlist load time: {time}ms");
-            }
+            var playlistLibUtils = Locator.Current.GetService<PlaylistLibUtils>()!;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var playlists = await playlistLibUtils.GetPlaylistsAsync(playlistLibUtils.PlaylistManager, true);
+            stopwatch.Stop();
+            var time = stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"Playlist load time: {time}ms");
         }
     }
 }

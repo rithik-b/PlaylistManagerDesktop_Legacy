@@ -57,9 +57,9 @@ namespace PlaylistManager.UserControls
                 return;
             }
             
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
             if (DataContext is PlaylistCoverViewModel {isPlaylist: true, playlist:{}} coverViewModel
-                && playlistsListView is {viewModel: {CurrentManager: { }}})
+                && playlistsListView.viewModel.CurrentManager != null)
             {
                 var playlistPath = coverViewModel.playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
                 var dragData = new DataObject();
@@ -121,8 +121,8 @@ namespace PlaylistManager.UserControls
 
         private void OpenClick(object? sender, RoutedEventArgs e)
         {
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            playlistsListView?.OpenSelectedPlaylistOrManager();
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+            playlistsListView.OpenSelectedPlaylistOrManager();
         }
         
         private async void CutClick(object? sender, RoutedEventArgs? e)
@@ -215,8 +215,8 @@ namespace PlaylistManager.UserControls
                 if (isPlaylist && playlist != null)
                 {
                     playlist.Title = value;
-                    playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-                    playlistsListView?.viewModel.CurrentManager?.StorePlaylist(playlist);
+                    playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+                    playlistsListView.viewModel.CurrentManager?.StorePlaylist(playlist);
                 }
                 else if (!isPlaylist && playlistManager != null)
                 {
@@ -261,13 +261,13 @@ namespace PlaylistManager.UserControls
                 {
                     return coverImage;
                 }
-                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>()!;
                 if (isPlaylist)
                 {
                     _ = LoadCoverAsync();
-                    return coverImageLoader?.LoadingImage;
+                    return coverImageLoader.LoadingImage;
                 }
-                return coverImageLoader?.FolderImage;
+                return coverImageLoader.FolderImage;
             }
             set
             {
@@ -288,8 +288,8 @@ namespace PlaylistManager.UserControls
         
         public async Task LoadPlaylistsAsync()
         {
-            playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>();
-            if (playlistLibUtils != null && playlistManager != null)
+            playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>()!;
+            if (playlistManager != null)
             {
                 numPlaylists = (await playlistLibUtils.GetPlaylistsAsync(playlistManager)).Length;
                 NotifyPropertyChanged(nameof(Author));
@@ -309,8 +309,8 @@ namespace PlaylistManager.UserControls
 
         public async Task Cut()
         {
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (isPlaylist && playlist != null && playlistsListView is {viewModel:{CurrentManager:{}}})
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+            if (isPlaylist && playlist != null && playlistsListView.viewModel.CurrentManager != null)
             {
                 var playlistPath = playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
                 var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
@@ -341,8 +341,8 @@ namespace PlaylistManager.UserControls
         
         public async Task Copy()
         {
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (isPlaylist && playlist != null && playlistsListView is {viewModel:{CurrentManager:{}}})
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+            if (isPlaylist && playlist != null && playlistsListView.viewModel.CurrentManager != null)
             {
                 var playlistPath = playlist.GetPlaylistPath(playlistsListView.viewModel.CurrentManager);
                 var dragData = new DataObject();
@@ -412,8 +412,8 @@ namespace PlaylistManager.UserControls
         public void Delete()
         {
             // TODO: Show a popup before delete
-            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>();
-            if (playlistsListView is {viewModel: {CurrentManager: { }}})
+            playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+            if (playlistsListView.viewModel.CurrentManager != null)
             {
                 if (isPlaylist && playlist != null)
                 {

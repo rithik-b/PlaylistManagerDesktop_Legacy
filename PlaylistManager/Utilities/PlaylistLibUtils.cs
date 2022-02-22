@@ -97,26 +97,26 @@ namespace PlaylistManager.Utilities
 
     public static class PlaylistLibExtensions
     {
-        public static bool TryGetIdentifierForPlaylistSong(this IPlaylistSong playlistSong, out string? identifier, out Identifier identifierType)
+        public static bool TryGetIdentifierForPlaylistSong(this IPlaylistSong playlistSong, out string identifier, out Identifier identifierType)
         {
             if (playlistSong.Identifiers.HasFlag(Identifier.Hash))
             {
-                identifier = playlistSong.Hash;
+                identifier = playlistSong.Hash!;
                 identifierType = Identifier.Hash;
             }
             else if (playlistSong.Identifiers.HasFlag(Identifier.Key))
             {
-                identifier = playlistSong.Key;
+                identifier = playlistSong.Key!;
                 identifierType = Identifier.Key;
             }
             else if (playlistSong.Identifiers.HasFlag(Identifier.LevelId))
             {
-                identifier = playlistSong.LevelId;
+                identifier = playlistSong.LevelId!;
                 identifierType = Identifier.LevelId;
             }
             else
             {
-                identifier = null;
+                identifier = null!;
                 identifierType = Identifier.None;
                 return false;
             }

@@ -19,10 +19,10 @@ namespace PlaylistManager.Views
         public readonly ViewModel viewModel;
         
         private NavigationPanel? navigationPanel;
-        private NavigationPanel? NavigationPanel => navigationPanel ??= Locator.Current.GetService<NavigationPanel>("PlaylistsTab");
+        private NavigationPanel NavigationPanel => navigationPanel ??= Locator.Current.GetService<NavigationPanel>("PlaylistsTab")!;
 
         private PlaylistsDetailView? playlistsDetailView;
-        private PlaylistsDetailView? PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>();
+        private PlaylistsDetailView PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>()!;
 
         private PlaylistLibUtils? playlistLibUtils;
         private PlaylistLibUtils PlaylistLibUtils => playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>()!;
@@ -122,11 +122,8 @@ namespace PlaylistManager.Views
             }
             else if (viewModel.SelectedPlaylistOrManager is {isPlaylist: true, playlist:{}} && viewModel.CurrentManager != null)
             {
-                if (PlaylistsDetailView != null)
-                {
-                    PlaylistsDetailView.ViewModel = new PlaylistsDetailViewModel(viewModel.SelectedPlaylistOrManager.playlist, viewModel.CurrentManager);
-                    NavigationPanel?.Push(PlaylistsDetailView);
-                }
+                PlaylistsDetailView.ViewModel = new PlaylistsDetailViewModel(viewModel.SelectedPlaylistOrManager.playlist, viewModel.CurrentManager);
+                NavigationPanel.Push(PlaylistsDetailView);
             }
         }
         

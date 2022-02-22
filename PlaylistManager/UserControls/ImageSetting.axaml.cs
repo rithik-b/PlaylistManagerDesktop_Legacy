@@ -18,7 +18,7 @@ namespace PlaylistManager.UserControls
         private readonly OpenFileDialog openFileDialog;
         
         private MainWindow? mainWindow;
-        private MainWindow? MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>();
+        private MainWindow MainWindow => (mainWindow ??= Locator.Current.GetService<MainWindow>())!;
 
         public ImageSetting()
         {
@@ -61,16 +61,13 @@ namespace PlaylistManager.UserControls
 
         private async void OpenImage(object? sender, RoutedEventArgs e)
         {
-            if (MainWindow != null)
+            var filePaths = await openFileDialog.ShowAsync(MainWindow);
+            if (filePaths is {Length: > 0})
             {
-                var filePaths = await openFileDialog.ShowAsync(MainWindow);
-                if (filePaths is {Length: > 0})
-                {
-                    var filePath = filePaths.First();
-                    await using var imageStream = File.Open(filePath, FileMode.Open);
-                    Image = Bitmap.DecodeToHeight(imageStream, 512);
-                }
-            }        
+                var filePath = filePaths.First();
+                await using var imageStream = File.Open(filePath, FileMode.Open);
+                Image = Bitmap.DecodeToHeight(imageStream, 512);
+            }
         }
     }
 }
