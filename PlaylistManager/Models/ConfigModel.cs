@@ -76,7 +76,8 @@ namespace PlaylistManager.Models
             }
             else
             {
-                using Stream? imageStream = Locator.Current.GetService<Assembly>()?.GetManifestResourceStream("PlaylistManager.Icons.DefaultIcon.png");
+                var assembly = Locator.Current.GetService<Assembly>();
+                using Stream? imageStream = assembly?.GetManifestResourceStream("PlaylistManager.Icons.DefaultIcon.png");
                 coverImage = Bitmap.DecodeToHeight(imageStream, 512);
             }
         }

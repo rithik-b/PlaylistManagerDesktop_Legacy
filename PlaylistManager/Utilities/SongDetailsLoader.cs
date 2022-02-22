@@ -9,9 +9,15 @@ namespace PlaylistManager.Utilities
     public class SongDetailsLoader
     {
         private SongDetails? songDetails;
-
+        
         public async Task Init() => songDetails = await SongDetails.Init();
-
+        
+        /// <summary>
+        /// Tries to look up a level by its hash
+        /// </summary>
+        /// <param name="hash">The SHA1 Hash of the level</param>
+        /// <param name="level">The looked up level</param>
+        /// <returns>True if the level exists, false otherwise</returns>
         public bool TryGetLevelByHash(string hash, out SongDetailsLevelData level)
         {
             level = null!;
@@ -30,6 +36,12 @@ namespace PlaylistManager.Utilities
             return returnVal;
         }
         
+        /// <summary>
+        /// Tries to look up a level by its key
+        /// </summary>
+        /// <param name="key">The BeatSaver ID of the level</param>
+        /// <param name="level">The looked up level</param>
+        /// <returns>True if the level exists, false otherwise</returns>
         public bool TryGetLevelByKey(string key, out SongDetailsLevelData level)
         {
             level = null!;
@@ -48,6 +60,12 @@ namespace PlaylistManager.Utilities
             return returnVal;
         }
         
+        /// <summary>
+        /// Searches for levels in SongDetails
+        /// </summary>
+        /// <param name="searchTexts">The array of search terms</param>
+        /// <param name="excludedHashes">Any level hashes we don't want to add to the list</param>
+        /// <returns>An enumerable of search results</returns>
         public IEnumerable<SongDetailsLevelData> SeachLevels(string[] searchTexts, HashSet<string>? excludedHashes = null)
         {
             var results = new List<SongDetailsLevelData>();

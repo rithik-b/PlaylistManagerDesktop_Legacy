@@ -11,13 +11,8 @@ namespace PlaylistManager.Views
     {
         public FlowCoordinator()
         {
-            InitializeComponent();
-            DataContext = new FlowCoordinatorModel();
-        }
-
-        private void InitializeComponent()
-        {
             AvaloniaXamlLoader.Load(this);
+            DataContext = new FlowCoordinatorModel();
         }
 
         public class FlowCoordinatorModel : ViewModelBase

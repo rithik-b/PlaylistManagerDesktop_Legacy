@@ -9,11 +9,12 @@ namespace PlaylistManager.Models
     public interface ILevelEncodedIDProtocol
     {
         /// <summary>
-        /// 
+        /// Parses a level ID from an input
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public Task<SearchResult?> Result(string input, CancellationToken? cancellationToken = null);
+        /// <param name="input">Search ter that hopefully contains a level ID</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Resulting ID or null if it doesn't exist</returns>
+        public Task<SearchResult?> FindResultAsync(string input, CancellationToken? cancellationToken = null);
     }
     
     public enum IDType

@@ -46,15 +46,13 @@ namespace PlaylistManager.Models
         {
             if (coverImage == null)
             {
-                var httpClientService = Locator.Current.GetService<HttpClientService>();
-                if (httpClientService != null)
+                var httpClientService = Locator.Current.GetService<HttpClientService>()!;
+                var result =
+                    await httpClientService.GetAsync(song.coverURL, cancellationToken ?? CancellationToken.None);
+                if (result.Successful)
                 {
-                    var result = await httpClientService.GetAsync(song.coverURL, cancellationToken ?? CancellationToken.None);
-                    if (result.Successful)
-                    {
-                        await using var imageStream = await result.ReadAsStreamAsync();
-                        coverImage = Bitmap.DecodeToHeight(imageStream, 512);
-                    }
+                    await using var imageStream = await result.ReadAsStreamAsync();
+                    coverImage = Bitmap.DecodeToHeight(imageStream, 512);
                 }
             }
             return coverImage;

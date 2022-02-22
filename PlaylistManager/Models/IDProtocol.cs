@@ -5,7 +5,7 @@ namespace PlaylistManager.Models
 {
     public class IDProtocol : ILevelEncodedIDProtocol
     {
-        public async Task<SearchResult?> Result(string input, CancellationToken? cancellationToken)
+        public async Task<SearchResult?> FindResultAsync(string input, CancellationToken? cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(input))
             {

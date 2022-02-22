@@ -26,7 +26,13 @@ namespace PlaylistManager.Utilities
             needsRefresh = true;
             configModel.DirectoryChanged += s => needsRefresh = true;
         }
-
+        
+        /// <summary>
+        /// Loads all levels in the Custom Levels directory
+        /// </summary>
+        /// <param name="needsRefresh">If the levels need to be loaded again</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>A dictionary of hash mapped to levels</returns>
         public async Task<ConcurrentDictionary<string, CustomLevel>> GetCustomLevelsAsync(bool needsRefresh = false, CancellationToken? cancellationToken = null)
         {
             if (needsRefresh || this.needsRefresh)

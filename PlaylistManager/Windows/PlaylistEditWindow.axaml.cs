@@ -44,7 +44,17 @@ namespace PlaylistManager.Windows
         
         public PlaylistEditWindow()
         {
-            InitializeComponent();
+            AvaloniaXamlLoader.Load(this);
+            Closing += (sender, args) =>
+            {
+                args.Cancel = true;
+                openSemaphore?.Release();
+            };
+#if DEBUG
+            var utils = Locator.Current.GetService<PlaylistLibUtils>()!;
+            var playlist = utils.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
+            ViewModel = new PlaylistEditWindowModel(playlist!);
+#endif
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -65,21 +75,6 @@ namespace PlaylistManager.Windows
                     }
                 }
             };
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-            Closing += (sender, args) =>
-            {
-                args.Cancel = true;
-                openSemaphore.Release();
-            };
-#if DEBUG
-            var utils = Locator.Current.GetService<PlaylistLibUtils>();
-            var playlist = utils?.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
-            ViewModel = new PlaylistEditWindowModel(playlist!);
-#endif
         }
 
         public async Task EditPlaylist(Window parent, IPlaylist playlist)
@@ -156,9 +151,9 @@ namespace PlaylistManager.Windows
                 {
                     return coverImage;
                 }
-                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>();
+                coverImageLoader ??= Locator.Current.GetService<CoverImageLoader>()!;
                 _ = LoadCoverAsync();
-                return coverImageLoader?.LoadingImage;
+                return coverImageLoader.LoadingImage;
             }
             set
             {

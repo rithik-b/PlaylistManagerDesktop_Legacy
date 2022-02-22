@@ -8,7 +8,7 @@ namespace PlaylistManager.Models
     {
         private const string kPattern = @"^(https:\/\/)?(www.)?bsaber.com\/songs\/([a-fA-F0-9]+)$";
         
-        public async Task<SearchResult?> Result(string input, CancellationToken? cancellationToken)
+        public async Task<SearchResult?> FindResultAsync(string input, CancellationToken? cancellationToken)
         {
             SearchResult? toReturn = null;
             

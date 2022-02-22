@@ -94,7 +94,7 @@ namespace PlaylistManager.Models
         public string LevelAuthorName => _levelAuthorName ?? "";
         public string Hash => hash ?? "";
         public bool Downloaded => true;
-        public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
+        public Dictionary<string, List<Difficulty>> Difficulties { get; } = new();
         
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
@@ -123,8 +123,8 @@ namespace PlaylistManager.Models
         {
             if (!attemptedSongDetailsLookup)
             {
-                var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>();
-                if (hash != null && songDetailsLoader != null && songDetailsLoader.TryGetLevelByHash(hash, out var songDetailsLevel))
+                var songDetailsLoader = Locator.Current.GetService<SongDetailsLoader>()!;
+                if (hash != null && songDetailsLoader.TryGetLevelByHash(hash, out var songDetailsLevel))
                 {
                     await songDetailsLoader.Init();
                     key = songDetailsLevel.Key;

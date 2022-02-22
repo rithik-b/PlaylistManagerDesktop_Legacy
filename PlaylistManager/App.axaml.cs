@@ -17,7 +17,7 @@ namespace PlaylistManager
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = Locator.Current.GetService<MainWindow>();
+                desktop.MainWindow = Locator.Current.GetService<MainWindow>()!;
             }
 
             base.OnFrameworkInitializationCompleted();
