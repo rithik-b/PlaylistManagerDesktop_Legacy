@@ -12,6 +12,7 @@
         <entry key="PlaylistManager/UserControls/ImageSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/LevelListItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/PlaylistCoverView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
+        <entry key="PlaylistManager/UserControls/ProgressButton.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/SearchItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/SideBarItemView.axaml" value="PlaylistManager/PlaylistManager.csproj" />
         <entry key="PlaylistManager/UserControls/StringSetting.axaml" value="PlaylistManager/PlaylistManager.csproj" />

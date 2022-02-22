@@ -10,7 +10,10 @@
                 <TextBlock Text="Directory Settings" FontSize="30" FontWeight="Black" />
                 <GroupBox Margin="0,0,0,20">
                     <StackPanel VerticalAlignment="Center" Spacing="35">
-                        <userControls:FileSetting SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
+                        <Grid ColumnDefinitions="*, Auto">
+                            <userControls:FileSetting Grid.Column="0" SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
+                            <userControls:ProgressButton Grid.Column="1" ToolTip.Tip="Refresh Playlists and Levels" HorizontalAlignment="Right" VerticalAlignment="Center" Icon="{StaticResource arrow_sync_regular}" Command="{Binding RefreshLevels}" Animate="{Binding RefreshingLevels}" IsEnabled="{Binding RefreshingLevels, Converter={x:Static BoolConverters.Not}}" />
+                        </Grid>
                     </StackPanel>
                 </GroupBox>
                 <TextBlock Text="Default Playlist Settings" FontSize="30" FontWeight="Black" />

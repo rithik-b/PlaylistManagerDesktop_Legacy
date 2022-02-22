@@ -16,13 +16,15 @@ namespace PlaylistManager.Utilities
         private readonly ConcurrentDictionary<string, CustomLevel> customLevels;
         private readonly Hasher hasher;
         private readonly ConfigModel configModel;
+        private readonly SemaphoreSlim refreshSemaphore;
         private bool needsRefresh;
-
+        
         public LevelLoader(ConfigModel configModel)
         {
             customLevels = new ConcurrentDictionary<string, CustomLevel>();
             hasher = new Hasher();
             this.configModel = configModel;
+            refreshSemaphore = new SemaphoreSlim(1, 1);
             needsRefresh = true;
             configModel.DirectoryChanged += s => needsRefresh = true;
         }
@@ -37,20 +39,25 @@ namespace PlaylistManager.Utilities
         {
             if (needsRefresh || this.needsRefresh)
             {
-                this.needsRefresh = false;
-                customLevels.Clear();
-                await Task.Run(() =>
+                await refreshSemaphore.WaitAsync(cancellationToken ?? CancellationToken.None);
+                if (cancellationToken is {IsCancellationRequested: false} or null)
                 {
-                    var songDirectories = Directory.GetDirectories(Path.Combine(configModel.BeatSaberDir, kBeatSaberDataDir, kCustomLevelsDir));
-                    foreach (var songDirectory in songDirectories)
+                    customLevels.Clear();
+                    await Task.Run(() =>
                     {
-                        var hash = hasher.HashDirectory(songDirectory, cancellationToken ?? CancellationToken.None);
-                        if (hash.Hash != null && hash.ResultType is HashResultType.Success or HashResultType.Warn)
+                        var songDirectories = Directory.GetDirectories(Path.Combine(configModel.BeatSaberDir, kBeatSaberDataDir, kCustomLevelsDir));
+                        foreach (var songDirectory in songDirectories)
                         {
-                            customLevels[hash.Hash] = new CustomLevel(hash.Hash, songDirectory);
+                            var hash = hasher.HashDirectory(songDirectory, cancellationToken ?? CancellationToken.None);
+                            if (hash.Hash != null && hash.ResultType is HashResultType.Success or HashResultType.Warn)
+                            {
+                                customLevels[hash.Hash] = new CustomLevel(hash.Hash, songDirectory);
+                            }
                         }
-                    }
-                }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+                        this.needsRefresh = false;
+                    }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+                    refreshSemaphore.Release();
+                }
             }
 
             return customLevels;

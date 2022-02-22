@@ -42,7 +42,7 @@ namespace PlaylistManager.UserControls
         }
         
         public static readonly StyledProperty<string> SettingNameProperty =
-            AvaloniaProperty.Register<FileSetting, string>(nameof(SettingName));
+            AvaloniaProperty.Register<ImageSetting, string>(nameof(SettingName));
 
         public string SettingName
         {
@@ -51,7 +51,7 @@ namespace PlaylistManager.UserControls
         }
             
         public static readonly StyledProperty<Bitmap> ImageProperty =
-            AvaloniaProperty.Register<FileSetting, Bitmap>(nameof(Image), defaultBindingMode: BindingMode.TwoWay);
+            AvaloniaProperty.Register<ImageSetting, Bitmap>(nameof(Image), defaultBindingMode: BindingMode.TwoWay);
         
         public Bitmap Image
         {
