@@ -16,7 +16,7 @@ namespace PlaylistManager.Models
         private HttpClientService? HttpClientService =>
             httpClientService ??= Locator.Current.GetService<HttpClientService>();
         
-        public async Task<SearchResult?> Result(string input, CancellationToken? cancellationToken = null)
+        public async Task<SearchResult?> FindResultAsync(string input, CancellationToken? cancellationToken = null)
         {
             string? leaderboardID = null;
             

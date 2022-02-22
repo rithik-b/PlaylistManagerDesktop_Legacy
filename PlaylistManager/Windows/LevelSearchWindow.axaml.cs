@@ -139,7 +139,7 @@ namespace PlaylistManager.Windows
                     // Do smart ID parsing
                     foreach (var levelEncodedIDProtocol in levelEncodedIDProtocols)
                     {
-                        var searchResult = await levelEncodedIDProtocol.Result(searchText, tokenSource.Token);
+                        var searchResult = await levelEncodedIDProtocol.FindResultAsync(searchText, tokenSource.Token);
                         if (searchResult != null)
                         {
                             ICustomLevelData? level = null;

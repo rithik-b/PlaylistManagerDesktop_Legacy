@@ -5,11 +5,11 @@ using Splat;
 
 namespace PlaylistManager.UserControls
 {
-    /*
-     * A panel that acts like a stack
-     * The last child of the panel is the only visible child, the rest are hidden
-     * As the name suggests, useful for navigation (going forward and back)
-     */
+    /// <summary>
+    /// A panel that acts like a stack
+    /// The last child of the panel is the only visible child, the rest are hidden
+    /// As the name suggests, useful for navigation (going forward and back)
+    /// </summary>
     public class NavigationPanel : Panel
     {
         protected override Size MeasureOverride(Size availableSize)
@@ -46,13 +46,21 @@ namespace PlaylistManager.UserControls
             }
         }
 
-        public void Push(Control? control)
+        /// <summary>
+        /// Push a child view
+        /// </summary>
+        /// <param name="view">View to push</param>
+        public void Push(Control? view)
         {
-            if (control != null)
+            if (view != null)
             {
-                Children.Add(control);
+                Children.Add(view);
             }
         } 
+        
+        /// <summary>
+        /// Pop the topmost view
+        /// </summary>
         public void Pop() => Children.RemoveAt(Children.Count - 1);
     }
 }
