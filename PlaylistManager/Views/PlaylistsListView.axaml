@@ -19,12 +19,14 @@
             </ListBox>
             <Border.ContextMenu>
                 <!-- TODO: Implement the features of this ContextMenu -->
+                <!-- TODO: Implement keyboard shortcuts -->
                 <ContextMenu>
+                    <MenuItem Header="Open In File Explorer" />
                     <MenuItem Header="New">
-                        <MenuItem Header="Playlist" Click="NewPlaylistClick" />
-                        <MenuItem Header="Folder" Click="NewFolderClick" />
+                        <MenuItem Header="Playlist" Click="NewPlaylistClick" InputGesture="Control + N" />
+                        <MenuItem Header="Folder" Click="NewFolderClick" InputGesture="Control + Shift + V" />
                     </MenuItem>
-                    <MenuItem Header="Paste" />
+                    <MenuItem Header="Paste" InputGesture="Control + V" />
                 </ContextMenu>
             </Border.ContextMenu>
         </Border>

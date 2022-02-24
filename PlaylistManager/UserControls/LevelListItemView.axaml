@@ -32,16 +32,24 @@
         <Button Grid.Column="4" Click="ContextButtonClick">···
             <Button.ContextMenu>
                 <ContextMenu Name="ContextMenu">
-                    <MenuItem Header="Preview Map" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <MenuItem Header="Remove Level" Command="{Binding RemoveLevel}" />
+                    <MenuItem Header="Open on BeatSaver" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <MenuItem Header="Preview" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <MenuItem Header="Cut" InputGesture="Control + X" />
+                    <MenuItem Header="Copy" InputGesture="Control + C" />
+                    <MenuItem Header="Remove" Command="{Binding RemoveLevel}" InputGesture="Delete" />
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
     </Grid>
     <UserControl.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="Preview Map" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            <MenuItem Header="Remove Level" Command="{Binding RemoveLevel}" />
+            <!-- TODO: Implement the features of this ContextMenu -->
+            <!-- TODO: Implement keyboard shortcuts -->
+            <MenuItem Header="Open on BeatSaver" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <MenuItem Header="Preview" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <MenuItem Header="Cut" InputGesture="Control + X" />
+            <MenuItem Header="Copy" InputGesture="Control + C" />
+            <MenuItem Header="Remove" Command="{Binding RemoveLevel}" InputGesture="Delete" />
         </ContextMenu>
     </UserControl.ContextMenu>
 </UserControl>

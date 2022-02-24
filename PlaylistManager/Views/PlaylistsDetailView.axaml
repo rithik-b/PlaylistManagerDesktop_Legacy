@@ -36,6 +36,14 @@
         <Panel DockPanel.Dock="Bottom">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding SongsLoading}" />
             <ListBox Name="ListBox" Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" Background="Transparent" AutoScrollToSelectedItem="True" />
+            <Panel.ContextMenu>
+                <ContextMenu>
+                    <!-- TODO: Implement the features of this ContextMenu -->
+                    <!-- TODO: Implement keyboard shortcuts -->
+                    <MenuItem Header="Add" Click="OnAddClick" InputGesture="Control + N" />
+                    <MenuItem Header="Paste" InputGesture="Control + V" />
+                </ContextMenu>
+            </Panel.ContextMenu>
         </Panel>
     </DockPanel>
 </UserControl>
