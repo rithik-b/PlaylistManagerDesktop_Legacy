@@ -26,7 +26,7 @@
                         <MenuItem Header="Playlist" Click="NewPlaylistClick" InputGesture="Control + N" />
                         <MenuItem Header="Folder" Click="NewFolderClick" InputGesture="Control + Shift + V" />
                     </MenuItem>
-                    <MenuItem Header="Paste" InputGesture="Control + V" />
+                    <MenuItem Header="Paste" Click="PasteClick" InputGesture="Control + V" />
                 </ContextMenu>
             </Border.ContextMenu>
         </Border>

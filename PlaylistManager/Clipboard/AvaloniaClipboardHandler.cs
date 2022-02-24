@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Input;
@@ -15,68 +16,69 @@ namespace PlaylistManager.Clipboard
     /// </summary>
     public class AvaloniaClipboardHandler : IClipboardHandler
     {
-        public async Task Cut(IEnumerable<PlaylistCoverViewModel> playlistOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        private readonly PlaylistLibUtils playlistLibUtils;
+        
+        public AvaloniaClipboardHandler(PlaylistLibUtils playlistLibUtils)
         {
-            var playlists = new List<IPlaylist>();
-            var tempPaths = new List<string>();
-            
-            foreach (var playlistOrManager in playlistOrManagers)
-            {
-                var playlist = playlistOrManager.playlist;
-                if (playlistOrManager.isPlaylist && playlist != null)
-                {
-                    playlists.Add(playlist);
-                    var playlistPath = playlist.GetPlaylistPath(parentManager);
-                    var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
-                    tempPaths.Add(tempPath);
-                    if (File.Exists(playlistPath))
-                    {
-                        await Task.Run(async () =>
-                        {
-                            await using FileStream fileStream = new(tempPath, FileMode.Create);
-                            playlist.GetHandlerForPlaylist(parentManager)?.Serialize(playlist, fileStream);
-                            parentManager.DeletePlaylist(playlist);
-                            parentManager.RequestRefresh("PlaylistManager (desktop)");
-                        });
-                    }
-                }
-            }
-
-            var clipboardData = new DataObject();
-            clipboardData.Set(IClipboardHandler.kPlaylistData, playlists);
-            clipboardData.Set(DataFormats.FileNames, tempPaths);
+            this.playlistLibUtils = playlistLibUtils;
+        }
+        
+        public async Task Cut(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        {
+            var clipboardData = await IClipboardHandler.PartialCut(playlistsOrManagers, parentManager);
             var clipboard = Application.Current?.Clipboard;
-            
             if (clipboard != null)
             {
                 await clipboard.SetDataObjectAsync(clipboardData);
             }        
         }
 
-        public async Task Copy(IEnumerable<PlaylistCoverViewModel> playlistOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        public async Task Copy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
-            var playlists = new List<IPlaylist>();
-            var playlistPaths = new List<string>();
-            
-            foreach (var playlistOrManager in playlistOrManagers)
-            {
-                var playlist = playlistOrManager.playlist;
-                if (playlistOrManager.isPlaylist && playlist != null)
-                {
-                    playlists.Add(playlist);
-                    playlistPaths.Add(playlist.GetPlaylistPath(parentManager));
-                }
-            }
-            
-            var clipboardData = new DataObject();
-            clipboardData.Set(IClipboardHandler.kPlaylistData, playlists);
-            clipboardData.Set(DataFormats.FileNames, playlistPaths);
+            var clipboardData = await IClipboardHandler.PartialCopy(playlistsOrManagers, parentManager);
             var clipboard = Application.Current?.Clipboard;
             
             if (clipboard != null)
             {
                 await clipboard.SetDataObjectAsync(clipboardData);
             }
+        }
+
+        public async Task<IEnumerable<IPlaylist>?> PastePlaylists()
+        {
+            var clipboard = Application.Current?.Clipboard;
+            if (clipboard != null)
+            {
+                var data = await clipboard.GetFormatsAsync();
+                
+                if (data.Contains(IClipboardHandler.kPlaylistData) && await clipboard.GetDataAsync(IClipboardHandler.kPlaylistData) is List<IPlaylist> playlists)
+                {
+                    return playlists;
+                }
+                
+                if (await clipboard.GetDataAsync(DataFormats.FileNames) is List<string> playlistPaths)
+                {
+                    playlists = new List<IPlaylist>();
+                    foreach (var path in playlistPaths)
+                    {
+                        var handler = playlistLibUtils.PlaylistManager.GetHandlerForExtension(Path.GetExtension(path));
+                        if (handler != null)
+                        {
+                            if (File.Exists(path))
+                            {
+                                var playlist = await Task.Run(async () =>
+                                {
+                                    await using Stream fileStream = new FileStream(path, FileMode.Open);
+                                    return handler.Deserialize(fileStream);
+                                });
+                                playlists.Add(playlist);
+                            }
+                        }
+                    }
+                    return playlists;
+                }
+            }
+            return null;
         }
 
         public void Cut(PlaylistSongWrapper level)

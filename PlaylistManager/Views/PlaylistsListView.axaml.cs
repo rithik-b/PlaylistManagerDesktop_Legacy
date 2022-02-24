@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
@@ -27,7 +28,10 @@ namespace PlaylistManager.Views
 
         private PlaylistLibUtils? playlistLibUtils;
         private PlaylistLibUtils PlaylistLibUtils => playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>()!;
-
+        
+        private IClipboardHandler? clipboardHandler;
+        private IClipboardHandler ClipboardHandler => clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
+        
         public PlaylistsListView()
         {
             AvaloniaXamlLoader.Load(this);
@@ -151,6 +155,22 @@ namespace PlaylistManager.Views
                 viewModel.SearchResults.Add(playlistViewModel);
                 viewModel.SelectedPlaylistOrManager = playlistViewModel;
                 playlistViewModel.IsRenaming = true;
+            }
+        }
+        
+        private async void PasteClick(object? sender, RoutedEventArgs e)
+        {
+            if (viewModel.CurrentManager != null)
+            {
+                var playlists = await ClipboardHandler.PastePlaylists();
+                if (playlists != null)
+                {
+                    foreach (var playlist in playlists)
+                    {
+                        viewModel.CurrentManager.StorePlaylist(playlist);
+                        viewModel.SearchResults.Add(new PlaylistCoverViewModel(playlist));
+                    }
+                }   
             }
         }
         
