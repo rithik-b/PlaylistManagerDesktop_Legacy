@@ -9,6 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
@@ -178,9 +179,12 @@ namespace PlaylistManager.UserControls
         private Bitmap? coverImage;
         
         private PlaylistsListView? playlistsListView;
-
-        public PlaylistsListView PlaylistsListView =>
+        private PlaylistsListView PlaylistsListView =>
             playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+
+        private IClipboardHandler? clipboardHandler;
+        private IClipboardHandler ClipboardHandler =>
+            clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
 
         public PlaylistCoverViewModel(IPlaylist playlist)
         {
@@ -308,30 +312,7 @@ namespace PlaylistManager.UserControls
         {
             if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
             {
-                var playlistPath = playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
-                if (File.Exists(playlistPath))
-                {
-                    await Task.Run(async () =>
-                    {
-                        await using FileStream fileStream = new(tempPath, FileMode.Create);
-                        playlist.GetHandlerForPlaylist(PlaylistsListView.viewModel.CurrentManager)?.Serialize(playlist, fileStream);
-                        PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlist);
-                        PlaylistsListView.viewModel.SearchResults.Remove(this);
-                    });
-                }
-                
-                var dragData = new DataObject();
-                dragData.Set(PlaylistCoverView.kPlaylistData, playlist);
-                dragData.Set(DataFormats.FileNames, new string[1]
-                {
-                    tempPath
-                });
-                var clipboard = Application.Current?.Clipboard;
-                if (clipboard != null)
-                {
-                    await clipboard.SetDataObjectAsync(dragData);
-                }
+                await ClipboardHandler.Cut(playlist, PlaylistsListView.viewModel.CurrentManager);
             }
         }
         
@@ -339,18 +320,7 @@ namespace PlaylistManager.UserControls
         {
             if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
             {
-                var playlistPath = playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                var dragData = new DataObject();
-                dragData.Set(PlaylistCoverView.kPlaylistData, playlist);
-                dragData.Set(DataFormats.FileNames, new string[1]
-                {
-                    playlistPath
-                });
-                var clipboard = Application.Current?.Clipboard;
-                if (clipboard != null)
-                {
-                    await clipboard.SetDataObjectAsync(dragData);
-                }
+                await ClipboardHandler.Copy(playlist, PlaylistsListView.viewModel.CurrentManager);
             }
         }
 
