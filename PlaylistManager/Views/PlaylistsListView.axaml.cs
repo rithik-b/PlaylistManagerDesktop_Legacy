@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -199,7 +200,9 @@ namespace PlaylistManager.Views
                     NotifyPropertyChanged();
                 }
             }
-            
+
+            public List<PlaylistCoverViewModel> SelectedPlaylistsOrManagers { get; } = new();
+
             public ViewModel(ListBox listBox)
             {
                 this.listBox = listBox;

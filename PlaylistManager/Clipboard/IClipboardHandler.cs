@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
+using PlaylistManager.UserControls;
 
 namespace PlaylistManager.Clipboard
 {
@@ -9,19 +11,21 @@ namespace PlaylistManager.Clipboard
     /// </summary>
     public interface IClipboardHandler
     {
+        public const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
+
         /// <summary>
         /// Cut a playlist
         /// </summary>
-        /// <param name="playlist">Playlist to cut</param>
+        /// <param name="playlistOrManagers">Playlists to cut</param>
         /// <param name="parentManager"></param>
-        public Task Cut(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager);
+        public Task Cut(IEnumerable<PlaylistCoverViewModel> playlistOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager);
 
         /// <summary>
         /// Copy a playlist
         /// </summary>
-        /// <param name="playlist"></param>
+        /// <param name="playlistOrManagers"></param>
         /// <param name="parentManager"></param>
-        public Task Copy(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager);
+        public Task Copy(IEnumerable<PlaylistCoverViewModel> playlistOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager);
         
         /// <summary>
         /// Cut a level

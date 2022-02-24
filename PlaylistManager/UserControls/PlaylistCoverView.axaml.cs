@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
@@ -310,17 +311,17 @@ namespace PlaylistManager.UserControls
 
         public async Task Cut()
         {
-            if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
+            if (PlaylistsListView.viewModel.CurrentManager != null)
             {
-                await ClipboardHandler.Cut(playlist, PlaylistsListView.viewModel.CurrentManager);
+                await ClipboardHandler.Cut(PlaylistsListView.viewModel.SelectedPlaylistsOrManagers, PlaylistsListView.viewModel.CurrentManager);
             }
         }
         
         public async Task Copy()
         {
-            if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
+            if (PlaylistsListView.viewModel.CurrentManager != null)
             {
-                await ClipboardHandler.Copy(playlist, PlaylistsListView.viewModel.CurrentManager);
+                await ClipboardHandler.Copy(PlaylistsListView.viewModel.SelectedPlaylistsOrManagers, PlaylistsListView.viewModel.CurrentManager);
             }
         }
 

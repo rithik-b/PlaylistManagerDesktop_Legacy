@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
@@ -14,44 +15,64 @@ namespace PlaylistManager.Clipboard
     /// </summary>
     public class AvaloniaClipboardHandler : IClipboardHandler
     {
-        public async Task Cut(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        public async Task Cut(IEnumerable<PlaylistCoverViewModel> playlistOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
-            var playlistPath = playlist.GetPlaylistPath(parentManager);
-            var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
-            if (File.Exists(playlistPath))
+            var playlists = new List<IPlaylist>();
+            var tempPaths = new List<string>();
+            
+            foreach (var playlistOrManager in playlistOrManagers)
             {
-                await Task.Run(async () =>
+                var playlist = playlistOrManager.playlist;
+                if (playlistOrManager.isPlaylist && playlist != null)
                 {
-                    await using FileStream fileStream = new(tempPath, FileMode.Create);
-                    playlist.GetHandlerForPlaylist(parentManager)?.Serialize(playlist, fileStream);
-                    parentManager.DeletePlaylist(playlist);
-                    parentManager.RequestRefresh("PlaylistManager (desktop)");
-                });
+                    playlists.Add(playlist);
+                    var playlistPath = playlist.GetPlaylistPath(parentManager);
+                    var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
+                    tempPaths.Add(tempPath);
+                    if (File.Exists(playlistPath))
+                    {
+                        await Task.Run(async () =>
+                        {
+                            await using FileStream fileStream = new(tempPath, FileMode.Create);
+                            playlist.GetHandlerForPlaylist(parentManager)?.Serialize(playlist, fileStream);
+                            parentManager.DeletePlaylist(playlist);
+                            parentManager.RequestRefresh("PlaylistManager (desktop)");
+                        });
+                    }
+                }
             }
-                
+
             var clipboardData = new DataObject();
-            clipboardData.Set(PlaylistCoverView.kPlaylistData, playlist);
-            clipboardData.Set(DataFormats.FileNames, new string[1]
-            {
-                tempPath
-            });
+            clipboardData.Set(IClipboardHandler.kPlaylistData, playlists);
+            clipboardData.Set(DataFormats.FileNames, tempPaths);
             var clipboard = Application.Current?.Clipboard;
+            
             if (clipboard != null)
             {
                 await clipboard.SetDataObjectAsync(clipboardData);
             }        
         }
 
-        public async Task Copy(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        public async Task Copy(IEnumerable<PlaylistCoverViewModel> playlistOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
-            var playlistPath = playlist.GetPlaylistPath(parentManager);
-            var clipboardData = new DataObject();
-            clipboardData.Set(PlaylistCoverView.kPlaylistData, playlist);
-            clipboardData.Set(DataFormats.FileNames, new string[1]
+            var playlists = new List<IPlaylist>();
+            var playlistPaths = new List<string>();
+            
+            foreach (var playlistOrManager in playlistOrManagers)
             {
-                playlistPath
-            });
+                var playlist = playlistOrManager.playlist;
+                if (playlistOrManager.isPlaylist && playlist != null)
+                {
+                    playlists.Add(playlist);
+                    playlistPaths.Add(playlist.GetPlaylistPath(parentManager));
+                }
+            }
+            
+            var clipboardData = new DataObject();
+            clipboardData.Set(IClipboardHandler.kPlaylistData, playlists);
+            clipboardData.Set(DataFormats.FileNames, playlistPaths);
             var clipboard = Application.Current?.Clipboard;
+            
             if (clipboard != null)
             {
                 await clipboard.SetDataObjectAsync(clipboardData);
