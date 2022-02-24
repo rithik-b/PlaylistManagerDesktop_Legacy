@@ -45,7 +45,7 @@ namespace PlaylistManager.Utilities
         {
             var playlist = CreatePlaylist(playlistName, configModel.AuthorName, playlistManager);
             using var coverStream = new MemoryStream();
-            configModel.coverImage.Save(coverStream);
+            configModel.coverImage?.Save(coverStream);
             playlist.SetCover(coverStream);
             return playlist;
         }

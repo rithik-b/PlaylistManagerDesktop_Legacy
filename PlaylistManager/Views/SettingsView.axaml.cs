@@ -45,7 +45,7 @@ namespace PlaylistManager.Views
                 }
             }
 
-            private Bitmap CoverImage
+            private Bitmap? CoverImage
             {
                 get => configModel.coverImage;
                 set

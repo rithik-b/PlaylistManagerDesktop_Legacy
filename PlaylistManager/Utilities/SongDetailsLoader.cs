@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using PlaylistManager.Models;
 using SongDetailsCache;
@@ -9,6 +10,12 @@ namespace PlaylistManager.Utilities
     public class SongDetailsLoader
     {
         private SongDetails? songDetails;
+        private const string kUserDataPath = "UserData";
+        
+        public SongDetailsLoader()
+        {
+            Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kUserDataPath));
+        }
         
         public async Task Init() => songDetails = await SongDetails.Init();
         
