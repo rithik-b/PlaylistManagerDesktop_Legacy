@@ -20,7 +20,7 @@ namespace PlaylistManager.Utilities
             }
         }
         
-        public static void OpenBrowser(string url)
+        public static void OpenURL(string url)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

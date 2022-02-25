@@ -18,10 +18,8 @@
                 </ListBox.ItemsPanel>
             </ListBox>
             <Border.ContextMenu>
-                <!-- TODO: Implement the features of this ContextMenu -->
-                <!-- TODO: Implement keyboard shortcuts -->
-                <ContextMenu>
-                    <MenuItem Header="Open In File Explorer" />
+                <ContextMenu IsVisible="{Binding CurrentManager, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <MenuItem Header="Open In File Explorer" Click="FileExplorerClick" />
                     <MenuItem Header="New">
                         <MenuItem Header="Playlist" Click="NewPlaylistClick" InputGesture="Control + N" />
                         <MenuItem Header="Folder" Click="NewFolderClick" InputGesture="Control + Shift + N" />

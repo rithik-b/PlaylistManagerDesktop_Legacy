@@ -397,7 +397,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private void OpenPreview() => Utils.OpenBrowser(kRabbitPreviewerIHardlyKnowHer + Key);
+        private void OpenPreview() => Utils.OpenURL(kRabbitPreviewerIHardlyKnowHer + Key);
 
         #endregion
 

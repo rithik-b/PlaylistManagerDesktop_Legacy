@@ -155,6 +155,14 @@ namespace PlaylistManager.Views
 
         #region Context Menu
         
+        private void FileExplorerClick(object? sender, RoutedEventArgs e)
+        {
+            if (viewModel.CurrentManager != null)
+            {
+                Utils.OpenURL(viewModel.CurrentManager.PlaylistPath);
+            }
+        }
+        
         private void NewPlaylistClick(object? sender, RoutedEventArgs? e)
         {
             if (viewModel.CurrentManager != null)
