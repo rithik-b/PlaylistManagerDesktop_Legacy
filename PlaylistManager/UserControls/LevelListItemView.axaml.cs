@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
@@ -90,6 +91,7 @@ namespace PlaylistManager.UserControls
 
     public class LevelListItemViewModel : ViewModelBase
     {
+        private const string kBeatSaverURL = "https://beatsaver.com/maps/";
         private const string kRabbitPreviewerIHardlyKnowHer = "https://skystudioapps.com/bs-viewer/?id=";
 
         public readonly PlaylistSongWrapper playlistSong;
@@ -98,6 +100,12 @@ namespace PlaylistManager.UserControls
         private string? key;
         private string? selectedCharacteristic;
         private List<Difficulty>? difficulties;
+
+        private IClipboardHandler? clipboardHandler;
+        private IClipboardHandler ClipboardHandler => clipboardHandler ??=  Locator.Current.GetService<IClipboardHandler>()!;
+        
+        private PlaylistsDetailView? playlistsDetailView;
+        private PlaylistsDetailView PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>()!;
         
         public LevelListItemViewModel(PlaylistSongWrapper playlistSong)
         {
@@ -384,6 +392,39 @@ namespace PlaylistManager.UserControls
 
         #region Action Buttons
 
+        private void OpenBeatSaver() => Utils.OpenURL(kBeatSaverURL + Key);
+        
+        private void OpenPreview() => Utils.OpenURL(kRabbitPreviewerIHardlyKnowHer + Key);
+
+        private async void Cut()
+        {
+            if (PlaylistsDetailView.ViewModel != null)
+            {
+                var playlistSongs = new List<PlaylistSongWrapper>();
+                foreach (var selectedLevel in PlaylistsDetailView.ViewModel.SelectedLevels)
+                {
+                    playlistSongs.Add(selectedLevel.playlistSong);
+                    PlaylistsDetailView.ViewModel.Levels.Remove(selectedLevel);
+                }
+
+                await ClipboardHandler.Copy(playlistSongs);
+            }
+        }
+
+        private async void Copy()
+        {
+            if (PlaylistsDetailView.ViewModel != null)
+            {
+                var playlistSongs = new List<PlaylistSongWrapper>();
+                foreach (var selectedLevel in PlaylistsDetailView.ViewModel.SelectedLevels)
+                {
+                    playlistSongs.Add(selectedLevel.playlistSong);
+                }
+
+                await ClipboardHandler.Copy(playlistSongs);
+            }
+        }
+        
         private void RemoveLevel()
         {
             // TODO: Show popup before deletion
@@ -397,8 +438,6 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private void OpenPreview() => Utils.OpenURL(kRabbitPreviewerIHardlyKnowHer + Key);
-
         #endregion
 
         private async Task LoadKeyAsync()

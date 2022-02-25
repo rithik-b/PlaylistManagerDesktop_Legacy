@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -180,6 +181,8 @@ namespace PlaylistManager.Views
                 NotifyPropertyChanged();
             }
         }
+
+        public List<LevelListItemViewModel> SelectedLevels { get; } = new();
 
         public Bitmap? CoverImage
         {

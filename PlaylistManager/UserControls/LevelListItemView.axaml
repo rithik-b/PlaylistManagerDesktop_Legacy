@@ -32,10 +32,10 @@
         <Button Grid.Column="4" Click="ContextButtonClick">···
             <Button.ContextMenu>
                 <ContextMenu Name="ContextMenu">
-                    <MenuItem Header="Open on BeatSaver" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <MenuItem Header="Open on BeatSaver" Command="{Binding OpenBeatSaver}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     <MenuItem Header="Preview" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <MenuItem Header="Cut" InputGesture="Control + X" />
-                    <MenuItem Header="Copy" InputGesture="Control + C" />
+                    <MenuItem Header="Cut" Command="{Binding CutLevel}" InputGesture="Control + X" />
+                    <MenuItem Header="Copy" Command="{Binding CopyLevel}" InputGesture="Control + C" />
                     <MenuItem Header="Remove" Command="{Binding RemoveLevel}" InputGesture="Delete" />
                 </ContextMenu>
             </Button.ContextMenu>
@@ -45,10 +45,10 @@
         <ContextMenu>
             <!-- TODO: Implement the features of this ContextMenu -->
             <!-- TODO: Implement keyboard shortcuts -->
-            <MenuItem Header="Open on BeatSaver" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <MenuItem Header="Open on BeatSaver" Command="{Binding OpenBeatSaver}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <MenuItem Header="Preview" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            <MenuItem Header="Cut" InputGesture="Control + X" />
-            <MenuItem Header="Copy" InputGesture="Control + C" />
+            <MenuItem Header="Cut" Command="{Binding CutLevel}" InputGesture="Control + X" />
+            <MenuItem Header="Copy" Command="{Binding CopyLevel}" InputGesture="Control + C" />
             <MenuItem Header="Remove" Command="{Binding RemoveLevel}" InputGesture="Delete" />
         </ContextMenu>
     </UserControl.ContextMenu>

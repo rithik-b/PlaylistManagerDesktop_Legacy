@@ -15,6 +15,7 @@ namespace PlaylistManager.Clipboard
     public interface IClipboardHandler
     {
         public const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
+        public const string kPlaylistSongData = "application/com.rithik-b.PlaylistManager.PlaylistSong";
 
         /// <summary>
         /// Cut playlists or managers
@@ -31,22 +32,17 @@ namespace PlaylistManager.Clipboard
         public Task Copy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager);
 
         /// <summary>
-        /// Paste playlists
+        /// Paste <see cref="IPlaylist" objects/>
         /// </summary>
         /// <returns>An enumerable of playlists if in clipboard, null otherwise</returns>
         public Task<IEnumerable<IPlaylist>?> PastePlaylists();
         
-        /// <summary>
-        /// Cut a level
-        /// </summary>
-        /// <param name="level"></param>
-        public void Cut(PlaylistSongWrapper level);
         
         /// <summary>
-        /// Copy a level
+        /// Copy <see cref="PlaylistSongWrapper"/> objects
         /// </summary>
-        /// <param name="level"></param>
-        public void Copy(PlaylistSongWrapper level);
+        /// <param name="playlistSongWrappers"></param>
+        public Task Copy(IEnumerable<PlaylistSongWrapper> playlistSongWrappers);
 
         /// <summary>
         /// Common method used for moving playlists to a temporary folder, and getting the appropriate DataObject
@@ -88,7 +84,7 @@ namespace PlaylistManager.Clipboard
             return clipboardData;
         }
 
-        protected static async Task<DataObject> PartialCopy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
+        protected static DataObject PartialCopy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             var playlists = new List<IPlaylist>();
             var playlistPaths = new List<string>();

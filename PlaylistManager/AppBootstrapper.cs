@@ -28,8 +28,7 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterLazySingleton(() => (IClipboardHandler?)DiFactory<AvaloniaClipboardHandler>());
             
             Locator.CurrentMutable.RegisterLazySingleton(ConfigModel.Factory);
-            
-            
+
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelSearchWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistEditWindow>);

@@ -35,7 +35,7 @@ namespace PlaylistManager.Clipboard
 
         public async Task Copy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
-            var clipboardData = await IClipboardHandler.PartialCopy(playlistsOrManagers, parentManager);
+            var clipboardData = IClipboardHandler.PartialCopy(playlistsOrManagers, parentManager);
             var clipboard = Application.Current?.Clipboard;
             
             if (clipboard != null)
@@ -81,14 +81,16 @@ namespace PlaylistManager.Clipboard
             return null;
         }
 
-        public void Cut(PlaylistSongWrapper level)
+        public async Task Copy(IEnumerable<PlaylistSongWrapper> playlistSongWrappers)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void Copy(PlaylistSongWrapper level)
-        {
-            throw new System.NotImplementedException();
+            var clipboardData = new DataObject();
+            clipboardData.Set(IClipboardHandler.kPlaylistSongData, playlistSongWrappers);
+            var clipboard = Application.Current?.Clipboard;
+            
+            if (clipboard != null)
+            {
+                await clipboard.SetDataObjectAsync(clipboardData);
+            }
         }
     }
 }
