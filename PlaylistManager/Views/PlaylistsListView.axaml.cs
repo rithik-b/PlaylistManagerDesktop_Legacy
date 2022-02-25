@@ -94,9 +94,10 @@ namespace PlaylistManager.Views
                 viewModel.SelectedPlaylistOrManager.IsRenaming = false;
             }
             viewModel.SelectedPlaylistOrManager = null;
+            Focus();
         }
         
-        private async void OnShortcut(object? sender, KeyEventArgs e)
+        private async void OnCellShortcut(object? sender, KeyEventArgs e)
         {
             if (viewModel.SelectedPlaylistOrManager != null)
             {
@@ -118,6 +119,26 @@ namespace PlaylistManager.Views
                 }
             }
         }
+        
+        private void OnShortcut(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyModifiers == KeyModifiers.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.N:
+                        NewPlaylistClick(this, null);
+                        break;
+                    case Key.V:
+                        PasteClick(this, null);
+                        break;
+                }
+            }
+            else if (e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.N)
+            {
+                NewFolderClick(this, null);
+            }
+        }
 
         public void OpenSelectedPlaylistOrManager()
         {
@@ -131,10 +152,10 @@ namespace PlaylistManager.Views
                 NavigationPanel.Push(PlaylistsDetailView);
             }
         }
-        
+
         #region Context Menu
         
-        private void NewPlaylistClick(object? sender, RoutedEventArgs e)
+        private void NewPlaylistClick(object? sender, RoutedEventArgs? e)
         {
             if (viewModel.CurrentManager != null)
             {
@@ -146,7 +167,7 @@ namespace PlaylistManager.Views
             }
         }
         
-        private void NewFolderClick(object? sender, RoutedEventArgs e)
+        private void NewFolderClick(object? sender, RoutedEventArgs? e)
         {
             if (viewModel.CurrentManager != null)
             {
@@ -158,7 +179,7 @@ namespace PlaylistManager.Views
             }
         }
         
-        private async void PasteClick(object? sender, RoutedEventArgs e)
+        private async void PasteClick(object? sender, RoutedEventArgs? e)
         {
             if (viewModel.CurrentManager != null)
             {

@@ -3,14 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="PlaylistManager.Views.PlaylistsListView">
+             x:Class="PlaylistManager.Views.PlaylistsListView" KeyDown="OnShortcut">
     <DockPanel Background="#202020">
         <Grid DockPanel.Dock="Top" IsVisible="{Binding IsSubfolder}">
             <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick">&lt;</Button>
             <TextBlock Text="{Binding FolderTitle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Grid>
         <Border DragDrop.AllowDrop="True" Name="CopyTarget" PointerPressed="LoseFocus">
-            <ListBox Name="ListBox" Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" SelectionMode="Multiple" SelectedItems="{Binding SelectedPlaylistsOrManagers}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped" KeyDown="OnShortcut" AutoScrollToSelectedItem="True">
+            <ListBox Name="ListBox" Items="{Binding SearchResults}" SelectedItem="{Binding SelectedPlaylistOrManager}" SelectionMode="Multiple" SelectedItems="{Binding SelectedPlaylistsOrManagers}" Background="Transparent" Margin="0 20" DoubleTapped="OnDoubleTapped" KeyDown="OnCellShortcut" AutoScrollToSelectedItem="True">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -24,7 +24,7 @@
                     <MenuItem Header="Open In File Explorer" />
                     <MenuItem Header="New">
                         <MenuItem Header="Playlist" Click="NewPlaylistClick" InputGesture="Control + N" />
-                        <MenuItem Header="Folder" Click="NewFolderClick" InputGesture="Control + Shift + V" />
+                        <MenuItem Header="Folder" Click="NewFolderClick" InputGesture="Control + Shift + N" />
                     </MenuItem>
                     <MenuItem Header="Paste" Click="PasteClick" InputGesture="Control + V" />
                 </ContextMenu>

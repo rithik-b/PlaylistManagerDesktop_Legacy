@@ -105,14 +105,12 @@ namespace PlaylistManager.UserControls
         
         private async void Drop(object sender, DragEventArgs e)
         {
-            if (DataContext is PlaylistCoverViewModel current && !current.isPlaylist && current is {playlistManager: { }})
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: false, playlistManager: {}} current
+                && e.Data.Get(kPlaylistData) is IPlaylist drag)
             {
-                if (e.Data.Contains(kPlaylistData) && e.Data.Get(kPlaylistData) is IPlaylist drag)
-                {
-                    PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
-                    _ = current.LoadPlaylistsAsync();
-                    e.DragEffects = DragDropEffects.Move;
-                }
+                PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
+                _ = current.LoadPlaylistsAsync();
+                e.DragEffects = DragDropEffects.Move;
             }
         }
         #endregion
