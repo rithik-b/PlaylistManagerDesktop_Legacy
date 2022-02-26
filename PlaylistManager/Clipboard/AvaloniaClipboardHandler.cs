@@ -52,15 +52,10 @@ namespace PlaylistManager.Clipboard
             if (clipboard != null)
             {
                 var data = await clipboard.GetFormatsAsync();
-                
-                if (data.Contains(IClipboardHandler.kPlaylistData) && await clipboard.GetDataAsync(IClipboardHandler.kPlaylistData) is List<IPlaylist> playlists)
-                {
-                    return playlists;
-                }
-                
+
                 if (await clipboard.GetDataAsync(DataFormats.FileNames) is List<string> playlistPaths)
                 {
-                    playlists = new List<IPlaylist>();
+                    var playlists = new List<IPlaylist>();
                     foreach (var path in playlistPaths)
                     {
                         var handler = playlistLibUtils.PlaylistManager.GetHandlerForExtension(Path.GetExtension(path));

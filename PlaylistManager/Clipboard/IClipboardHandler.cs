@@ -15,7 +15,6 @@ namespace PlaylistManager.Clipboard
     /// </summary>
     public interface IClipboardHandler
     {
-        public const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
         public const string kPlaylistSongData = "application/com.rithik-b.PlaylistManager.PlaylistSong";
 
         /// <summary>
@@ -59,7 +58,6 @@ namespace PlaylistManager.Clipboard
         /// <returns>DataObject with file paths of playlists and the playlists itself</returns>
         protected static async Task<DataObject> PartialCut(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
-            var playlists = new List<IPlaylist>();
             var tempPaths = new List<string>();
 
             var itemsToDelete = playlistsOrManagers.ToArray();
@@ -69,25 +67,20 @@ namespace PlaylistManager.Clipboard
                 var playlist = playlistOrManager.playlist;
                 if (playlistOrManager.isPlaylist && playlist != null)
                 {
-                    playlists.Add(playlist);
                     var playlistPath = playlist.GetPlaylistPath(parentManager);
                     var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
                     tempPaths.Add(tempPath);
                     if (File.Exists(playlistPath))
                     {
-                        await Task.Run(async () =>
-                        {
-                            await using FileStream fileStream = new(tempPath, FileMode.Create);
-                            playlist.GetHandlerForPlaylist(parentManager)?.Serialize(playlist, fileStream);
-                            parentManager.DeletePlaylist(playlist);
-                            parentManager.RequestRefresh("PlaylistManager (desktop)");
-                        });
+                        await using FileStream fileStream = new(tempPath, FileMode.Create);
+                        playlist.GetHandlerForPlaylist(parentManager)?.Serialize(playlist, fileStream);
+                        parentManager.DeletePlaylist(playlist);
                     }
                 }
             }
+            parentManager.RequestRefresh("PlaylistManager (desktop)");
 
             var clipboardData = new DataObject();
-            clipboardData.Set(kPlaylistData, playlists);
             clipboardData.Set(DataFormats.FileNames, tempPaths);
 
             return clipboardData;
@@ -95,7 +88,6 @@ namespace PlaylistManager.Clipboard
 
         protected static DataObject PartialCopy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
-            var playlists = new List<IPlaylist>();
             var playlistPaths = new List<string>();
             
             foreach (var playlistOrManager in playlistsOrManagers)
@@ -103,13 +95,11 @@ namespace PlaylistManager.Clipboard
                 var playlist = playlistOrManager.playlist;
                 if (playlistOrManager.isPlaylist && playlist != null)
                 {
-                    playlists.Add(playlist);
                     playlistPaths.Add(playlist.GetPlaylistPath(parentManager));
                 }
             }
             
             var clipboardData = new DataObject();
-            clipboardData.Set(IClipboardHandler.kPlaylistData, playlists);
             clipboardData.Set(DataFormats.FileNames, playlistPaths);
 
             return clipboardData;
