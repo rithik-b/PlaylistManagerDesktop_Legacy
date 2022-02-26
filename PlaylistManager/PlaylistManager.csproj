@@ -13,8 +13,8 @@
         <PackageReference Include="Aura.UI.FluentTheme" Version="0.1.5-dev-04" />
         <PackageReference Include="Avalonia" Version="0.10.12" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.12" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.12" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.12" />
         <PackageReference Include="BeatSaber.SongHashing" Version="1.1.1" />
         <PackageReference Include="BeatSaverSharper" Version="3.3.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-preview.1.22076.8" />
