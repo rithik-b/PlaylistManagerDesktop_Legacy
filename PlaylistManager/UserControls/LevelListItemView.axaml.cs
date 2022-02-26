@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
+using Aura.UI.Services;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -12,6 +13,7 @@ using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
+using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 using Difficulty = PlaylistManager.Models.Difficulty;
@@ -106,6 +108,9 @@ namespace PlaylistManager.UserControls
         
         private PlaylistsDetailView? playlistsDetailView;
         private PlaylistsDetailView PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>()!;
+        
+        private MainWindow? mainWindow;
+        private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
         
         public LevelListItemViewModel(PlaylistSongWrapper playlistSongWrapper)
         {
@@ -401,12 +406,15 @@ namespace PlaylistManager.UserControls
             if (PlaylistsDetailView.ViewModel != null)
             {
                 var playlistSongs = new List<PlaylistSongWrapper>();
-                foreach (var selectedLevel in PlaylistsDetailView.ViewModel.SelectedLevels)
+                var selectedItems = PlaylistsDetailView.ViewModel.SelectedLevels.ToArray();
+                
+                foreach (var selectedLevel in selectedItems)
                 {
                     playlistSongs.Add(selectedLevel.playlistSongWrapper);
                     PlaylistsDetailView.ViewModel.Levels.Remove(selectedLevel);
                 }
-
+                
+                PlaylistsDetailView.ViewModel.UpdateNumSongs();
                 await ClipboardHandler.Copy(playlistSongs);
             }
         }
@@ -427,15 +435,32 @@ namespace PlaylistManager.UserControls
         
         public void Remove()
         {
-            // TODO: Show popup before deletion
-            var detailView = Locator.Current.GetService<PlaylistsDetailView>()!;
-            if (detailView.ViewModel != null)
+            var removeMessage = GetRemoveMessage();
+            if (PlaylistsDetailView.ViewModel != null && removeMessage != null)
             {
-                var viewModel = detailView.ViewModel;
-                viewModel.playlist.Remove(playlistSongWrapper.playlistSong);
-                viewModel.Levels.Remove(this);
-                viewModel.UpdateNumSongs();
+                MainWindow.NewContentDialog(removeMessage, (sender, e) =>
+                {
+                    var selectedItems = PlaylistsDetailView.ViewModel.SelectedLevels.ToArray();
+
+                    foreach (var level in selectedItems)
+                    {
+                        PlaylistsDetailView.ViewModel.playlist.Remove(level.playlistSongWrapper.playlistSong);
+                        PlaylistsDetailView.ViewModel.Levels.Remove(level);
+                    }
+                
+                    PlaylistsDetailView.ViewModel.UpdateNumSongs();
+                }, null, "Yes", "No");
             }
+        }
+
+        private string? GetRemoveMessage()
+        {
+            if (PlaylistsDetailView.ViewModel != null)
+            {
+                var numLevels = PlaylistsDetailView.ViewModel.SelectedLevels.Count;
+                return numLevels > 0 ? $"Are you sure you want to remove {numLevels} level{(numLevels != 1 ? "s" : "")} from the playlist?" : null;
+            }
+            return null;
         }
         
         #endregion

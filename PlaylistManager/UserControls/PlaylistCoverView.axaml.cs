@@ -394,7 +394,7 @@ namespace PlaylistManager.UserControls
             {
                 MainWindow.NewContentDialog(deleteMessage, (object sender, RoutedEventArgs e) =>
                 {
-                    var selectedItems = new List<PlaylistCoverViewModel>(PlaylistsListView.viewModel.SelectedPlaylistsOrManagers);
+                    var selectedItems = PlaylistsListView.viewModel.SelectedPlaylistsOrManagers.ToArray();
                     foreach (var playlistsOrManager in selectedItems)
                     {
                         if (playlistsOrManager.isPlaylist && playlistsOrManager.playlist != null)
@@ -438,17 +438,17 @@ namespace PlaylistManager.UserControls
             if (numPlaylists > 0 && numManagers > 0)
             {
                 return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")} and " +
-                       $"{numManagers} folder{(numManagers != 1 ? "s" : "")}";
+                       $"{numManagers} folder{(numManagers != 1 ? "s" : "")}?";
             }
             
             if (numPlaylists > 0)
             {
-                return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")}";
+                return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")}?";
             }
 
             if (numManagers > 0)
             {
-                return $"Are you sure you want to delete {numManagers} folder{(numManagers != 1 ? "s" : "")}";
+                return $"Are you sure you want to delete {numManagers} folder{(numManagers != 1 ? "s" : "")}?";
             }
 
             return null;

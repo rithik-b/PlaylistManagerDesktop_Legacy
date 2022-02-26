@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Input;
 using BeatSaberPlaylistsLib.Types;
@@ -61,7 +62,7 @@ namespace PlaylistManager.Clipboard
             var playlists = new List<IPlaylist>();
             var tempPaths = new List<string>();
 
-            var itemsToDelete = new List<PlaylistCoverViewModel>(playlistsOrManagers);
+            var itemsToDelete = playlistsOrManagers.ToArray();
             
             foreach (var playlistOrManager in itemsToDelete)
             {
