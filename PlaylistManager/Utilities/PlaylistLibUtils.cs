@@ -153,5 +153,20 @@ namespace PlaylistManager.Utilities
             }
             return null;
         }
+
+        public static string GetUniqueChildName(this BeatSaberPlaylistsLib.PlaylistManager playlistManager,
+            string proposedName)
+        {
+            var path = Path.Combine(playlistManager.PlaylistPath, proposedName);
+            
+            if (Directory.Exists(path))
+            {
+                int pathNum = 1;
+                while (Directory.Exists(path + $" ({pathNum})")) ++pathNum;
+                path += $" ({pathNum})";
+            }
+
+            return Path.GetFileName(path);
+        }
     }
 }

@@ -179,7 +179,7 @@ namespace PlaylistManager.Views
         {
             if (viewModel.CurrentManager != null)
             {
-                var folder = viewModel.CurrentManager.CreateChildManager("New Folder");
+                var folder = viewModel.CurrentManager.CreateChildManager(viewModel.CurrentManager.GetUniqueChildName("New Folder"));
                 var playlistViewModel = new PlaylistCoverViewModel(folder);
                 viewModel.SearchResults.Add(playlistViewModel);
                 viewModel.SelectedPlaylistOrManager = playlistViewModel;
