@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
+using Aura.UI.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -14,6 +15,7 @@ using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
+using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 
@@ -184,6 +186,9 @@ namespace PlaylistManager.UserControls
         private IClipboardHandler? clipboardHandler;
         private IClipboardHandler ClipboardHandler =>
             clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
+        
+        private MainWindow? mainWindow;
+        private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
 
         public PlaylistCoverViewModel(IPlaylist playlist)
         {
@@ -212,9 +217,9 @@ namespace PlaylistManager.UserControls
             }
             set
             {
-                // TODO: Prevent renaming of folders to same name
                 if (isPlaylist && playlist != null)
                 {
+                    playlist.Filename = "";
                     playlist.Title = value;
                     PlaylistsListView.viewModel.CurrentManager?.StorePlaylist(playlist);
                 }
@@ -227,7 +232,16 @@ namespace PlaylistManager.UserControls
                     }
                     if (Path.GetFileName(playlistManager.PlaylistPath) != input)
                     {
-                        playlistManager.RenameManager(input);
+                        var oldName = Path.GetFileName(playlistManager.PlaylistPath);
+                        try
+                        {
+                            playlistManager.RenameManager(input);
+                        }
+                        catch (Exception e)
+                        {
+                            MainWindow.NewMessageDialog("Rename Error", e.Message, null, null);
+                            RenameTitle = oldName;
+                        }
                     }
                 }
                 NotifyPropertyChanged();
