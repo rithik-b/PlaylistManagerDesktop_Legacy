@@ -55,7 +55,7 @@ namespace PlaylistManager.Clipboard
         /// </summary>
         /// <param name="playlistsOrManagers"></param>
         /// <param name="parentManager"></param>
-        /// <returns>DataObject with file paths of playlists and the playlists itself</returns>
+        /// <returns>DataObject with file paths of playlists</returns>
         protected static async Task<DataObject> PartialCut(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             var tempPaths = new List<string>();
@@ -86,6 +86,12 @@ namespace PlaylistManager.Clipboard
             return clipboardData;
         }
 
+        /// <summary>
+        /// Common method used for copying playlist paths into clipboard, and getting the appropriate DataObject
+        /// </summary>
+        /// <param name="playlistsOrManagers"></param>
+        /// <param name="parentManager"></param>
+        /// <returns>DataObject with file paths of playlists</returns>
         protected static DataObject PartialCopy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             var playlistPaths = new List<string>();
