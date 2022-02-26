@@ -9,18 +9,19 @@ namespace PlaylistManager.Utilities
 {
     public class LevelMatcher
     {
-        // TODO: Potentially add BeatSaver song lookup as a final fallback?
         private readonly LevelLoader levelLoader;
         private readonly SongDetailsLoader songDetailsLoader;
+        private readonly BeatSaverLoader beatSaverLoader;
         
-        public LevelMatcher(LevelLoader levelLoader, SongDetailsLoader songDetailsLoader)
+        public LevelMatcher(LevelLoader levelLoader, SongDetailsLoader songDetailsLoader, BeatSaverLoader beatSaverLoader)
         {
             this.levelLoader = levelLoader;
             this.songDetailsLoader = songDetailsLoader;
+            this.beatSaverLoader = beatSaverLoader;
         }
         
         /// <summary>
-        /// Looks up a level by hash locally then on SongDetails
+        /// Looks up a level by hash locally then on SongDetails and finally on BeatSaver
         /// </summary>
         /// <param name="hash">The SHA1 Hash of the level</param>
         /// <param name="cancellationToken"></param>
@@ -45,12 +46,12 @@ namespace PlaylistManager.Utilities
                 return songDetailsLevel;
             }
             
-            // Level not found
-            return null;
+            // Try getting level from BeatSaver/return null if not found
+            return await beatSaverLoader.GetLevelByHashAsync(hash, cancellationToken);
         }
         
         /// <summary>
-        /// Looks up a level by key on SongDetails.
+        /// Looks up a level by key on SongDetails/BeatSaver.
         /// </summary>
         /// <param name="key">The BeatSaver ID of the level</param>
         /// <param name="cancellationToken"></param>
@@ -59,11 +60,14 @@ namespace PlaylistManager.Utilities
         {
             // First we need to find the level on SongDetails to get the hash
             await songDetailsLoader.Init();
-            if (songDetailsLoader.TryGetLevelByKey(key, out var songDetailsLevel))
+            if (songDetailsLoader.TryGetLevelByKey(key, out var songDetailsLevel) || (await beatSaverLoader.GetLevelByKeyAsync(key, cancellationToken)) != null)
             {
                 // Try finding the equivalent local level
                 var localLevels = await levelLoader.GetCustomLevelsAsync(cancellationToken: cancellationToken);
-                if (localLevels.TryGetValue(songDetailsLevel.Hash, out var customLevel))
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse, song details level can in fact be null here
+                ICustomLevelData remoteLevel = songDetailsLevel != null ? songDetailsLevel : (await beatSaverLoader.GetLevelByKeyAsync(key, cancellationToken))!;
+                var hash = remoteLevel.Hash.ToUpper();
+                if (localLevels.TryGetValue(hash, out var customLevel))
                 {
                     var customLevelData = await customLevel.GetLevelDataAsync();
                     if (customLevelData != null)
@@ -72,7 +76,7 @@ namespace PlaylistManager.Utilities
                     }
                 }
                 // Local level not found
-                return songDetailsLevel;
+                return remoteLevel;
             }
             
             // Level not found

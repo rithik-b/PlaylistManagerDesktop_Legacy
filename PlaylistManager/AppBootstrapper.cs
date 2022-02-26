@@ -23,6 +23,7 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistLibUtils>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<SongDetailsLoader>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<BeatSaverLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelMatcher>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<CoverImageLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(() => (IClipboardHandler?)DiFactory<AvaloniaClipboardHandler>());
