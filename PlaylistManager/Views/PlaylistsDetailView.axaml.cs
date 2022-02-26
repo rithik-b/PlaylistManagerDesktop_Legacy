@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -10,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
@@ -30,9 +32,11 @@ namespace PlaylistManager.Views
         private LevelSearchWindow? levelSearchWindow;
         private LevelSearchWindow LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>()!;
         
-                
         private PlaylistEditWindow? playlistEditWindow;
         private PlaylistEditWindow PlaylistEditWindow => playlistEditWindow ??= Locator.Current.GetService<PlaylistEditWindow>()!;
+        
+        private IClipboardHandler? clipboardHandler;
+        private IClipboardHandler ClipboardHandler => clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
         
         private PlaylistsDetailViewModel? viewModel;
         public PlaylistsDetailViewModel? ViewModel
@@ -83,13 +87,13 @@ namespace PlaylistManager.Views
             }
         }
 
-        private void OnBackClick(object? sender, RoutedEventArgs e)
+        private void BackClick(object? sender, RoutedEventArgs e)
         {
             ViewModel?.Save();
             NavigationPanel.Pop();
         }
 
-        private async void OnAddClick(object? sender, RoutedEventArgs e)
+        private async void AddClick(object? sender, RoutedEventArgs? e)
         {
             if (ViewModel != null)
             {
@@ -110,7 +114,7 @@ namespace PlaylistManager.Views
             }
         }
         
-        private async void OnEditClick(object? sender, RoutedEventArgs e)
+        private async void EditClick(object? sender, RoutedEventArgs e)
         {
             if (ViewModel != null)
             {
@@ -140,7 +144,63 @@ namespace PlaylistManager.Views
             if (ViewModel != null)
             {
                 ViewModel.SelectedLevel = null;
-                Focus();
+            }
+            Focus();
+        }
+
+        private async void OnCellShortcut(object? sender, KeyEventArgs e)
+        {
+            if (ViewModel is {SelectedLevel: { }})
+            {
+                if (e.KeyModifiers == KeyModifiers.Control)
+                {
+                    switch (e.Key)
+                    {
+                        case Key.X:
+                            await ViewModel.SelectedLevel.Cut();
+                            break;
+                        case Key.C:
+                            await ViewModel.SelectedLevel.Copy();
+                            break;
+                    }
+                }
+                else if (e.Key == Key.Delete)
+                {
+                    ViewModel.SelectedLevel.Remove();
+                }
+            }
+        }
+        
+        private void OnShortcut(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyModifiers == KeyModifiers.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.N:
+                        AddClick(this, null);
+                        break;
+                    case Key.V:
+                        PasteClick(this, null);
+                        break;
+                }
+            }
+        }
+        
+        private async void PasteClick(object? sender, RoutedEventArgs? e)
+        {
+            var playlistSongWrappers = await ClipboardHandler.PastePlaylistSongWrappers();
+            if (playlistSongWrappers != null && ViewModel != null)
+            {
+                listBox.Selection.Clear();
+                foreach (var playlistSongWrapper in playlistSongWrappers)
+                {
+                    ViewModel.playlist.Add(playlistSongWrapper.playlistSong);
+                    var cell = new LevelListItemViewModel(playlistSongWrapper);
+                    ViewModel.Levels.Add(cell);
+                    listBox.Selection.Select(ViewModel.Levels.Count - 1);
+                }
+                ViewModel.UpdateNumSongs();
             }
         }
     }
@@ -165,7 +225,7 @@ namespace PlaylistManager.Views
         public string Title => playlist.Title;
         public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
-        public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
+        public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.customLevelData.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
@@ -180,6 +240,8 @@ namespace PlaylistManager.Views
                 NotifyPropertyChanged();
             }
         }
+
+        public List<LevelListItemViewModel> SelectedLevels { get; } = new();
 
         public Bitmap? CoverImage
         {
@@ -244,8 +306,8 @@ namespace PlaylistManager.Views
 
         public void MoveLevel(LevelListItemViewModel source, LevelListItemViewModel destination)
         {
-            playlist.Remove(source.playlistSong.playlistSong);
-            playlist.Insert(playlist.IndexOf(destination.playlistSong.playlistSong), source.playlistSong.playlistSong);
+            playlist.Remove(source.playlistSongWrapper.playlistSong);
+            playlist.Insert(playlist.IndexOf(destination.playlistSongWrapper.playlistSong), source.playlistSongWrapper.playlistSong);
             Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
             SelectedLevel = source;
         }

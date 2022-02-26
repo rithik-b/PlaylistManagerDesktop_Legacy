@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Avalonia;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
@@ -24,7 +25,10 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<SongDetailsLoader>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelMatcher>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<CoverImageLoader>);
+            Locator.CurrentMutable.RegisterLazySingleton(() => (IClipboardHandler?)DiFactory<AvaloniaClipboardHandler>());
+            
             Locator.CurrentMutable.RegisterLazySingleton(ConfigModel.Factory);
+
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelSearchWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistEditWindow>);

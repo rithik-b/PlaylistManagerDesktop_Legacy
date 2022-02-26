@@ -3,11 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
-             x:Class="PlaylistManager.Views.PlaylistsDetailView" PointerPressed="LoseFocus">
+             x:Class="PlaylistManager.Views.PlaylistsDetailView" PointerPressed="LoseFocus" KeyDown="OnShortcut">
     <DockPanel>
         <Border Background="#202020" DockPanel.Dock="Top" PointerLeave="FloatingBarHoverLeave">
             <Grid ColumnDefinitions="1*, 4*" RowDefinitions="Auto, Auto" Margin="0,0,0,20">
-                <Button Padding="20" HorizontalAlignment="Left" Click="OnBackClick" Margin="0,0,0,20">&lt;</Button>
+                <Button Padding="20" HorizontalAlignment="Left" Click="BackClick" Margin="0,0,0,20">&lt;</Button>
                 <Image Stretch="UniformToFill" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
                 <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" Grid.Row="1" MaxHeight="256" Margin="20,0">
                     <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
@@ -17,10 +17,10 @@
                         <TextBlock Text="{Binding NumSongs}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Thin" />
                     </StackPanel>
                     <FloatingButtonBar Name="FloatingButtonBar" Icon="···" IconBackground="#606060" ExpandDirection="ToRight" OpenLength="180" PointerEnter="FloatingBarHoverStart">
-                        <FloatingButton Click="OnAddClick" Background="#606060" ToolTip.Tip="Add a Song">
+                        <FloatingButton Click="AddClick" Background="#606060" ToolTip.Tip="Add a Song">
                             <TextBlock Text="+" TextAlignment="Center" FontSize="18" VerticalAlignment="Center" />
                         </FloatingButton>
-                        <FloatingButton Click="OnEditClick" Background="#606060" ToolTip.Tip="Edit playlist">
+                        <FloatingButton Click="EditClick" Background="#606060" ToolTip.Tip="Edit playlist">
                             <PathIcon Data="{StaticResource edit_regular}" />
                         </FloatingButton>
                         <FloatingButton Background="#606060" ToolTip.Tip="Download all Songs">
@@ -35,7 +35,13 @@
         </Border>
         <Panel DockPanel.Dock="Bottom">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding SongsLoading}" />
-            <ListBox Name="ListBox" Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" Background="Transparent" AutoScrollToSelectedItem="True" />
+            <ListBox Name="ListBox" Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" SelectionMode="Multiple" SelectedItems="{Binding SelectedLevels, Mode=TwoWay}" Background="Transparent" AutoScrollToSelectedItem="True" KeyDown="OnCellShortcut" />
+            <Panel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add" Click="AddClick" InputGesture="Control + N" />
+                    <MenuItem Header="Paste" Click="PasteClick" InputGesture="Control + V" />
+                </ContextMenu>
+            </Panel.ContextMenu>
         </Panel>
     </DockPanel>
 </UserControl>

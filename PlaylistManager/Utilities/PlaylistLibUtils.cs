@@ -45,7 +45,7 @@ namespace PlaylistManager.Utilities
         {
             var playlist = CreatePlaylist(playlistName, configModel.AuthorName, playlistManager);
             using var coverStream = new MemoryStream();
-            configModel.coverImage.Save(coverStream);
+            configModel.coverImage?.Save(coverStream);
             playlist.SetCover(coverStream);
             return playlist;
         }
@@ -152,6 +152,21 @@ namespace PlaylistManager.Utilities
                     return Difficulty.ExpertPlus;
             }
             return null;
+        }
+
+        public static string GetUniqueChildName(this BeatSaberPlaylistsLib.PlaylistManager playlistManager,
+            string proposedName)
+        {
+            var path = Path.Combine(playlistManager.PlaylistPath, proposedName);
+            
+            if (Directory.Exists(path))
+            {
+                int pathNum = 1;
+                while (Directory.Exists(path + $" ({pathNum})")) ++pathNum;
+                path += $" ({pathNum})";
+            }
+
+            return Path.GetFileName(path);
         }
     }
 }

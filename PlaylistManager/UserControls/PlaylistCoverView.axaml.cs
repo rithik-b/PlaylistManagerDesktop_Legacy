@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
+using Aura.UI.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -9,9 +11,11 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.Utilities;
 using PlaylistManager.Views;
+using PlaylistManager.Windows;
 using ReactiveUI;
 using Splat;
 
@@ -103,14 +107,12 @@ namespace PlaylistManager.UserControls
         
         private async void Drop(object sender, DragEventArgs e)
         {
-            if (DataContext is PlaylistCoverViewModel current && !current.isPlaylist && current is {playlistManager: { }})
+            if (DataContext is PlaylistCoverViewModel {isPlaylist: false, playlistManager: {}} current
+                && e.Data.Get(kPlaylistData) is IPlaylist drag)
             {
-                if (e.Data.Contains(kPlaylistData) && e.Data.Get(kPlaylistData) is IPlaylist drag)
-                {
-                    PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
-                    _ = current.LoadPlaylistsAsync();
-                    e.DragEffects = DragDropEffects.Move;
-                }
+                PlaylistLibUtils.OnPlaylistMove(drag, current.playlistManager);
+                _ = current.LoadPlaylistsAsync();
+                e.DragEffects = DragDropEffects.Move;
             }
         }
         #endregion
@@ -171,6 +173,7 @@ namespace PlaylistManager.UserControls
         public readonly IPlaylist? playlist;
         public readonly BeatSaberPlaylistsLib.PlaylistManager? playlistManager;
         public readonly bool isPlaylist;
+        private bool popupShowing;
         private PlaylistCoverView? control;
         private CoverImageLoader? coverImageLoader;
         private PlaylistLibUtils? playlistLibUtils;
@@ -178,9 +181,15 @@ namespace PlaylistManager.UserControls
         private Bitmap? coverImage;
         
         private PlaylistsListView? playlistsListView;
-
-        public PlaylistsListView PlaylistsListView =>
+        private PlaylistsListView PlaylistsListView =>
             playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+
+        private IClipboardHandler? clipboardHandler;
+        private IClipboardHandler ClipboardHandler =>
+            clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
+        
+        private MainWindow? mainWindow;
+        private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
 
         public PlaylistCoverViewModel(IPlaylist playlist)
         {
@@ -209,9 +218,9 @@ namespace PlaylistManager.UserControls
             }
             set
             {
-                // TODO: Prevent renaming of folders to same name
                 if (isPlaylist && playlist != null)
                 {
+                    playlist.Filename = "";
                     playlist.Title = value;
                     PlaylistsListView.viewModel.CurrentManager?.StorePlaylist(playlist);
                 }
@@ -224,7 +233,16 @@ namespace PlaylistManager.UserControls
                     }
                     if (Path.GetFileName(playlistManager.PlaylistPath) != input)
                     {
-                        playlistManager.RenameManager(input);
+                        var oldName = Path.GetFileName(playlistManager.PlaylistPath);
+                        try
+                        {
+                            playlistManager.RenameManager(input);
+                        }
+                        catch (Exception e)
+                        {
+                            MainWindow.NewMessageDialog("Rename Error", e.Message, null, null);
+                            RenameTitle = oldName;
+                        }
                     }
                 }
                 NotifyPropertyChanged();
@@ -306,51 +324,17 @@ namespace PlaylistManager.UserControls
 
         public async Task Cut()
         {
-            if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
+            if (PlaylistsListView.viewModel.CurrentManager != null)
             {
-                var playlistPath = playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                var tempPath = Path.GetTempPath() + Path.GetFileName(playlistPath);
-                if (File.Exists(playlistPath))
-                {
-                    await Task.Run(async () =>
-                    {
-                        await using FileStream fileStream = new(tempPath, FileMode.Create);
-                        playlist.GetHandlerForPlaylist(PlaylistsListView.viewModel.CurrentManager)?.Serialize(playlist, fileStream);
-                        PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlist);
-                        PlaylistsListView.viewModel.SearchResults.Remove(this);
-                    });
-                }
-                
-                var dragData = new DataObject();
-                dragData.Set(PlaylistCoverView.kPlaylistData, playlist);
-                dragData.Set(DataFormats.FileNames, new string[1]
-                {
-                    tempPath
-                });
-                var clipboard = Application.Current?.Clipboard;
-                if (clipboard != null)
-                {
-                    await clipboard.SetDataObjectAsync(dragData);
-                }
+                await ClipboardHandler.Cut(PlaylistsListView.viewModel.SelectedPlaylistsOrManagers, PlaylistsListView.viewModel.CurrentManager);
             }
         }
         
         public async Task Copy()
         {
-            if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
+            if (PlaylistsListView.viewModel.CurrentManager != null)
             {
-                var playlistPath = playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                var dragData = new DataObject();
-                dragData.Set(PlaylistCoverView.kPlaylistData, playlist);
-                dragData.Set(DataFormats.FileNames, new string[1]
-                {
-                    playlistPath
-                });
-                var clipboard = Application.Current?.Clipboard;
-                if (clipboard != null)
-                {
-                    await clipboard.SetDataObjectAsync(dragData);
-                }
+                await ClipboardHandler.Copy(PlaylistsListView.viewModel.SelectedPlaylistsOrManagers, PlaylistsListView.viewModel.CurrentManager);
             }
         }
 
@@ -404,28 +388,74 @@ namespace PlaylistManager.UserControls
 
         #endregion
 
+        // TODO: Make this async
         public void Delete()
         {
-            // TODO: Show a popup before delete
-            if (PlaylistsListView.viewModel.CurrentManager != null)
+            var deleteMessage = GetDeleteMessage();
+            if (PlaylistsListView.viewModel.CurrentManager != null && deleteMessage != null && !popupShowing)
             {
-                if (isPlaylist && playlist != null)
+                MainWindow.NewContentDialog(deleteMessage, (sender, e) =>
                 {
-                    var playlistPath = playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                    if (File.Exists(playlistPath))
+                    var selectedItems = PlaylistsListView.viewModel.SelectedPlaylistsOrManagers.ToArray();
+                    foreach (var playlistsOrManager in selectedItems)
                     {
-                        PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlist);
+                        if (playlistsOrManager.isPlaylist && playlistsOrManager.playlist != null)
+                        {
+                            var playlistPath = playlistsOrManager.playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
+                            if (File.Exists(playlistPath))
+                            {
+                                PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlistsOrManager.playlist);
+                            }
+                        }
+                        else if (playlistsOrManager.playlistManager != null)
+                        {
+                            if (Directory.Exists(playlistsOrManager.playlistManager.PlaylistPath))
+                            {
+                                PlaylistsListView.viewModel.CurrentManager.DeleteChildManager(playlistsOrManager.playlistManager);
+                            }
+                        }
+                        PlaylistsListView.viewModel.SearchResults.Remove(playlistsOrManager);
                     }
-                }
-                else if (playlistManager != null)
-                {
-                    if (Directory.Exists(playlistManager.PlaylistPath))
-                    {
-                        PlaylistsListView.viewModel.CurrentManager.DeleteChildManager(playlistManager);
-                    }
-                }
-                PlaylistsListView.viewModel.SearchResults.Remove(this);
+                    popupShowing = false;
+                }, (sender, e) => popupShowing = false, "Yes", "No");
+                popupShowing = true;
             }
+        }
+
+        private string? GetDeleteMessage()
+        {
+            var numPlaylists = 0;
+            var numManagers = 0;
+
+            foreach (var playlistsOrManager in PlaylistsListView.viewModel.SelectedPlaylistsOrManagers)
+            {
+                if (playlistsOrManager.isPlaylist)
+                {
+                    numPlaylists++;
+                }
+                else
+                {
+                    numManagers++;
+                }
+            }
+
+            if (numPlaylists > 0 && numManagers > 0)
+            {
+                return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")} and " +
+                       $"{numManagers} folder{(numManagers != 1 ? "s" : "")}?";
+            }
+            
+            if (numPlaylists > 0)
+            {
+                return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")}?";
+            }
+
+            if (numManagers > 0)
+            {
+                return $"Are you sure you want to delete {numManagers} folder{(numManagers != 1 ? "s" : "")}?";
+            }
+
+            return null;
         }
 
         #endregion

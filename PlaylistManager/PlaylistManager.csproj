@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ApplicationIcon>Icons\Logo.ico</ApplicationIcon>
     </PropertyGroup>
@@ -12,19 +12,19 @@
         <PackageReference Include="Aura.UI" Version="0.1.5-dev-04" />
         <PackageReference Include="Aura.UI.FluentTheme" Version="0.1.5-dev-04" />
         <PackageReference Include="Avalonia" Version="0.10.12" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.12" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.12" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
         <PackageReference Include="BeatSaber.SongHashing" Version="1.1.1" />
-        <PackageReference Include="BeatSaberPlaylistsLib" Version="1.5.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.2-mauipre.1.22054.8" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.2-mauipre.1.22054.8" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.2-mauipre.1.22054.8" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.2-mauipre.1.22054.8" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.2-mauipre.1.22054.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0-preview.1.22076.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0-preview.1.22076.8" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.1.22076.8" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0-preview.1.22076.8" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0-preview.1.22076.8" />
         <PackageReference Include="protobuf-net" Version="3.0.101" />
-        <PackageReference Include="ReactiveUI" Version="17.1.17" />
-        <PackageReference Include="Splat" Version="14.1.17" />
+        <PackageReference Include="ReactiveUI" Version="17.1.50" />
+        <PackageReference Include="Splat" Version="14.1.45" />
+        <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.1.22076.8" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Windows\MainWindow.axaml.cs">
@@ -44,5 +44,8 @@
       <Reference Include="SongDetailsCache, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>Refs\SongDetailsCache.dll</HintPath>
       </Reference>
+        <Reference Include="BeatSaberPlaylistsLib, Version=1.5.2.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>Refs\BeatSaberPlaylistsLib.dll</HintPath>
+        </Reference>
     </ItemGroup>
 </Project>

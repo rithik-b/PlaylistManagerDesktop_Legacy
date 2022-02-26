@@ -31,7 +31,7 @@ namespace PlaylistManager.Models
         public string AuthorName { get; set; } = nameof(PlaylistManager);
         
         [JsonIgnore]
-        public Bitmap coverImage;
+        public Bitmap? coverImage;
 
         public static ConfigModel Factory()
         {
@@ -89,7 +89,7 @@ namespace PlaylistManager.Models
             Utils.Serialize(this, configStream);
             
             var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kImagePath);
-            coverImage.Save(imagePath);
+            coverImage?.Save(imagePath);
         }
     }
 }
