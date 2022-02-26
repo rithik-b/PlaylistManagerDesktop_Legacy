@@ -141,7 +141,30 @@ namespace PlaylistManager.Views
             if (ViewModel != null)
             {
                 ViewModel.SelectedLevel = null;
-                Focus();
+            }
+            Focus();
+        }
+
+        private async void OnCellShortcut(object? sender, KeyEventArgs e)
+        {
+            if (ViewModel is {SelectedLevel: { }})
+            {
+                if (e.KeyModifiers == KeyModifiers.Control)
+                {
+                    switch (e.Key)
+                    {
+                        case Key.X:
+                            ViewModel.SelectedLevel.Cut();
+                            break;
+                        case Key.C:
+                            ViewModel.SelectedLevel.Copy();
+                            break;
+                    }
+                }
+                else if (e.Key == Key.Delete)
+                {
+                    ViewModel.SelectedLevel.Remove();
+                }
             }
         }
     }

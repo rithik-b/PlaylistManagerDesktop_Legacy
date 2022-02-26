@@ -396,7 +396,7 @@ namespace PlaylistManager.UserControls
         
         private void OpenPreview() => Utils.OpenURL(kRabbitPreviewerIHardlyKnowHer + Key);
 
-        private async void Cut()
+        public async Task Cut()
         {
             if (PlaylistsDetailView.ViewModel != null)
             {
@@ -411,7 +411,7 @@ namespace PlaylistManager.UserControls
             }
         }
 
-        private async void Copy()
+        public async Task Copy()
         {
             if (PlaylistsDetailView.ViewModel != null)
             {
@@ -425,7 +425,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private void RemoveLevel()
+        public void Remove()
         {
             // TODO: Show popup before deletion
             var detailView = Locator.Current.GetService<PlaylistsDetailView>()!;
