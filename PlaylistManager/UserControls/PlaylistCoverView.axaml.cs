@@ -173,6 +173,7 @@ namespace PlaylistManager.UserControls
         public readonly IPlaylist? playlist;
         public readonly BeatSaberPlaylistsLib.PlaylistManager? playlistManager;
         public readonly bool isPlaylist;
+        private bool popupShowing;
         private PlaylistCoverView? control;
         private CoverImageLoader? coverImageLoader;
         private PlaylistLibUtils? playlistLibUtils;
@@ -390,9 +391,9 @@ namespace PlaylistManager.UserControls
         public void Delete()
         {
             var deleteMessage = GetDeleteMessage();
-            if (PlaylistsListView.viewModel.CurrentManager != null && deleteMessage != null)
+            if (PlaylistsListView.viewModel.CurrentManager != null && deleteMessage != null && !popupShowing)
             {
-                MainWindow.NewContentDialog(deleteMessage, (object sender, RoutedEventArgs e) =>
+                MainWindow.NewContentDialog(deleteMessage, (sender, e) =>
                 {
                     var selectedItems = PlaylistsListView.viewModel.SelectedPlaylistsOrManagers.ToArray();
                     foreach (var playlistsOrManager in selectedItems)
@@ -414,7 +415,9 @@ namespace PlaylistManager.UserControls
                         }
                         PlaylistsListView.viewModel.SearchResults.Remove(playlistsOrManager);
                     }
-                }, null, "Yes", "No");
+                    popupShowing = false;
+                }, (sender, e) => popupShowing = false, "Yes", "No");
+                popupShowing = true;
             }
         }
 

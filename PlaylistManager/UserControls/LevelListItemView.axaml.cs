@@ -99,6 +99,7 @@ namespace PlaylistManager.UserControls
         public readonly PlaylistSongWrapper playlistSongWrapper;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
+        private bool popupShowing;
         private string? key;
         private string? selectedCharacteristic;
         private List<Difficulty>? difficulties;
@@ -436,7 +437,7 @@ namespace PlaylistManager.UserControls
         public void Remove()
         {
             var removeMessage = GetRemoveMessage();
-            if (PlaylistsDetailView.ViewModel != null && removeMessage != null)
+            if (PlaylistsDetailView.ViewModel != null && removeMessage != null && !popupShowing)
             {
                 MainWindow.NewContentDialog(removeMessage, (sender, e) =>
                 {
@@ -449,7 +450,9 @@ namespace PlaylistManager.UserControls
                     }
                 
                     PlaylistsDetailView.ViewModel.UpdateNumSongs();
-                }, null, "Yes", "No");
+                    popupShowing = false;
+                }, (sender, e) => popupShowing = false, "Yes", "No");
+                popupShowing = true;
             }
         }
 
