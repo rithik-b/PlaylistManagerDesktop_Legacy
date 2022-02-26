@@ -192,11 +192,15 @@ namespace PlaylistManager.Views
             var playlistSongWrappers = await ClipboardHandler.PastePlaylistSongWrappers();
             if (playlistSongWrappers != null && ViewModel != null)
             {
+                listBox.Selection.Clear();
                 foreach (var playlistSongWrapper in playlistSongWrappers)
                 {
                     ViewModel.playlist.Add(playlistSongWrapper.playlistSong);
-                    ViewModel.Levels.Add(new LevelListItemViewModel(playlistSongWrapper));
+                    var cell = new LevelListItemViewModel(playlistSongWrapper);
+                    ViewModel.Levels.Add(cell);
+                    listBox.Selection.Select(ViewModel.Levels.Count - 1);
                 }
+                ViewModel.UpdateNumSongs();
             }
         }
     }

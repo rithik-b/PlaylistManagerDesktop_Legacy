@@ -35,7 +35,7 @@
         </Border>
         <Panel DockPanel.Dock="Bottom">
             <ProgressBar IsIndeterminate="True" IsVisible="{Binding SongsLoading}" />
-            <ListBox Name="ListBox" Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" SelectionMode="Multiple" SelectedItems="{Binding SelectedLevels}" Background="Transparent" AutoScrollToSelectedItem="True" KeyDown="OnCellShortcut" />
+            <ListBox Name="ListBox" Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" SelectionMode="Multiple" SelectedItems="{Binding SelectedLevels, Mode=TwoWay}" Background="Transparent" AutoScrollToSelectedItem="True" KeyDown="OnCellShortcut" />
             <Panel.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Add" Click="AddClick" InputGesture="Control + N" />

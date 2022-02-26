@@ -17,10 +17,12 @@ namespace PlaylistManager.Clipboard
     public class AvaloniaClipboardHandler : IClipboardHandler
     {
         private readonly PlaylistLibUtils playlistLibUtils;
-        
-        public AvaloniaClipboardHandler(PlaylistLibUtils playlistLibUtils)
+        private readonly LevelMatcher levelMatcher;
+
+        public AvaloniaClipboardHandler(PlaylistLibUtils playlistLibUtils, LevelMatcher levelMatcher)
         {
             this.playlistLibUtils = playlistLibUtils;
+            this.levelMatcher = levelMatcher;
         }
         
         public async Task Cut(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager)
@@ -84,7 +86,13 @@ namespace PlaylistManager.Clipboard
         public async Task Copy(IEnumerable<PlaylistSongWrapper> playlistSongWrappers)
         {
             var clipboardData = new DataObject();
-            clipboardData.Set(IClipboardHandler.kPlaylistSongData, playlistSongWrappers);
+            var playlistSongs = new List<IPlaylistSong>();
+            foreach (var playlistSongWrapper in playlistSongWrappers)
+            {
+                playlistSongs.Add(playlistSongWrapper.playlistSong);
+            }
+            
+            clipboardData.Set(IClipboardHandler.kPlaylistSongData, playlistSongs);
             var clipboard = Application.Current?.Clipboard;
             
             if (clipboard != null)
@@ -100,8 +108,23 @@ namespace PlaylistManager.Clipboard
             {
                 var data = await clipboard.GetFormatsAsync();
                 
-                if (data.Contains(IClipboardHandler.kPlaylistSongData) && await clipboard.GetDataAsync(IClipboardHandler.kPlaylistSongData) is List<PlaylistSongWrapper> playlistSongWrappers)
+                if (data.Contains(IClipboardHandler.kPlaylistSongData) && await clipboard.GetDataAsync(IClipboardHandler.kPlaylistSongData) is IEnumerable<IPlaylistSong> playlistSongs)
                 {
+                    var playlistSongWrappers = new List<PlaylistSongWrapper>();
+
+                    foreach (var playlistSong in playlistSongs)
+                    {
+                        if (playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var identifierType))
+                        {
+                            var levelData = identifierType == Identifier.Hash ? await levelMatcher.GetLevelByHash(identifier) :
+                                identifierType == Identifier.Key ? await levelMatcher.GetLevelByKey(identifier) : null;
+                            if (levelData != null)
+                            {
+                                playlistSongWrappers.Add(new PlaylistSongWrapper(playlistSong, levelData));
+                            }
+                        }
+                    }
+                    
                     return playlistSongWrappers;
                 }
             }
