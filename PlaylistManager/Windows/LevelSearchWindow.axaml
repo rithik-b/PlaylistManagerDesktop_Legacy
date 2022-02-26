@@ -5,9 +5,9 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PlaylistManager.Windows.LevelSearchWindow"
         Title="LevelSearchWindow" SystemDecorations="None" SizeToContent="WidthAndHeight"
-        WindowStartupLocation="CenterOwner" KeyDown="InputElement_OnKeyDown">
+        WindowStartupLocation="CenterOwner" KeyDown="OnKeyDown">
     <DockPanel Width="600" Margin="5" MaxHeight="350">
         <TextBox Name="SearchBox" DockPanel.Dock="Top" Watermark="Add level (Esc to close)" Text="{Binding SearchText}" FontSize="25" />
-        <ListBox Name="ListBox" Items="{Binding SearchResults}" SelectedItem="{Binding SelectedResult}" AutoScrollToSelectedItem="True" Background="Transparent" />
+        <ListBox Name="ListBox" Items="{Binding SearchResults}" SelectedItem="{Binding SelectedResult}" AutoScrollToSelectedItem="True" Background="Transparent" DoubleTapped="OnDoubleClick" />
     </DockPanel>
 </Window>

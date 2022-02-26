@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
@@ -56,7 +57,7 @@ namespace PlaylistManager.Windows
             searchBox.Focus();
         }
         
-        private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
+        private void OnKeyDown(object? sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -75,6 +76,14 @@ namespace PlaylistManager.Windows
                         openSemaphore.Release();
                     }
                     break;
+            }
+        }
+
+        private void OnDoubleClick(object? sender, RoutedEventArgs e)
+        {
+            if (SearchedSong != null)
+            {
+                openSemaphore.Release();
             }
         }
     }
