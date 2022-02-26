@@ -11,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
+using PlaylistManager.Clipboard;
 using PlaylistManager.Models;
 using PlaylistManager.UserControls;
 using PlaylistManager.Utilities;
@@ -31,9 +32,11 @@ namespace PlaylistManager.Views
         private LevelSearchWindow? levelSearchWindow;
         private LevelSearchWindow LevelSearchWindow => levelSearchWindow ??= Locator.Current.GetService<LevelSearchWindow>()!;
         
-                
         private PlaylistEditWindow? playlistEditWindow;
         private PlaylistEditWindow PlaylistEditWindow => playlistEditWindow ??= Locator.Current.GetService<PlaylistEditWindow>()!;
+        
+        private IClipboardHandler? clipboardHandler;
+        private IClipboardHandler ClipboardHandler => clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
         
         private PlaylistsDetailViewModel? viewModel;
         public PlaylistsDetailViewModel? ViewModel
@@ -167,6 +170,19 @@ namespace PlaylistManager.Views
                 }
             }
         }
+        
+        private async void PasteClick(object? sender, RoutedEventArgs e)
+        {
+            var playlistSongWrappers = await ClipboardHandler.PastePlaylistSongWrappers();
+            if (playlistSongWrappers != null && ViewModel != null)
+            {
+                foreach (var playlistSongWrapper in playlistSongWrappers)
+                {
+                    ViewModel.playlist.Add(playlistSongWrapper.playlistSong);
+                    ViewModel.Levels.Add(new LevelListItemViewModel(playlistSongWrapper));
+                }
+            }
+        }
     }
 
     public class PlaylistsDetailViewModel : ViewModelBase
@@ -189,7 +205,7 @@ namespace PlaylistManager.Views
         public string Title => playlist.Title;
         public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
-        public int OwnedSongs => Levels.Count(l => l.playlistSong.customLevelData.Downloaded);
+        public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.customLevelData.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
@@ -270,8 +286,8 @@ namespace PlaylistManager.Views
 
         public void MoveLevel(LevelListItemViewModel source, LevelListItemViewModel destination)
         {
-            playlist.Remove(source.playlistSong.playlistSong);
-            playlist.Insert(playlist.IndexOf(destination.playlistSong.playlistSong), source.playlistSong.playlistSong);
+            playlist.Remove(source.playlistSongWrapper.playlistSong);
+            playlist.Insert(playlist.IndexOf(destination.playlistSongWrapper.playlistSong), source.playlistSongWrapper.playlistSong);
             Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
             SelectedLevel = source;
         }

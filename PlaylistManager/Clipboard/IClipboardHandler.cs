@@ -32,7 +32,7 @@ namespace PlaylistManager.Clipboard
         public Task Copy(IEnumerable<PlaylistCoverViewModel> playlistsOrManagers, BeatSaberPlaylistsLib.PlaylistManager parentManager);
 
         /// <summary>
-        /// Paste <see cref="IPlaylist" objects/>
+        /// Paste <see cref="IPlaylist"/> objects
         /// </summary>
         /// <returns>An enumerable of playlists if in clipboard, null otherwise</returns>
         public Task<IEnumerable<IPlaylist>?> PastePlaylists();
@@ -43,6 +43,12 @@ namespace PlaylistManager.Clipboard
         /// </summary>
         /// <param name="playlistSongWrappers"></param>
         public Task Copy(IEnumerable<PlaylistSongWrapper> playlistSongWrappers);
+
+        /// <summary>
+        /// Paste <see cref="PlaylistSongWrapper"/> objects
+        /// </summary>
+        /// <returns></returns>
+        public Task<IEnumerable<PlaylistSongWrapper>?> PastePlaylistSongWrappers();
 
         /// <summary>
         /// Common method used for moving playlists to a temporary folder, and getting the appropriate DataObject

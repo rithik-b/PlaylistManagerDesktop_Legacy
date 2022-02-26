@@ -92,5 +92,20 @@ namespace PlaylistManager.Clipboard
                 await clipboard.SetDataObjectAsync(clipboardData);
             }
         }
+
+        public async Task<IEnumerable<PlaylistSongWrapper>?> PastePlaylistSongWrappers()
+        {
+            var clipboard = Application.Current?.Clipboard;
+            if (clipboard != null)
+            {
+                var data = await clipboard.GetFormatsAsync();
+                
+                if (data.Contains(IClipboardHandler.kPlaylistSongData) && await clipboard.GetDataAsync(IClipboardHandler.kPlaylistSongData) is List<PlaylistSongWrapper> playlistSongWrappers)
+                {
+                    return playlistSongWrappers;
+                }
+            }
+            return null;
+        }
     }
 }

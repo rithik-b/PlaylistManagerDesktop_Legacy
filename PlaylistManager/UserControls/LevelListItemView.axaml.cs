@@ -94,7 +94,7 @@ namespace PlaylistManager.UserControls
         private const string kBeatSaverURL = "https://beatsaver.com/maps/";
         private const string kRabbitPreviewerIHardlyKnowHer = "https://skystudioapps.com/bs-viewer/?id=";
 
-        public readonly PlaylistSongWrapper playlistSong;
+        public readonly PlaylistSongWrapper playlistSongWrapper;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         private string? key;
@@ -107,11 +107,11 @@ namespace PlaylistManager.UserControls
         private PlaylistsDetailView? playlistsDetailView;
         private PlaylistsDetailView PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>()!;
         
-        public LevelListItemViewModel(PlaylistSongWrapper playlistSong)
+        public LevelListItemViewModel(PlaylistSongWrapper playlistSongWrapper)
         {
-            this.playlistSong = playlistSong;
+            this.playlistSongWrapper = playlistSongWrapper;
             
-            foreach (var characteristic in playlistSong.customLevelData.Difficulties.Keys)
+            foreach (var characteristic in playlistSongWrapper.customLevelData.Difficulties.Keys)
             {
                 Characteristics.Add(characteristic);
             }
@@ -119,8 +119,8 @@ namespace PlaylistManager.UserControls
             SelectedCharacteristic = Characteristics.FirstOrDefault();
         }
 
-        public string SongName => $"{playlistSong.customLevelData.SongName} {playlistSong.customLevelData.SongSubName}";
-        public string AuthorName => $"{playlistSong.customLevelData.SongAuthorName} [{playlistSong.customLevelData.LevelAuthorName}]";
+        public string SongName => $"{playlistSongWrapper.customLevelData.SongName} {playlistSongWrapper.customLevelData.SongSubName}";
+        public string AuthorName => $"{playlistSongWrapper.customLevelData.SongAuthorName} [{playlistSongWrapper.customLevelData.LevelAuthorName}]";
         public string? Key
         {
             get
@@ -137,7 +137,7 @@ namespace PlaylistManager.UserControls
                 NotifyPropertyChanged();
             }
         }
-        public float Opacity => playlistSong.customLevelData.Downloaded ? 1f: 0.5f;
+        public float Opacity => playlistSongWrapper.customLevelData.Downloaded ? 1f: 0.5f;
         public List<string> Characteristics { get; } = new();
         public Bitmap? CoverImage
         {
@@ -163,7 +163,7 @@ namespace PlaylistManager.UserControls
             set
             {
                 selectedCharacteristic = value;
-                if (selectedCharacteristic != null && playlistSong.customLevelData.Difficulties.TryGetValue(selectedCharacteristic, out var difficulties))
+                if (selectedCharacteristic != null && playlistSongWrapper.customLevelData.Difficulties.TryGetValue(selectedCharacteristic, out var difficulties))
                 {
                     this.difficulties = difficulties;
 
@@ -173,9 +173,9 @@ namespace PlaylistManager.UserControls
                     expertHighlighted = false;
                     expertPlusHighlighted = false;
                     
-                    if (playlistSong.playlistSong.Difficulties != null)
+                    if (playlistSongWrapper.playlistSong.Difficulties != null)
                     {
-                        foreach (var difficulty in playlistSong.playlistSong.Difficulties)
+                        foreach (var difficulty in playlistSongWrapper.playlistSong.Difficulties)
                         {
                             if (difficulty.Characteristic.Equals(SelectedCharacteristic, StringComparison.OrdinalIgnoreCase))
                             {
@@ -216,7 +216,7 @@ namespace PlaylistManager.UserControls
                 NotifyPropertyChanged(nameof(ExpertPlusBackground));
             }
         }
-        public bool MultipleCharacteristics => playlistSong.customLevelData.Difficulties.Keys.Count > 1;
+        public bool MultipleCharacteristics => playlistSongWrapper.customLevelData.Difficulties.Keys.Count > 1;
 
         #region Difficulties
         
@@ -364,26 +364,26 @@ namespace PlaylistManager.UserControls
         {
             if (SelectedCharacteristic != null)
             {
-                playlistSong.playlistSong.Difficulties ??= new List<BeatSaberPlaylistsLib.Types.Difficulty>();
+                playlistSongWrapper.playlistSong.Difficulties ??= new List<BeatSaberPlaylistsLib.Types.Difficulty>();
                 var diffToHighlight = new BeatSaberPlaylistsLib.Types.Difficulty
                 {
                     Characteristic = SelectedCharacteristic,
                     Name = difficulty.ToString()
                 };
-                playlistSong.playlistSong.Difficulties.Add(diffToHighlight);
+                playlistSongWrapper.playlistSong.Difficulties.Add(diffToHighlight);
             }
         }
         
         private void UnHighlightDifficulty(Difficulty difficulty)
         {
-            if (playlistSong.playlistSong.Difficulties != null && SelectedCharacteristic != null)
+            if (playlistSongWrapper.playlistSong.Difficulties != null && SelectedCharacteristic != null)
             {
-                var diffToDelete = playlistSong.playlistSong.Difficulties.FindIndex(d =>
+                var diffToDelete = playlistSongWrapper.playlistSong.Difficulties.FindIndex(d =>
                     d.Characteristic.Equals(SelectedCharacteristic, StringComparison.OrdinalIgnoreCase) &&
                     d.Name.Equals(difficulty.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (diffToDelete != -1)
                 {
-                    playlistSong.playlistSong.Difficulties.RemoveAt(diffToDelete);
+                    playlistSongWrapper.playlistSong.Difficulties.RemoveAt(diffToDelete);
                 }
             }
         }
@@ -403,7 +403,7 @@ namespace PlaylistManager.UserControls
                 var playlistSongs = new List<PlaylistSongWrapper>();
                 foreach (var selectedLevel in PlaylistsDetailView.ViewModel.SelectedLevels)
                 {
-                    playlistSongs.Add(selectedLevel.playlistSong);
+                    playlistSongs.Add(selectedLevel.playlistSongWrapper);
                     PlaylistsDetailView.ViewModel.Levels.Remove(selectedLevel);
                 }
 
@@ -418,7 +418,7 @@ namespace PlaylistManager.UserControls
                 var playlistSongs = new List<PlaylistSongWrapper>();
                 foreach (var selectedLevel in PlaylistsDetailView.ViewModel.SelectedLevels)
                 {
-                    playlistSongs.Add(selectedLevel.playlistSong);
+                    playlistSongs.Add(selectedLevel.playlistSongWrapper);
                 }
 
                 await ClipboardHandler.Copy(playlistSongs);
@@ -432,7 +432,7 @@ namespace PlaylistManager.UserControls
             if (detailView.ViewModel != null)
             {
                 var viewModel = detailView.ViewModel;
-                viewModel.playlist.Remove(playlistSong.playlistSong);
+                viewModel.playlist.Remove(playlistSongWrapper.playlistSong);
                 viewModel.Levels.Remove(this);
                 viewModel.UpdateNumSongs();
             }
@@ -442,7 +442,7 @@ namespace PlaylistManager.UserControls
 
         private async Task LoadKeyAsync()
         {
-            var key = await playlistSong.customLevelData.GetKeyAsync();
+            var key = await playlistSongWrapper.customLevelData.GetKeyAsync();
             if (key != null)
             {
                 RxApp.MainThreadScheduler.Schedule(() => Key = key);
@@ -451,7 +451,7 @@ namespace PlaylistManager.UserControls
         
         private async Task LoadCoverAsync()
         {
-            var bitmap = await playlistSong.customLevelData.GetCoverImageAsync();
+            var bitmap = await playlistSongWrapper.customLevelData.GetCoverImageAsync();
             if (bitmap != null)
             {
                 RxApp.MainThreadScheduler.Schedule(() => CoverImage = bitmap);

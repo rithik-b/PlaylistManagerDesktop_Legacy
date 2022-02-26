@@ -38,10 +38,9 @@
             <ListBox Name="ListBox" Items="{Binding Levels}" SelectedItem="{Binding SelectedLevel}" SelectionMode="Multiple" SelectedItems="{Binding SelectedLevels}" Background="Transparent" AutoScrollToSelectedItem="True" KeyDown="OnCellShortcut" />
             <Panel.ContextMenu>
                 <ContextMenu>
-                    <!-- TODO: Implement the features of this ContextMenu -->
                     <!-- TODO: Implement keyboard shortcuts -->
                     <MenuItem Header="Add" Click="OnAddClick" InputGesture="Control + N" />
-                    <MenuItem Header="Paste" InputGesture="Control + V" />
+                    <MenuItem Header="Paste" Click="PasteClick" InputGesture="Control + V" />
                 </ContextMenu>
             </Panel.ContextMenu>
         </Panel>
