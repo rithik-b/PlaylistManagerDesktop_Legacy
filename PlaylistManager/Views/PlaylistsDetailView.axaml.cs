@@ -87,13 +87,13 @@ namespace PlaylistManager.Views
             }
         }
 
-        private void OnBackClick(object? sender, RoutedEventArgs e)
+        private void BackClick(object? sender, RoutedEventArgs e)
         {
             ViewModel?.Save();
             NavigationPanel.Pop();
         }
 
-        private async void OnAddClick(object? sender, RoutedEventArgs e)
+        private async void AddClick(object? sender, RoutedEventArgs? e)
         {
             if (ViewModel != null)
             {
@@ -114,7 +114,7 @@ namespace PlaylistManager.Views
             }
         }
         
-        private async void OnEditClick(object? sender, RoutedEventArgs e)
+        private async void EditClick(object? sender, RoutedEventArgs e)
         {
             if (ViewModel != null)
             {
@@ -157,10 +157,10 @@ namespace PlaylistManager.Views
                     switch (e.Key)
                     {
                         case Key.X:
-                            ViewModel.SelectedLevel.Cut();
+                            await ViewModel.SelectedLevel.Cut();
                             break;
                         case Key.C:
-                            ViewModel.SelectedLevel.Copy();
+                            await ViewModel.SelectedLevel.Copy();
                             break;
                     }
                 }
@@ -171,7 +171,23 @@ namespace PlaylistManager.Views
             }
         }
         
-        private async void PasteClick(object? sender, RoutedEventArgs e)
+        private void OnShortcut(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyModifiers == KeyModifiers.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.N:
+                        AddClick(this, null);
+                        break;
+                    case Key.V:
+                        PasteClick(this, null);
+                        break;
+                }
+            }
+        }
+        
+        private async void PasteClick(object? sender, RoutedEventArgs? e)
         {
             var playlistSongWrappers = await ClipboardHandler.PastePlaylistSongWrappers();
             if (playlistSongWrappers != null && ViewModel != null)
