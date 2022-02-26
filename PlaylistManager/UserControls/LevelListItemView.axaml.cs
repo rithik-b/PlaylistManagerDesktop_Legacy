@@ -434,6 +434,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
+        // TODO: Make this async
         public void Remove()
         {
             var removeMessage = GetRemoveMessage();

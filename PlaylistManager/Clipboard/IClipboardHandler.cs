@@ -15,6 +15,8 @@ namespace PlaylistManager.Clipboard
     /// </summary>
     public interface IClipboardHandler
     {
+        // TODO: Lock when a Cut/Copy/Paste operation is already happening to prevent another one from happening
+        
         public const string kPlaylistSongData = "application/com.rithik-b.PlaylistManager.PlaylistSong";
 
         /// <summary>

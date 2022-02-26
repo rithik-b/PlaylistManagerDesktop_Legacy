@@ -388,6 +388,7 @@ namespace PlaylistManager.UserControls
 
         #endregion
 
+        // TODO: Make this async
         public void Delete()
         {
             var deleteMessage = GetDeleteMessage();
