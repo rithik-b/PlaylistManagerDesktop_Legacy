@@ -30,6 +30,9 @@ namespace PlaylistManager.Views
             private PlaylistLibUtils? playlistLibUtils;
             private PlaylistLibUtils PlaylistLibUtils => playlistLibUtils ??= Locator.Current.GetService<PlaylistLibUtils>()!;
             
+            private PlaylistsListView? playlistsListView;
+            private PlaylistsListView PlaylistsListView => playlistsListView ??= Locator.Current.GetService<PlaylistsListView>()!;
+            
             public ViewModel()
             {
                 configModel = Locator.Current.GetService<ConfigModel>()!;
@@ -84,6 +87,7 @@ namespace PlaylistManager.Views
                     RefreshingLevels = true;
                     await LevelLoader.GetCustomLevelsAsync(true);
                     await PlaylistLibUtils.RefreshPlaylistsAsync(PlaylistLibUtils.PlaylistManager, true);
+                    PlaylistsListView.viewModel.CurrentManager = PlaylistLibUtils.PlaylistManager;
                     RefreshingLevels = false;
                 }
             }
