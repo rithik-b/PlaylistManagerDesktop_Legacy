@@ -60,8 +60,10 @@ namespace PlaylistManager.Clipboard
         {
             var playlists = new List<IPlaylist>();
             var tempPaths = new List<string>();
+
+            var itemsToDelete = new List<PlaylistCoverViewModel>(playlistsOrManagers);
             
-            foreach (var playlistOrManager in playlistsOrManagers)
+            foreach (var playlistOrManager in itemsToDelete)
             {
                 var playlist = playlistOrManager.playlist;
                 if (playlistOrManager.isPlaylist && playlist != null)

@@ -389,26 +389,69 @@ namespace PlaylistManager.UserControls
 
         public void Delete()
         {
-            // TODO: Show a popup before delete
-            if (PlaylistsListView.viewModel.CurrentManager != null)
+            var deleteMessage = GetDeleteMessage();
+            if (PlaylistsListView.viewModel.CurrentManager != null && deleteMessage != null)
             {
-                if (isPlaylist && playlist != null)
+                MainWindow.NewContentDialog(deleteMessage, (object sender, RoutedEventArgs e) =>
                 {
-                    var playlistPath = playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                    if (File.Exists(playlistPath))
+                    var selectedItems = new List<PlaylistCoverViewModel>(PlaylistsListView.viewModel.SelectedPlaylistsOrManagers);
+                    foreach (var playlistsOrManager in selectedItems)
                     {
-                        PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlist);
+                        if (playlistsOrManager.isPlaylist && playlistsOrManager.playlist != null)
+                        {
+                            var playlistPath = playlistsOrManager.playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
+                            if (File.Exists(playlistPath))
+                            {
+                                PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlistsOrManager.playlist);
+                            }
+                        }
+                        else if (playlistsOrManager.playlistManager != null)
+                        {
+                            if (Directory.Exists(playlistsOrManager.playlistManager.PlaylistPath))
+                            {
+                                PlaylistsListView.viewModel.CurrentManager.DeleteChildManager(playlistsOrManager.playlistManager);
+                            }
+                        }
+                        PlaylistsListView.viewModel.SearchResults.Remove(playlistsOrManager);
                     }
-                }
-                else if (playlistManager != null)
-                {
-                    if (Directory.Exists(playlistManager.PlaylistPath))
-                    {
-                        PlaylistsListView.viewModel.CurrentManager.DeleteChildManager(playlistManager);
-                    }
-                }
-                PlaylistsListView.viewModel.SearchResults.Remove(this);
+                }, null, "Yes", "No");
             }
+        }
+
+        private string? GetDeleteMessage()
+        {
+            var numPlaylists = 0;
+            var numManagers = 0;
+
+            foreach (var playlistsOrManager in PlaylistsListView.viewModel.SelectedPlaylistsOrManagers)
+            {
+                if (playlistsOrManager.isPlaylist)
+                {
+                    numPlaylists++;
+                }
+                else
+                {
+                    numManagers++;
+                }
+            }
+
+            if (numPlaylists > 0 && numManagers > 0)
+            {
+                return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")} and " +
+                       $"{numManagers} folder{(numManagers != 1 ? "s" : "")}";
+            }
+            
+            if (numPlaylists > 0)
+            {
+                return $"Are you sure you want to delete {numPlaylists} playlist{(numPlaylists != 1 ? "s" : "")}";
+            }
+
+            if (numManagers > 0)
+            {
+                return $"Are you sure you want to delete {numManagers} folder{(numManagers != 1 ? "s" : "")}";
+            }
+
+            return null;
         }
 
         #endregion
