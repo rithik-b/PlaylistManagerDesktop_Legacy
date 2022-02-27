@@ -225,7 +225,7 @@ namespace PlaylistManager.Views
         public string Title => playlist.Title;
         public string Author => string.IsNullOrWhiteSpace(playlist.Author) ? "Unknown" : playlist.Author;
         public string? Description => playlist.Description;
-        public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.customLevelData.Downloaded);
+        public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
@@ -294,6 +294,10 @@ namespace PlaylistManager.Views
                     if (levelData != null)
                     {
                         Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong, levelData)));
+                    }
+                    else
+                    {
+                        Levels.Add(new LevelListItemViewModel(new PlaylistSongWrapper(playlistSong)));
                     }
                 }
             }
