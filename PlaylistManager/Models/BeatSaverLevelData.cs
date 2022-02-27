@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
@@ -9,7 +10,7 @@ using Splat;
 
 namespace PlaylistManager.Models;
 
-public class BeatSaverLevelData : ICustomLevelData
+public class BeatSaverLevelData : IRemoteLevelData
 {
     private readonly Beatmap beatmap;
     private Bitmap? coverImage;
@@ -19,7 +20,6 @@ public class BeatSaverLevelData : ICustomLevelData
     public string LevelAuthorName => beatmap.Metadata.LevelAuthorName;
     public string Hash { get; }
     public string Key => beatmap.ID;
-    public bool Downloaded => false;
     public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
     
     public BeatSaverLevelData(Beatmap beatmap, string hash)
@@ -39,6 +39,9 @@ public class BeatSaverLevelData : ICustomLevelData
     }
 
     public Task<string?> GetKeyAsync() => Task.FromResult(Key)!;
+
+    public Task<byte[]?> DownloadLevel(CancellationToken? cancellationToken = null, IProgress<double>? progress = null)
+        => IRemoteLevelData.DownloadLevelCommon(this, beatmap, cancellationToken, progress);
 
     public async Task<Bitmap?> GetCoverImageAsync(CancellationToken? cancellationToken = null)
     {

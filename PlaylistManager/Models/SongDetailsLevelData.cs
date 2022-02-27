@@ -12,7 +12,7 @@ namespace PlaylistManager.Models
     /// <summary>
     /// A wrapper for SongDetails structs that implements the ICustomLevelData interface
     /// </summary>
-    public class SongDetailsLevelData : ICustomLevelData
+    public class SongDetailsLevelData : IRemoteLevelData
     {
         private readonly Song song;
         private Bitmap? coverImage;
@@ -22,7 +22,6 @@ namespace PlaylistManager.Models
         public string LevelAuthorName => song.levelAuthorName;
         public string Hash => song.hash;
         public string Key => song.key;
-        public bool Downloaded => false;
         public Dictionary<string, List<Difficulty>> Difficulties { get; } = new Dictionary<string, List<Difficulty>>();
         
         public SongDetailsLevelData(Song song)
@@ -41,6 +40,17 @@ namespace PlaylistManager.Models
         }
 
         public Task<string?> GetKeyAsync() => Task.FromResult(Key)!;
+        
+        public async Task<byte[]?> DownloadLevel(CancellationToken? cancellationToken = null, IProgress<double>? progress = null)
+        {
+            var beatSaverLoader = Locator.Current.GetService<BeatSaverLoader>()!;
+            var beatmap = await beatSaverLoader.beatSaverInstance.BeatmapByHash(Hash);
+            if (beatmap != null)
+            {
+                return await IRemoteLevelData.DownloadLevelCommon(this, beatmap, cancellationToken, progress);
+            }
+            return null;
+        }
 
         public async Task<Bitmap?> GetCoverImageAsync(CancellationToken? cancellationToken = null)
         {

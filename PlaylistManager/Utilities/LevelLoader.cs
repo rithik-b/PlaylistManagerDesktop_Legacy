@@ -18,6 +18,9 @@ namespace PlaylistManager.Utilities
         private readonly ConfigModel configModel;
         private readonly SemaphoreSlim refreshSemaphore;
         private bool needsRefresh;
+
+        public string CustomLevelsDirectoryPath =>
+            Path.Combine(configModel.BeatSaberDir, kBeatSaberDataDir, kCustomLevelsDir);
         
         public LevelLoader(ConfigModel configModel)
         {
@@ -45,7 +48,7 @@ namespace PlaylistManager.Utilities
                     customLevels.Clear();
                     await Task.Run(() =>
                     {
-                        var songDirectories = Directory.GetDirectories(Path.Combine(configModel.BeatSaberDir, kBeatSaberDataDir, kCustomLevelsDir));
+                        var songDirectories = Directory.GetDirectories(CustomLevelsDirectoryPath);
                         foreach (var songDirectory in songDirectories)
                         {
                             var hash = hasher.HashDirectory(songDirectory, cancellationToken ?? CancellationToken.None);

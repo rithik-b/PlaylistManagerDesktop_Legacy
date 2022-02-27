@@ -9,7 +9,7 @@ namespace PlaylistManager.Utilities;
 
 public class BeatSaverLoader
 {
-    private readonly BeatSaver beatSaverInstance;
+    public readonly BeatSaver beatSaverInstance;
 
     public BeatSaverLoader(Assembly assembly)
     {

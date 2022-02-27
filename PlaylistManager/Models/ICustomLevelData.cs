@@ -18,11 +18,6 @@ namespace PlaylistManager.Models
         public string Hash { get; }
 
         /// <summary>
-        /// Is the map downloaded (locally available)?
-        /// </summary>
-        public bool Downloaded { get; }
-
-        /// <summary>
         /// Asynchronously get the BeatSaver ID of the level
         /// </summary>
         public Task<string?> GetKeyAsync();

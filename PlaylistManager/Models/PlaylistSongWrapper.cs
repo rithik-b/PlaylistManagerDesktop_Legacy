@@ -38,7 +38,7 @@ namespace PlaylistManager.Models
         public string LevelAuthorName => customLevelData != null 
             ? customLevelData.LevelAuthorName 
             : playlistSong.LevelAuthorName ?? "Unknown";
-        public bool Downloaded => customLevelData?.Downloaded ?? false;
+        public bool Downloaded => customLevelData != null && customLevelData is not IRemoteLevelData;
         public Dictionary<string, List<Difficulty>> Difficulties => customLevelData?.Difficulties ?? new Dictionary<string, List<Difficulty>>();
         
         public PlaylistSongWrapper(IPlaylistSong playlistSong) => this.playlistSong = playlistSong;
