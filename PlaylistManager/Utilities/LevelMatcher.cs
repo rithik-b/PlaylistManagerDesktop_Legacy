@@ -66,7 +66,7 @@ namespace PlaylistManager.Utilities
                 var localLevels = await levelLoader.GetCustomLevelsAsync(cancellationToken: cancellationToken);
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse, song details level can in fact be null here
                 ICustomLevelData remoteLevel = songDetailsLevel != null ? songDetailsLevel : (await beatSaverLoader.GetLevelByKeyAsync(key, cancellationToken))!;
-                var hash = remoteLevel.Hash.ToUpper();
+                var hash = remoteLevel.Hash;
                 if (localLevels.TryGetValue(hash, out var customLevel))
                 {
                     var customLevelData = await customLevel.GetLevelDataAsync();
