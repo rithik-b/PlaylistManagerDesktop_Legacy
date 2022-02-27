@@ -23,6 +23,7 @@ namespace PlaylistManager.UserControls
     public class LevelListItemView : UserControl
     {
         private readonly ContextMenu contextMenu;
+        private readonly ComboBox comboBox;
 
         private PlaylistsDetailView? playlistsDetailView;
         
@@ -35,19 +36,17 @@ namespace PlaylistManager.UserControls
             AddHandler(DragDrop.DragOverEvent, DragOver!);
             AddHandler(DragDrop.DropEvent, Drop!);
             contextMenu = this.Find<ContextMenu>("ContextMenu");
+            comboBox = this.Find<ComboBox>("ComboBox");
         }
 
         #region Drag and Drop
 
         public const string kPlaylistSongData = "application/com.rithik-b.PlaylistManager.PlaylistSong";
-        private bool pointerHeld;
-
+        
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            pointerHeld = true;
-
             await Task.Delay(Utils.kHoldDelay);
-            if (!pointerHeld)
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || comboBox.IsFocused)
             {
                 return;
             }
@@ -59,9 +58,6 @@ namespace PlaylistManager.UserControls
                 var result = await DragDrop.DoDragDrop(e, dragData, DragDropEffects.Move);
             }
         }
-
-        // Tracks if pointer is released to prevent a drag operation
-        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) => pointerHeld = false;
         
         private void DragOver(object sender, DragEventArgs e)
         {
