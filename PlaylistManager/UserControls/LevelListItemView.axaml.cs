@@ -71,7 +71,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private async void Drop(object sender, DragEventArgs e)
+        private void Drop(object sender, DragEventArgs e)
         {
             if (DataContext is LevelListItemViewModel destination && e.Data.Get(kPlaylistSongData) is LevelListItemViewModel source && source != destination)
             {

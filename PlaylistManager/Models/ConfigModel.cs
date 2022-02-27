@@ -45,14 +45,12 @@ namespace PlaylistManager.Models
                 configModel.Save();
                 return configModel;
             }
-            else
-            {
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                    .AddJsonFile(kConfigPath).Build();
-                configModel = builder.Get<ConfigModel>();
-            }
-            
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile(kConfigPath).Build();
+            configModel = builder.Get<ConfigModel>()!;
+
             configModel.LoadImage();
 
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

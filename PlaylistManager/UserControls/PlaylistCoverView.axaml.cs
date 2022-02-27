@@ -105,7 +105,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private async void Drop(object sender, DragEventArgs e)
+        private void Drop(object sender, DragEventArgs e)
         {
             if (DataContext is PlaylistCoverViewModel {isPlaylist: false, playlistManager: {}} current
                 && e.Data.Get(kPlaylistData) is IPlaylist drag)
@@ -137,7 +137,7 @@ namespace PlaylistManager.UserControls
             }
         }
         
-        private async void RenameClick(object? sender, RoutedEventArgs e)
+        private void RenameClick(object? sender, RoutedEventArgs e)
         {
             if (DataContext is PlaylistCoverViewModel viewModel)
             {
