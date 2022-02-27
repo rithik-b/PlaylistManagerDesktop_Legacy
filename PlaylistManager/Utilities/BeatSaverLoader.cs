@@ -1,8 +1,8 @@
-using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using BeatSaverSharp;
+using BeatSaverSharp.Models;
 using PlaylistManager.Models;
 
 namespace PlaylistManager.Utilities;
@@ -20,14 +20,32 @@ public class BeatSaverLoader
 
     public async Task<BeatSaverLevelData?> GetLevelByHashAsync(string hash, CancellationToken? cancellationToken = null)
     {
-        var map = await beatSaverInstance.BeatmapByHash(hash, cancellationToken ?? CancellationToken.None);
+        Beatmap? map = null;
+        try
+        {
+            map = await beatSaverInstance.BeatmapByHash(hash, cancellationToken ?? CancellationToken.None);
+        }
+        catch
+        {
+            // ignored
+        }
+
         var levelData = map != null ? new BeatSaverLevelData(map, hash) : null;
         return levelData;
     }
     
     public async Task<BeatSaverLevelData?> GetLevelByKeyAsync(string key, CancellationToken? cancellationToken = null)
     {
-        var map = await beatSaverInstance.Beatmap(key, cancellationToken ?? CancellationToken.None);
+        Beatmap? map = null;
+        try
+        {
+            map = await beatSaverInstance.Beatmap(key, cancellationToken ?? CancellationToken.None);
+        }
+        catch
+        {
+            // ignored
+        }
+        
         var levelData = map != null ? new BeatSaverLevelData(map, map.LatestVersion.Hash.ToUpper()) : null;
         return levelData;
     }
