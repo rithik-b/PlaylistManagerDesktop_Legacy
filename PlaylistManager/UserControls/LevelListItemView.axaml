@@ -27,18 +27,41 @@
             <Button Background="{Binding ExpertBackground}" IsVisible="{Binding IsExpert}" Command="{Binding ToggleExpert}">Ex</Button>
             <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}" Command="{Binding ToggleExpertPlus}">Ex+</Button>
         </StackPanel>
-        
-        <Button Grid.Column="4" Click="ContextButtonClick">···
-            <Button.ContextMenu>
-                <ContextMenu Name="ContextMenu">
-                    <MenuItem Header="Open on BeatSaver" Command="{Binding OpenBeatSaver}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <MenuItem Header="Preview" Command="{Binding OpenPreview}" IsVisible="{Binding Key, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <MenuItem Header="Cut" Command="{Binding Cut}" InputGesture="Control + X" />
-                    <MenuItem Header="Copy" Command="{Binding Copy}" InputGesture="Control + C" />
-                    <MenuItem Header="Remove" Command="{Binding Remove}" InputGesture="Delete" />
-                </ContextMenu>
-            </Button.ContextMenu>
-        </Button>
+        <Panel Grid.Column="4" Width="30">
+            <Button Background="Transparent" ToolTip.Tip="Download Level">
+                <Button.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!Downloaded" />
+                        <Binding Path="Key" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
+                    </MultiBinding>
+                </Button.IsVisible>
+                <PathIcon Data="{StaticResource cloud_download_regular}" />
+            </Button>
+            <PathIcon Data="{StaticResource checkmark_circle_regular}" ToolTip.Tip="Level is downloaded and on BeatSaver" Foreground="Green">
+                <PathIcon.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="Downloaded" />
+                        <Binding Path="Key" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
+                    </MultiBinding>
+                </PathIcon.IsVisible>
+            </PathIcon>
+            <PathIcon Data="{StaticResource checkmark_circle_regular}" ToolTip.Tip="Level is downloaded but cannot be found on BeatSaver" Foreground="Yellow">
+                <PathIcon.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="Downloaded" />
+                        <Binding Path="Key" Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+                    </MultiBinding>
+                </PathIcon.IsVisible>
+            </PathIcon>
+            <PathIcon Data="{StaticResource error_circle_regular}" ToolTip.Tip="Level is unavailable locally and on BeatSaver." Foreground="Yellow">
+                <PathIcon.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!Downloaded" />
+                        <Binding Path="Key" Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+                    </MultiBinding>
+                </PathIcon.IsVisible>
+            </PathIcon>
+        </Panel>
     </Grid>
     <UserControl.ContextMenu>
         <ContextMenu>

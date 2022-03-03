@@ -22,7 +22,6 @@ namespace PlaylistManager.UserControls
 {
     public class LevelListItemView : UserControl
     {
-        private readonly ContextMenu contextMenu;
         private readonly ComboBox comboBox;
 
         private PlaylistsDetailView? playlistsDetailView;
@@ -35,7 +34,6 @@ namespace PlaylistManager.UserControls
             AvaloniaXamlLoader.Load(this);
             AddHandler(DragDrop.DragOverEvent, DragOver!);
             AddHandler(DragDrop.DropEvent, Drop!);
-            contextMenu = this.Find<ContextMenu>("ContextMenu");
             comboBox = this.Find<ComboBox>("ComboBox");
         }
 
@@ -80,11 +78,6 @@ namespace PlaylistManager.UserControls
         }
 
         #endregion
-
-        private void ContextButtonClick(object? sender, RoutedEventArgs e)
-        {
-            contextMenu.Open();
-        }
     }
 
     public class LevelListItemViewModel : ViewModelBase
@@ -101,7 +94,7 @@ namespace PlaylistManager.UserControls
         private List<Difficulty>? difficulties;
 
         private IClipboardHandler? clipboardHandler;
-        private IClipboardHandler ClipboardHandler => clipboardHandler ??=  Locator.Current.GetService<IClipboardHandler>()!;
+        private IClipboardHandler ClipboardHandler => clipboardHandler ??= Locator.Current.GetService<IClipboardHandler>()!;
         
         private PlaylistsDetailView? playlistsDetailView;
         private PlaylistsDetailView PlaylistsDetailView => playlistsDetailView ??= Locator.Current.GetService<PlaylistsDetailView>()!;
@@ -139,6 +132,7 @@ namespace PlaylistManager.UserControls
                 NotifyPropertyChanged();
             }
         }
+        public bool Downloaded => playlistSongWrapper.Downloaded;
         public float Opacity => playlistSongWrapper.Downloaded ? 1f: 0.5f;
         public List<string> Characteristics { get; } = new();
         public Bitmap? CoverImage
