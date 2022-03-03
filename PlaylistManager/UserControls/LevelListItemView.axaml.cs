@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Threading;
 using System.Threading.Tasks;
 using Aura.UI.Services;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Clipboard;
@@ -80,7 +80,7 @@ namespace PlaylistManager.UserControls
         #endregion
     }
 
-    public class LevelListItemViewModel : ViewModelBase
+    public class LevelListItemViewModel : ViewModelBase, IProgress<double>
     {
         private const string kBeatSaverURL = "https://beatsaver.com/maps/";
         private const string kRabbitPreviewerIHardlyKnowHer = "https://skystudioapps.com/bs-viewer/?id=";
@@ -101,6 +101,12 @@ namespace PlaylistManager.UserControls
         
         private MainWindow? mainWindow;
         private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
+        
+        private LevelLoader? levelLoader;
+        private LevelLoader LevelLoader => levelLoader ??= Locator.Current.GetService<LevelLoader>()!;
+        
+        private BeatSaverLoader? beatSaverLoader;
+        private BeatSaverLoader BeatSaverLoader => beatSaverLoader ??= Locator.Current.GetService<BeatSaverLoader>()!;
         
         public LevelListItemViewModel(PlaylistSongWrapper playlistSongWrapper)
         {
@@ -457,6 +463,85 @@ namespace PlaylistManager.UserControls
             return null;
         }
         
+        #endregion
+
+        #region Download
+        
+        private CancellationTokenSource? cancellationTokenSource;
+        
+        private double downloadProgress;
+        private double DownloadProgress
+        {
+            get => downloadProgress;
+            set
+            {
+                downloadProgress = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool IsDownloading => cancellationTokenSource is {IsCancellationRequested: false};
+        
+        private bool isUnzipping;
+        private bool IsUnzipping
+        {
+            get => isUnzipping;
+            set
+            {
+                isUnzipping = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private async void ToggleDownload()
+        {
+            if (IsDownloading)
+            {
+                cancellationTokenSource?.Cancel();
+                NotifyPropertyChanged(nameof(IsDownloading));
+                return;
+            }
+
+            if (playlistSongWrapper.customLevelData is IRemoteLevelData remoteLevelData)
+            {
+                IsUnzipping = false;
+                cancellationTokenSource = new CancellationTokenSource();
+                NotifyPropertyChanged(nameof(IsDownloading));
+                DownloadProgress = 0;
+                var zip = await remoteLevelData.DownloadLevel(cancellationTokenSource.Token, this);
+                if (zip != null)
+                {
+                    IsUnzipping = true;
+                    var beatmap = await BeatSaverLoader.beatSaverInstance.BeatmapByHash(playlistSongWrapper.customLevelData.Hash);
+                    if (beatmap != null)
+                    {
+                        var path = await Utils.ExtractZipAsync(zip, LevelLoader.CustomLevelsDirectoryPath, Utils.FolderNameForBeatSaverMap(beatmap));
+                        if (path != null)
+                        {
+                            var customLevel = await LevelLoader.LoadCustomLevelAsync(path);
+                            if (customLevel != null && PlaylistsDetailView.ViewModel != null)
+                            {
+                                var levelData = await customLevel.GetLevelDataAsync();
+                                if (levelData != null)
+                                {
+                                    PlaylistsDetailView.ViewModel.Levels
+                                            [PlaylistsDetailView.ViewModel.Levels.IndexOf(this)] =
+                                        new LevelListItemViewModel(new PlaylistSongWrapper(playlistSongWrapper.playlistSong,
+                                            levelData));
+                                    PlaylistsDetailView.ViewModel.UpdateNumSongs();
+                                }
+                            }
+                        }
+                    }
+                    IsUnzipping = false;
+                    cancellationTokenSource = null;
+                    NotifyPropertyChanged(nameof(IsDownloading));
+                }
+            }
+        }
+        
+        public void Report(double value) => DownloadProgress = value;
+
         #endregion
 
         private async Task LoadKeyAsync()

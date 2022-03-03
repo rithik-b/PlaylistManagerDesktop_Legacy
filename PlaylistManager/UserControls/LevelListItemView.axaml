@@ -27,15 +27,21 @@
             <Button Background="{Binding ExpertBackground}" IsVisible="{Binding IsExpert}" Command="{Binding ToggleExpert}">Ex</Button>
             <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}" Command="{Binding ToggleExpertPlus}">Ex+</Button>
         </StackPanel>
-        <Panel Grid.Column="4" Width="30">
-            <Button Background="Transparent" ToolTip.Tip="Download Level">
+        <Panel Grid.Column="4" Width="35">
+            <Button Background="Transparent" ToolTip.Tip="Download Level" Command="{Binding ToggleDownload}" IsEnabled="{Binding !IsUnzipping}">
                 <Button.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                         <Binding Path="!Downloaded" />
                         <Binding Path="Key" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
                     </MultiBinding>
                 </Button.IsVisible>
-                <PathIcon Data="{StaticResource cloud_download_regular}" />
+                <Panel>
+                    <PathIcon Data="{StaticResource cloud_download_regular}" IsVisible="{Binding !IsDownloading}" />
+                    <Panel IsVisible="{Binding IsDownloading}">
+                        <ProgressRing BackgroundColor="DarkRed" ForegroundColor="Red" Value="{Binding DownloadProgress}" Minimum="0" Maximum="1" Width="35" Height="35" IsIndeterminate="{Binding IsUnzipping}" />
+                        <PathIcon Data="{StaticResource stop_regular}" Foreground="Red" Width="10" Height="10" IsVisible="{Binding !IsUnzipping}" />
+                    </Panel>
+                </Panel>
             </Button>
             <PathIcon Data="{StaticResource checkmark_circle_regular}" ToolTip.Tip="Level is downloaded and on BeatSaver" Foreground="Green">
                 <PathIcon.IsVisible>

@@ -13,7 +13,7 @@ namespace PlaylistManager.Models
     public class PlaylistSongWrapper : ILevelData
     {
         public readonly IPlaylistSong playlistSong;
-        private readonly ICustomLevelData? customLevelData;
+        public readonly ICustomLevelData? customLevelData;
         
         public string SongName
         {

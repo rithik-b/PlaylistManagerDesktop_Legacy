@@ -65,5 +65,27 @@ namespace PlaylistManager.Utilities
 
             return customLevels;
         }
+
+        /// <summary>
+        /// Loads a single level
+        /// </summary>
+        /// <param name="path">Path to level</param>
+        /// <returns>The custom level that is loaded</returns>
+        public async Task<CustomLevel?> LoadCustomLevelAsync(string path)
+        {
+            await refreshSemaphore.WaitAsync();
+            CustomLevel? customLevel = null;
+            await Task.Run(() =>
+            {
+                var hash = hasher.HashDirectory(path, CancellationToken.None);
+                if (hash.Hash != null && hash.ResultType is HashResultType.Success or HashResultType.Warn)
+                {
+                    customLevel = new CustomLevel(hash.Hash, path);
+                    customLevels[hash.Hash] = customLevel;
+                }
+            }).ConfigureAwait(false);
+            refreshSemaphore.Release();
+            return customLevel;
+        }
     }
 }
