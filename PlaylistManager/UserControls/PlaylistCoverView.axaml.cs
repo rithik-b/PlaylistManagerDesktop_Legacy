@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Clipboard;
@@ -173,7 +174,6 @@ namespace PlaylistManager.UserControls
         public readonly IPlaylist? playlist;
         public readonly BeatSaberPlaylistsLib.PlaylistManager? playlistManager;
         public readonly bool isPlaylist;
-        private bool popupShowing;
         private PlaylistCoverView? control;
         private CoverImageLoader? coverImageLoader;
         private PlaylistLibUtils? playlistLibUtils;
@@ -190,6 +190,9 @@ namespace PlaylistManager.UserControls
         
         private MainWindow? mainWindow;
         private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
+        
+        private YesNoPopup? yesNoPopup;
+        private YesNoPopup YesNoPopup => yesNoPopup ??= Locator.Current.GetService<YesNoPopup>()!;
 
         public PlaylistCoverViewModel(IPlaylist playlist)
         {
@@ -391,20 +394,15 @@ namespace PlaylistManager.UserControls
 
         public void Delete(bool showPopup = true)
         {
-            if (showPopup && !popupShowing)
+            if (showPopup)
             {
                 var deleteMessage = GetDeleteMessage();
                 if (deleteMessage != null)
                 {
-                    MainWindow.NewContentDialog(deleteMessage, (sender, e) =>
-                    {
-                        CoreDelete();
-                        popupShowing = false;
-                    }, (sender, e) => popupShowing = false, "Yes", "No");
-                    popupShowing = true;
+                    YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel(deleteMessage, yesButtonAction: CoreDelete));
                 }   
             }
-            else if (!showPopup)
+            else
             {
                 CoreDelete();
             }

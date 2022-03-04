@@ -31,6 +31,7 @@ namespace PlaylistManager
             Locator.CurrentMutable.RegisterLazySingleton(ConfigModel.Factory);
 
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<MainWindow>);
+            Locator.CurrentMutable.RegisterLazySingleton(DiFactory<YesNoPopup>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<LevelSearchWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistEditWindow>);
             Locator.CurrentMutable.RegisterLazySingleton(DiFactory<PlaylistsDetailView>);
