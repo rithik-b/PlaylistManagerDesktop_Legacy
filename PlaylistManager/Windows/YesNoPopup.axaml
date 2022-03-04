@@ -9,8 +9,12 @@
         <StackPanel Spacing="20">
             <TextBlock Text="{Binding Message}" />
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="20">
-                <Button Click="YesButtonClick">Yes</Button>
-                <Button Click="NoButtonClick">No</Button>
+                <Button Name="YesButton" Click="YesButtonClick">
+                    <TextBlock Text="{Binding YesButtonText}" />
+                </Button>
+                <Button Click="NoButtonClick" IsVisible="{Binding ShowNoButton}">
+                    <TextBlock Text="{Binding YesButtonText}" />
+                </Button>
             </StackPanel>
         </StackPanel>
     </Border>

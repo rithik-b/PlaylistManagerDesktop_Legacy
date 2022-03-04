@@ -9,15 +9,17 @@ namespace PlaylistManager.Windows;
 
 public partial class YesNoPopup : Window
 {
+    private readonly Button yesButton;
     private readonly SemaphoreSlim openSemaphore;
     
     public YesNoPopup()
     {
         AvaloniaXamlLoader.Load(this);
+        yesButton = this.Find<Button>("YesButton");
+        openSemaphore = new SemaphoreSlim(0, 1);
 #if DEBUG
             this.AttachDevTools();
 #endif
-        openSemaphore = new SemaphoreSlim(0, 1);
     }
     
     private YesNoPopupModel? viewModel;
@@ -40,6 +42,7 @@ public partial class YesNoPopup : Window
             mainWindow.viewModel.ModalShown = true;
         }
         _ = ShowDialog(parent);
+        yesButton.Focus();
         await openSemaphore.WaitAsync();
         if (mainWindow != null)
         {
@@ -67,15 +70,17 @@ public class YesNoPopupModel : ViewModelBase
     private string Message { get; }
     private string YesButtonText { get; }
     private string NoButtonText { get; }
+    private bool ShowNoButton { get; }
     public readonly Action? yesButtonAction;
     public readonly Action? noButtonAction;
     
     public YesNoPopupModel(string message, string yesButtonText = "Yes", string noButtonText = "No",
-        Action? yesButtonAction = null, Action? noButtonAction = null)
+        bool showNoButton = true, Action? yesButtonAction = null, Action? noButtonAction = null)
     {
         Message = message;
         YesButtonText = yesButtonText;
         NoButtonText = noButtonText;
+        ShowNoButton = showNoButton;
         this.yesButtonAction = yesButtonAction;
         this.noButtonAction = noButtonAction;
     }

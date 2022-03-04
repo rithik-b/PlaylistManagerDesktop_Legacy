@@ -244,7 +244,7 @@ namespace PlaylistManager.UserControls
                         }
                         catch (Exception e)
                         {
-                            MainWindow.NewMessageDialog("Rename Error", e.Message, null, null);
+                            YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel(e.Message, "Ok", showNoButton: false));
                             RenameTitle = oldName;
                         }
                     }
