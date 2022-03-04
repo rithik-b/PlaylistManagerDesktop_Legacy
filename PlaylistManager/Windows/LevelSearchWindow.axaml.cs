@@ -23,8 +23,6 @@ namespace PlaylistManager.Windows
         private readonly TextBox searchBox;
         private readonly ListBox listBox;
         private readonly SemaphoreSlim openSemaphore;
-
-        private SearchItemViewModel? SearchedSong => viewModel.SelectedResult;
         
         public LevelSearchWindow()
         {
@@ -55,7 +53,7 @@ namespace PlaylistManager.Windows
                 mainWindow.ClickOffEvent -= CloseModal;
             }
             Hide();
-            return SearchedSong;
+            return viewModel.SelectedResult;
         }
 
         protected override void OnOpened(EventArgs e)
@@ -81,23 +79,27 @@ namespace PlaylistManager.Windows
                     listBox.SelectedIndex++;
                     break;
                 case Key.Enter:
-                    if (SearchedSong != null)
+                    if (viewModel.SelectedResult != null)
                     {
-                        CloseModal();
+                        openSemaphore.Release();
                     }
                     break;
             }
         }
 
-        private void OnDoubleClick(object? sender, RoutedEventArgs e)
+        private void OnClick(object? sender, RoutedEventArgs e)
         {
-            if (SearchedSong != null)
+            if (viewModel.SelectedResult != null)
             {
                 openSemaphore.Release();
             }
         }
-        
-        private void CloseModal() => openSemaphore.Release();
+
+        private void CloseModal()
+        {
+            viewModel.SelectedResult = null;
+            openSemaphore.Release();
+        }
     }
 
     public class LevelSearchWindowModel : ViewModelBase
