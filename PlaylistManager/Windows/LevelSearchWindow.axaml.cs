@@ -42,8 +42,19 @@ namespace PlaylistManager.Windows
 
         public async Task<SearchItemViewModel?> SearchSong(Window parent)
         {
-            _ = ShowDialog(parent);
+            var mainWindow = parent as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.viewModel.ModalShown = true;
+                mainWindow.ClickOffEvent += CloseModal;
+            }
+            Show(parent);
             await openSemaphore.WaitAsync();
+            if (mainWindow != null)
+            {
+                mainWindow.viewModel.ModalShown = false;
+                mainWindow.ClickOffEvent -= CloseModal;
+            }
             Hide();
             return SearchedSong;
         }
@@ -52,7 +63,7 @@ namespace PlaylistManager.Windows
         {
             base.OnOpened(e);
             viewModel.SelectedResult = null;
-            viewModel.SearchText = String.Empty;
+            viewModel.SearchText = string.Empty;
             viewModel.SearchResults.Clear();
             searchBox.Focus();
         }
@@ -62,7 +73,7 @@ namespace PlaylistManager.Windows
             switch (e.Key)
             {
                 case Key.Escape:
-                    openSemaphore.Release();
+                    CloseModal();
                     break;
                 case Key.Up:
                     listBox.SelectedIndex--;
@@ -73,7 +84,7 @@ namespace PlaylistManager.Windows
                 case Key.Enter:
                     if (SearchedSong != null)
                     {
-                        openSemaphore.Release();
+                        CloseModal();
                     }
                     break;
             }
@@ -86,6 +97,8 @@ namespace PlaylistManager.Windows
                 openSemaphore.Release();
             }
         }
+        
+        private void CloseModal() => openSemaphore.Release();
     }
 
     public class LevelSearchWindowModel : ViewModelBase
