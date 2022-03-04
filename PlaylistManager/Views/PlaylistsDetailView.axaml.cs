@@ -228,6 +228,7 @@ namespace PlaylistManager.Views
         public string? Description => playlist.Description;
         public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
+        private bool DownloadableLevelsExist => Levels.Any(x => !x.Downloaded && x.Key != null);
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
@@ -283,7 +284,12 @@ namespace PlaylistManager.Views
 
         public void Save() => parentManager.StorePlaylist(playlist);
 
-        public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
+        public void UpdateNumSongs()
+        {
+            NotifyPropertyChanged(nameof(NumSongs));
+            NotifyPropertyChanged(nameof(DownloadableLevelsExist));
+        }
+
         private async Task FetchSongs()
         {
             foreach (var playlistSong in playlist)
