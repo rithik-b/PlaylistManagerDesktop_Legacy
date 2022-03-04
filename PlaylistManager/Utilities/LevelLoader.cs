@@ -42,27 +42,29 @@ namespace PlaylistManager.Utilities
         {
             if (needsRefresh || this.needsRefresh)
             {
-                await refreshSemaphore.WaitAsync(cancellationToken ?? CancellationToken.None);
-                if (cancellationToken is {IsCancellationRequested: false} or null)
+                if (Directory.Exists(CustomLevelsDirectoryPath))
                 {
-                    customLevels.Clear();
-                    await Task.Run(() =>
+                    await refreshSemaphore.WaitAsync(cancellationToken ?? CancellationToken.None);
+                    if (cancellationToken is {IsCancellationRequested: false} or null)
                     {
-                        var songDirectories = Directory.GetDirectories(CustomLevelsDirectoryPath);
-                        foreach (var songDirectory in songDirectories)
+                        customLevels.Clear();
+                        await Task.Run(() =>
                         {
-                            var hash = hasher.HashDirectory(songDirectory, cancellationToken ?? CancellationToken.None);
-                            if (hash.Hash != null && hash.ResultType is HashResultType.Success or HashResultType.Warn)
+                            var songDirectories = Directory.GetDirectories(CustomLevelsDirectoryPath);
+                            foreach (var songDirectory in songDirectories)
                             {
-                                customLevels[hash.Hash] = new CustomLevel(hash.Hash, songDirectory);
+                                var hash = hasher.HashDirectory(songDirectory, cancellationToken ?? CancellationToken.None);
+                                if (hash.Hash != null && hash.ResultType is HashResultType.Success or HashResultType.Warn)
+                                {
+                                    customLevels[hash.Hash] = new CustomLevel(hash.Hash, songDirectory);
+                                }
                             }
-                        }
-                        this.needsRefresh = false;
-                    }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+                            this.needsRefresh = false;
+                        }, cancellationToken ?? CancellationToken.None).ConfigureAwait(false);
+                    }   
                     refreshSemaphore.Release();
                 }
             }
-
             return customLevels;
         }
 
@@ -73,6 +75,11 @@ namespace PlaylistManager.Utilities
         /// <returns>The custom level that is loaded</returns>
         public async Task<CustomLevel?> LoadCustomLevelAsync(string path)
         {
+            if (!Directory.Exists(path))
+            {
+                return null;
+            }
+            
             await refreshSemaphore.WaitAsync();
             CustomLevel? customLevel = null;
             await Task.Run(() =>
