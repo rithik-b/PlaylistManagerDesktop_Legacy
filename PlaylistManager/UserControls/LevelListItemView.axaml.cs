@@ -482,13 +482,13 @@ namespace PlaylistManager.UserControls
 
         private bool IsDownloading => cancellationTokenSource is {IsCancellationRequested: false};
         
-        private bool isUnzipping;
-        private bool IsUnzipping
+        private bool isIndeterminate;
+        public bool IsIndeterminate
         {
-            get => isUnzipping;
+            get => isIndeterminate;
             set
             {
-                isUnzipping = value;
+                isIndeterminate = value;
                 NotifyPropertyChanged();
             }
         }
@@ -504,14 +504,14 @@ namespace PlaylistManager.UserControls
 
             if (playlistSongWrapper.customLevelData is IRemoteLevelData remoteLevelData)
             {
-                IsUnzipping = false;
+                IsIndeterminate = false;
                 cancellationTokenSource = new CancellationTokenSource();
                 NotifyPropertyChanged(nameof(IsDownloading));
                 DownloadProgress = 0;
                 var zip = await remoteLevelData.DownloadLevel(cancellationTokenSource.Token, this);
                 if (zip != null)
                 {
-                    IsUnzipping = true;
+                    IsIndeterminate = true;
                     var beatmap = await BeatSaverLoader.beatSaverInstance.BeatmapByHash(playlistSongWrapper.customLevelData.Hash);
                     if (beatmap != null)
                     {
@@ -533,7 +533,7 @@ namespace PlaylistManager.UserControls
                             }
                         }
                     }
-                    IsUnzipping = false;
+                    IsIndeterminate = false;
                     cancellationTokenSource = null;
                     NotifyPropertyChanged(nameof(IsDownloading));
                 }

@@ -28,7 +28,7 @@
             <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}" Command="{Binding ToggleExpertPlus}">Ex+</Button>
         </StackPanel>
         <Panel Grid.Column="4" Width="35">
-            <Button Background="Transparent" ToolTip.Tip="Download Level" Command="{Binding ToggleDownload}" IsEnabled="{Binding !IsUnzipping}">
+            <Button Background="Transparent" ToolTip.Tip="Download Level" Command="{Binding ToggleDownload}" IsEnabled="{Binding !IsIndeterminate}">
                 <Button.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                         <Binding Path="!Downloaded" />
@@ -38,8 +38,8 @@
                 <Panel>
                     <PathIcon Data="{StaticResource cloud_download_regular}" IsVisible="{Binding !IsDownloading}" />
                     <Panel IsVisible="{Binding IsDownloading}">
-                        <ProgressRing BackgroundColor="DarkRed" ForegroundColor="Red" Value="{Binding DownloadProgress}" Minimum="0" Maximum="1" Width="35" Height="35" IsIndeterminate="{Binding IsUnzipping}" />
-                        <PathIcon Data="{StaticResource stop_regular}" Foreground="Red" Width="10" Height="10" IsVisible="{Binding !IsUnzipping}" />
+                        <ProgressRing BackgroundColor="DarkRed" ForegroundColor="Red" Value="{Binding DownloadProgress}" Minimum="0" Maximum="1" Width="35" Height="35" IsIndeterminate="{Binding IsIndeterminate}" />
+                        <PathIcon Data="{StaticResource stop_regular}" Foreground="Red" Width="10" Height="10" IsVisible="{Binding !IsIndeterminate}" />
                     </Panel>
                 </Panel>
             </Button>
