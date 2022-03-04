@@ -218,11 +218,12 @@ namespace PlaylistManager.UserControls
             }
             set
             {
-                if (isPlaylist && playlist != null)
+                if (isPlaylist && playlist != null && PlaylistsListView.viewModel.CurrentManager != null)
                 {
+                    File.Delete(playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager));
                     playlist.Filename = "";
                     playlist.Title = value;
-                    PlaylistsListView.viewModel.CurrentManager?.StorePlaylist(playlist);
+                    PlaylistsListView.viewModel.CurrentManager.StorePlaylist(playlist);
                 }
                 else if (!isPlaylist && playlistManager != null)
                 {
