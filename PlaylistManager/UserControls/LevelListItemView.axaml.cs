@@ -480,7 +480,7 @@ namespace PlaylistManager.UserControls
             }
         }
 
-        private bool IsDownloading => cancellationTokenSource is {IsCancellationRequested: false};
+        public bool IsDownloading => cancellationTokenSource is {IsCancellationRequested: false};
         
         private bool isIndeterminate;
         public bool IsIndeterminate
@@ -493,8 +493,13 @@ namespace PlaylistManager.UserControls
             }
         }
 
-        private async void ToggleDownload()
+        public async Task ToggleDownload()
         {
+            if (IsIndeterminate && IsDownloading)
+            {
+                return;
+            }
+            
             if (IsDownloading)
             {
                 cancellationTokenSource?.Cancel();
@@ -504,7 +509,6 @@ namespace PlaylistManager.UserControls
 
             if (playlistSongWrapper.customLevelData is IRemoteLevelData remoteLevelData)
             {
-                IsIndeterminate = false;
                 cancellationTokenSource = new CancellationTokenSource();
                 NotifyPropertyChanged(nameof(IsDownloading));
                 DownloadProgress = 0;
@@ -539,8 +543,12 @@ namespace PlaylistManager.UserControls
                 }
             }
         }
-        
-        public void Report(double value) => DownloadProgress = value;
+
+        public void Report(double value)
+        {
+            IsIndeterminate = false;
+            DownloadProgress = value;
+        }
 
         #endregion
 

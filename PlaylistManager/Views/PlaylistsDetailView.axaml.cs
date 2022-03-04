@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Threading;
 using System.Threading.Tasks;
 using Aura.UI.Controls;
 using Avalonia;
@@ -306,8 +307,6 @@ namespace PlaylistManager.Views
             UpdateNumSongs();
         }
         
-        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
-
         public void MoveLevel(LevelListItemViewModel source, LevelListItemViewModel destination)
         {
             playlist.Remove(source.playlistSongWrapper.playlistSong);
@@ -315,5 +314,95 @@ namespace PlaylistManager.Views
             Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
             SelectedLevel = source;
         }
+
+        #region Download & Sync
+
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+        
+        private double downloadProgress;
+        private double DownloadProgress
+        {
+            get => downloadProgress;
+            set
+            {
+                downloadProgress = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool isDownloading;
+        private bool IsDownloading
+        {
+            get => isDownloading;
+            set
+            {
+                isDownloading = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(DownloadTip));
+            }
+        }
+
+        private string DownloadTip => IsDownloading ? "Stop download" : "Download all levels";
+        
+        private bool isIndeterminate;
+        private bool IsIndeterminate
+        {
+            get => isIndeterminate;
+            set
+            {
+                isIndeterminate = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private async Task ToggleDownloadLevels()
+        {
+            if (IsDownloading)
+            {
+                IsDownloading = false;
+                foreach (var level in Levels)
+                {
+                    if (!level.Downloaded && !level.IsDownloading && await level.playlistSongWrapper.GetKeyAsync() != null)
+                    {
+                        level.IsIndeterminate = false;
+                    }
+                    else if (level.IsDownloading)
+                    {
+                        
+                        level.IsIndeterminate = false;
+                        await level.ToggleDownload();
+                    }
+                }
+                return;
+            }
+
+            IsDownloading = true;
+            IsIndeterminate = true;
+            DownloadProgress = 0;
+            
+            foreach (var level in Levels)
+            {
+                if (!level.Downloaded && !level.IsDownloading && await level.playlistSongWrapper.GetKeyAsync() != null)
+                {
+                    level.IsIndeterminate = true;
+                }
+            }
+
+            IsIndeterminate = false;
+
+            for (int i = 0; i < Levels.Count; i++)
+            {
+                var level = Levels[i];
+                if (!level.Downloaded && !level.IsDownloading && level.IsIndeterminate)
+                {
+                    await level.ToggleDownload();
+                }
+                DownloadProgress = (float) i / Levels.Count;
+            }
+
+            IsDownloading = false;
+        }
+
+        #endregion
     }
 }

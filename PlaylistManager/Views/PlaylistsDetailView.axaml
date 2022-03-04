@@ -23,8 +23,27 @@
                         <FloatingButton Click="EditClick" Background="#606060" ToolTip.Tip="Edit playlist">
                             <PathIcon Data="{StaticResource edit_regular}" />
                         </FloatingButton>
-                        <FloatingButton Background="#606060" ToolTip.Tip="Download all Songs">
-                            <PathIcon Data="{StaticResource arrow_download_regular}" />
+                        <FloatingButton Command="{Binding ToggleDownloadLevels}" Background="#606060" ToolTip.Tip="{Binding DownloadTip}">
+                            <Panel>
+                                <PathIcon Data="{StaticResource arrow_download_regular}">
+                                    <PathIcon.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="!IsDownloading" />
+                                            <Binding Path="!IsIndeterminate" />
+                                        </MultiBinding>
+                                    </PathIcon.IsVisible>
+                                </PathIcon>
+                                <Panel>
+                                    <Panel.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                            <Binding Path="IsDownloading" />
+                                            <Binding Path="IsIndeterminate" />
+                                        </MultiBinding>
+                                    </Panel.IsVisible>
+                                    <ProgressRing BackgroundColor="LightGray" ForegroundColor="White" Value="{Binding DownloadProgress}" Minimum="0" Maximum="1" Width="35" Height="35" IsIndeterminate="{Binding IsIndeterminate}" />
+                                    <PathIcon Data="{StaticResource stop_regular}" Width="10" Height="10" IsVisible="{Binding !IsIndeterminate}" />
+                                </Panel>
+                            </Panel>
                         </FloatingButton>
                         <FloatingButton Background="#606060" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
                             <PathIcon Data="{StaticResource arrow_sync_regular}" />

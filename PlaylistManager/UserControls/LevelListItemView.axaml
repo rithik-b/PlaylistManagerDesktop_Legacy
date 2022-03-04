@@ -28,7 +28,7 @@
             <Button Background="{Binding ExpertPlusBackground}" IsVisible="{Binding IsExpertPlus}" Command="{Binding ToggleExpertPlus}">Ex+</Button>
         </StackPanel>
         <Panel Grid.Column="4" Width="35">
-            <Button Background="Transparent" ToolTip.Tip="Download Level" Command="{Binding ToggleDownload}" IsEnabled="{Binding !IsIndeterminate}">
+            <Button Background="Transparent" ToolTip.Tip="Download Level" Command="{Binding ToggleDownload}">
                 <Button.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                         <Binding Path="!Downloaded" />
@@ -36,8 +36,21 @@
                     </MultiBinding>
                 </Button.IsVisible>
                 <Panel>
-                    <PathIcon Data="{StaticResource cloud_download_regular}" IsVisible="{Binding !IsDownloading}" />
-                    <Panel IsVisible="{Binding IsDownloading}">
+                    <PathIcon Data="{StaticResource cloud_download_regular}">
+                        <PathIcon.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="!IsDownloading" />
+                                <Binding Path="!IsIndeterminate" />
+                            </MultiBinding>
+                        </PathIcon.IsVisible>
+                    </PathIcon>
+                    <Panel>
+                        <Panel.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                <Binding Path="IsDownloading" />
+                                <Binding Path="IsIndeterminate" />
+                            </MultiBinding>
+                        </Panel.IsVisible>
                         <ProgressRing BackgroundColor="DarkRed" ForegroundColor="Red" Value="{Binding DownloadProgress}" Minimum="0" Maximum="1" Width="35" Height="35" IsIndeterminate="{Binding IsIndeterminate}" />
                         <PathIcon Data="{StaticResource stop_regular}" Foreground="Red" Width="10" Height="10" IsVisible="{Binding !IsIndeterminate}" />
                     </Panel>
