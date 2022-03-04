@@ -391,10 +391,10 @@ namespace PlaylistManager.UserControls
 
         public void Delete(bool showPopup = true)
         {
-            if (showPopup)
+            if (showPopup && !popupShowing)
             {
                 var deleteMessage = GetDeleteMessage();
-                if (deleteMessage != null && !popupShowing)
+                if (deleteMessage != null)
                 {
                     MainWindow.NewContentDialog(deleteMessage, (sender, e) =>
                     {
@@ -404,7 +404,7 @@ namespace PlaylistManager.UserControls
                     popupShowing = true;
                 }   
             }
-            else
+            else if (!showPopup)
             {
                 CoreDelete();
             }
