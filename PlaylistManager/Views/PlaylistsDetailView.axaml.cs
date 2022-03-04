@@ -312,6 +312,7 @@ namespace PlaylistManager.Views
             playlist.Remove(source.playlistSongWrapper.playlistSong);
             playlist.Insert(playlist.IndexOf(destination.playlistSongWrapper.playlistSong), source.playlistSongWrapper.playlistSong);
             Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
+            SelectedLevels.Clear();
             SelectedLevel = source;
         }
 
