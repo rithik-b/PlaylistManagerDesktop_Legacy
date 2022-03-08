@@ -43,7 +43,6 @@ namespace PlaylistManager.UserControls
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            await Task.Delay(Utils.kHoldDelay);
             if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || comboBox.IsFocused)
             {
                 return;

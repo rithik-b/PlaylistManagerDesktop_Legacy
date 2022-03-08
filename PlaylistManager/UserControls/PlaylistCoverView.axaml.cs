@@ -49,14 +49,10 @@ namespace PlaylistManager.UserControls
         #region Drag and Drop
         
         public const string kPlaylistData = "application/com.rithik-b.PlaylistManager.Playlist";
-        private bool pointerHeld;
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            pointerHeld = true;
-
-            await Task.Delay(Utils.kHoldDelay);
-            if (!pointerHeld)
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
                 return;
             }
@@ -88,9 +84,6 @@ namespace PlaylistManager.UserControls
                 }
             }
         }
-        
-        // Tracks if pointer is released to prevent a drag operation
-        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) => pointerHeld = false;
 
         private void DragOver(object sender, DragEventArgs e)
         {
