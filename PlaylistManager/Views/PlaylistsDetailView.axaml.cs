@@ -123,22 +123,6 @@ namespace PlaylistManager.Views
             }
         }
 
-        private void FloatingBarHoverStart(object? sender, PointerEventArgs e)
-        {
-            if (!floatingButtonBar.IsExpanded)
-            {
-                floatingButtonBar.IsExpanded = true;
-            }
-        }
-
-        private void FloatingBarHoverLeave(object? sender, PointerEventArgs e)
-        {
-            if (floatingButtonBar.IsExpanded)
-            {
-                floatingButtonBar.IsExpanded = false;
-            }
-        }
-
         private void LoseFocus(object? sender, PointerPressedEventArgs e)
         {
             if (ViewModel != null)

@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
              x:Class="PlaylistManager.Views.PlaylistsDetailView" PointerPressed="LoseFocus" KeyDown="OnShortcut">
     <DockPanel>
-        <Border Background="#202020" DockPanel.Dock="Top" PointerLeave="FloatingBarHoverLeave">
+        <Border Background="#202020" DockPanel.Dock="Top">
             <Grid ColumnDefinitions="1*, 4*" RowDefinitions="Auto, Auto" Margin="0,0,0,20">
                 <Button Padding="20" HorizontalAlignment="Left" Click="BackClick" Margin="0,0,0,20">&lt;</Button>
                 <Image Stretch="UniformToFill" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
@@ -16,7 +16,7 @@
                         <TextBlock Text="{Binding Author}" FontSize="25" VerticalAlignment="Bottom" FontWeight="Regular" TextTrimming="CharacterEllipsis" />
                         <TextBlock Text="{Binding NumSongs}" FontSize="20" VerticalAlignment="Bottom" FontWeight="Thin" />
                     </StackPanel>
-                    <FloatingButtonBar Name="FloatingButtonBar" Icon="···" IconBackground="#606060" ExpandDirection="ToRight" OpenLength="180" PointerEnter="FloatingBarHoverStart">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
                         <FloatingButton Click="AddClick" Background="#606060" ToolTip.Tip="Add a Level" IsEnabled="{Binding !SongsLoading}">
                             <TextBlock Text="+" TextAlignment="Center" FontSize="18" VerticalAlignment="Center" />
                         </FloatingButton>
@@ -54,7 +54,7 @@
                         <FloatingButton Background="#606060" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
                             <PathIcon Data="{StaticResource arrow_sync_regular}" />
                         </FloatingButton>
-                    </FloatingButtonBar>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
