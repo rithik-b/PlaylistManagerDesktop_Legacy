@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:userControls="clr-namespace:PlaylistManager.UserControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="PlaylistManager.Views.SettingsView">
+             x:Class="PlaylistManager.Views.SettingsView" PointerPressed="LoseFocus">
         <ScrollViewer Background="#202020">
             <StackPanel VerticalAlignment="Center" Margin="20">
                 <TextBlock Text="Directory Settings" FontSize="30" FontWeight="Black" />

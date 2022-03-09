@@ -1,6 +1,7 @@
 using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using PlaylistManager.Models;
@@ -19,6 +20,8 @@ namespace PlaylistManager.Views
             viewModel = new ViewModel();
             DataContext = viewModel;
         }
+        
+        private void LoseFocus(object? sender, PointerPressedEventArgs e) => Focus();
 
         public class ViewModel : ViewModelBase
         {
