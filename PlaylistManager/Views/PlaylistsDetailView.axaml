@@ -7,7 +7,7 @@
     <DockPanel>
         <Border Background="#202020" DockPanel.Dock="Top">
             <Grid ColumnDefinitions="1*, 4*" RowDefinitions="Auto, Auto" Margin="0,0,0,20">
-                <Button Padding="20" HorizontalAlignment="Left" Click="BackClick" Margin="0,0,0,20">&lt;</Button>
+                <Button Padding="20" HorizontalAlignment="Left" Click="BackClick" Margin="0,0,0,20" IsEnabled="{Binding !IsDownloading}">&lt;</Button>
                 <Image Stretch="UniformToFill" Source="{Binding CoverImage}" MinWidth="0" MinHeight="0" MaxWidth="256" MaxHeight="256" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" />
                 <StackPanel VerticalAlignment="Bottom" Spacing="10" Grid.Column="1" Grid.Row="1" MaxHeight="256" Margin="20,0">
                     <TextBlock Text="{Binding Title}" FontSize="70" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
