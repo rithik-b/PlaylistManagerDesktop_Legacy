@@ -79,7 +79,7 @@ namespace PlaylistManager.UserControls
                 {
                     var newFileName = coverViewModel.playlist.Filename;
                     coverViewModel.playlist.Filename = oldFileName;
-                    coverViewModel.Delete(false);
+                    coverViewModel.DeleteSinglePlaylistOrManager();
                     coverViewModel.playlist.Filename = newFileName;
                 }
             }
@@ -392,40 +392,50 @@ namespace PlaylistManager.UserControls
                 var deleteMessage = GetDeleteMessage();
                 if (deleteMessage != null)
                 {
-                    YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel(deleteMessage, yesButtonAction: CoreDelete));
+                    YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel(deleteMessage, yesButtonAction: DeleteSelectedPlaylistsOrManagers));
                 }   
             }
             else
             {
-                CoreDelete();
+                DeleteSelectedPlaylistsOrManagers();
             }
         }
 
-        // TODO: Make this async
-        private void CoreDelete()
+        private void DeleteSelectedPlaylistsOrManagers()
         {
             if (PlaylistsListView.viewModel.CurrentManager != null)
             {
                 var selectedItems = PlaylistsListView.viewModel.SelectedPlaylistsOrManagers.ToArray();
                 foreach (var playlistsOrManager in selectedItems)
                 {
-                    if (playlistsOrManager.isPlaylist && playlistsOrManager.playlist != null)
-                    {
-                        var playlistPath = playlistsOrManager.playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
-                        if (File.Exists(playlistPath))
-                        {
-                            PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlistsOrManager.playlist);
-                        }
-                    }
-                    else if (playlistsOrManager.playlistManager != null)
-                    {
-                        if (Directory.Exists(playlistsOrManager.playlistManager.PlaylistPath))
-                        {
-                            PlaylistsListView.viewModel.CurrentManager.DeleteChildManager(playlistsOrManager.playlistManager);
-                        }
-                    }
-                    PlaylistsListView.viewModel.SearchResults.Remove(playlistsOrManager);
+                    DeleteSinglePlaylistOrManager(playlistsOrManager);
                 }   
+            }
+        }
+
+        // TODO: Make this async
+        public void DeleteSinglePlaylistOrManager(PlaylistCoverViewModel? playlistOrManager = null)
+        {
+            playlistOrManager ??= this;
+            
+            if (PlaylistsListView.viewModel.CurrentManager != null)
+            {
+                if (playlistOrManager.isPlaylist && playlistOrManager.playlist != null)
+                {
+                    var playlistPath = playlistOrManager.playlist.GetPlaylistPath(PlaylistsListView.viewModel.CurrentManager);
+                    if (File.Exists(playlistPath))
+                    {
+                        PlaylistsListView.viewModel.CurrentManager.DeletePlaylist(playlistOrManager.playlist);
+                    }
+                }
+                else if (playlistOrManager.playlistManager != null)
+                {
+                    if (Directory.Exists(playlistOrManager.playlistManager.PlaylistPath))
+                    {
+                        PlaylistsListView.viewModel.CurrentManager.DeleteChildManager(playlistOrManager.playlistManager);
+                    }
+                }
+                PlaylistsListView.viewModel.SearchResults.Remove(playlistOrManager);
             }
         }
 
