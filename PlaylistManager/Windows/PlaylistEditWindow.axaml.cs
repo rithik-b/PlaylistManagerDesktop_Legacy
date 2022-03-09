@@ -23,7 +23,6 @@ namespace PlaylistManager.Windows
         private readonly SemaphoreSlim openSemaphore;
         private readonly OpenFileDialog openFileDialog;
         private readonly MainWindow? mainWindow;
-        private readonly PlaylistLibUtils? playlistLibUtils;
         
         private PlaylistEditWindowModel? viewModel;
         public PlaylistEditWindowModel? ViewModel
@@ -36,10 +35,9 @@ namespace PlaylistManager.Windows
             }
         }
 
-        public PlaylistEditWindow(MainWindow mainWindow, PlaylistLibUtils playlistLibUtils) : this()
+        public PlaylistEditWindow(MainWindow mainWindow) : this()
         {
             this.mainWindow = mainWindow;
-            this.playlistLibUtils = playlistLibUtils;
         }
         
         public PlaylistEditWindow()
@@ -77,13 +75,13 @@ namespace PlaylistManager.Windows
             };
         }
 
-        public async Task EditPlaylist(Window parent, IPlaylist playlist)
+        public async Task EditPlaylist(Window parent, IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             ViewModel = new PlaylistEditWindowModel(playlist);
             _ = ShowDialog(parent);
             await openSemaphore.WaitAsync();
             Hide();
-            playlistLibUtils?.PlaylistManager.RequestRefresh("PlaylistManager (desktop)");
+            parentManager.RequestRefresh("PlaylistManager (desktop)");
         }
 
         private async void EditButtonClick(object? sender, RoutedEventArgs e)

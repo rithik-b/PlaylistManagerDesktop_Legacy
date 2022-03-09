@@ -118,7 +118,7 @@ namespace PlaylistManager.Views
         {
             if (ViewModel != null)
             {
-                await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist);
+                await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist, ViewModel.parentManager);
                 ViewModel.UpdateMetadata();
             }
         }
@@ -192,7 +192,7 @@ namespace PlaylistManager.Views
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         public readonly IPlaylist playlist;
-        private readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
+        public readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
         private readonly LevelMatcher levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
