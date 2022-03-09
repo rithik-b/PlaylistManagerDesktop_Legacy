@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
-using System.Threading;
 using System.Threading.Tasks;
 using Aura.UI.Controls;
 using Avalonia;
@@ -119,24 +118,8 @@ namespace PlaylistManager.Views
         {
             if (ViewModel != null)
             {
-                await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist);
+                await PlaylistEditWindow.EditPlaylist(MainWindow, ViewModel.playlist, ViewModel.parentManager);
                 ViewModel.UpdateMetadata();
-            }
-        }
-
-        private void FloatingBarHoverStart(object? sender, PointerEventArgs e)
-        {
-            if (!floatingButtonBar.IsExpanded)
-            {
-                floatingButtonBar.IsExpanded = true;
-            }
-        }
-
-        private void FloatingBarHoverLeave(object? sender, PointerEventArgs e)
-        {
-            if (floatingButtonBar.IsExpanded)
-            {
-                floatingButtonBar.IsExpanded = false;
             }
         }
 
@@ -209,7 +192,7 @@ namespace PlaylistManager.Views
     public class PlaylistsDetailViewModel : ViewModelBase
     {
         public readonly IPlaylist playlist;
-        private readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
+        public readonly BeatSaberPlaylistsLib.PlaylistManager parentManager;
         private readonly LevelMatcher levelMatcher;
         private bool songsLoaded;
         private Bitmap? coverImage;
@@ -228,6 +211,7 @@ namespace PlaylistManager.Views
         public string? Description => playlist.Description;
         public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
+        private bool DownloadableLevelsExist => Levels.Any(x => !x.Downloaded && x.Key != null);
         public bool SongsLoading => !songsLoaded;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
@@ -283,7 +267,12 @@ namespace PlaylistManager.Views
 
         public void Save() => parentManager.StorePlaylist(playlist);
 
-        public void UpdateNumSongs() => NotifyPropertyChanged(nameof(NumSongs));
+        public void UpdateNumSongs()
+        {
+            NotifyPropertyChanged(nameof(NumSongs));
+            NotifyPropertyChanged(nameof(DownloadableLevelsExist));
+        }
+
         private async Task FetchSongs()
         {
             foreach (var playlistSong in playlist)
@@ -312,6 +301,7 @@ namespace PlaylistManager.Views
             playlist.Remove(source.playlistSongWrapper.playlistSong);
             playlist.Insert(playlist.IndexOf(destination.playlistSongWrapper.playlistSong), source.playlistSongWrapper.playlistSong);
             Levels.Move(Levels.IndexOf(source), Levels.IndexOf(destination));
+            SelectedLevels.Clear();
             SelectedLevel = source;
         }
 

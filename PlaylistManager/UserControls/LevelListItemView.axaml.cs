@@ -43,7 +43,6 @@ namespace PlaylistManager.UserControls
         
         private async void DoDrag(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            await Task.Delay(Utils.kHoldDelay);
             if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || comboBox.IsFocused)
             {
                 return;
@@ -88,7 +87,6 @@ namespace PlaylistManager.UserControls
         public readonly PlaylistSongWrapper playlistSongWrapper;
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
-        private bool popupShowing;
         private string? key;
         private string? selectedCharacteristic;
         private List<Difficulty>? difficulties;
@@ -101,6 +99,9 @@ namespace PlaylistManager.UserControls
         
         private MainWindow? mainWindow;
         private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
+        
+        private YesNoPopup? yesNoPopup;
+        private YesNoPopup YesNoPopup => yesNoPopup ??= Locator.Current.GetService<YesNoPopup>()!;
         
         private LevelLoader? levelLoader;
         private LevelLoader LevelLoader => levelLoader ??= Locator.Current.GetService<LevelLoader>()!;
@@ -434,9 +435,9 @@ namespace PlaylistManager.UserControls
         public void Remove()
         {
             var removeMessage = GetRemoveMessage();
-            if (PlaylistsDetailView.ViewModel != null && removeMessage != null && !popupShowing)
+            if (PlaylistsDetailView.ViewModel != null && removeMessage != null)
             {
-                MainWindow.NewContentDialog(removeMessage, (sender, e) =>
+                YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel(removeMessage, yesButtonAction: () =>
                 {
                     var selectedItems = PlaylistsDetailView.ViewModel.SelectedLevels.ToArray();
 
@@ -447,9 +448,7 @@ namespace PlaylistManager.UserControls
                     }
                 
                     PlaylistsDetailView.ViewModel.UpdateNumSongs();
-                    popupShowing = false;
-                }, (sender, e) => popupShowing = false, "Yes", "No");
-                popupShowing = true;
+                }));
             }
         }
 

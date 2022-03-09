@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -24,8 +23,6 @@ namespace PlaylistManager.Windows
         private readonly TextBox searchBox;
         private readonly ListBox listBox;
         private readonly SemaphoreSlim openSemaphore;
-
-        private SearchItemViewModel? SearchedSong => viewModel.SelectedResult;
         
         public LevelSearchWindow()
         {
@@ -42,17 +39,28 @@ namespace PlaylistManager.Windows
 
         public async Task<SearchItemViewModel?> SearchSong(Window parent)
         {
-            _ = ShowDialog(parent);
+            var mainWindow = parent as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.viewModel.ModalShown = true;
+                mainWindow.ClickOffEvent += CloseModal;
+            }
+            Show(parent);
             await openSemaphore.WaitAsync();
+            if (mainWindow != null)
+            {
+                mainWindow.viewModel.ModalShown = false;
+                mainWindow.ClickOffEvent -= CloseModal;
+            }
             Hide();
-            return SearchedSong;
+            return viewModel.SelectedResult;
         }
 
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
             viewModel.SelectedResult = null;
-            viewModel.SearchText = String.Empty;
+            viewModel.SearchText = string.Empty;
             viewModel.SearchResults.Clear();
             searchBox.Focus();
         }
@@ -62,7 +70,7 @@ namespace PlaylistManager.Windows
             switch (e.Key)
             {
                 case Key.Escape:
-                    openSemaphore.Release();
+                    CloseModal();
                     break;
                 case Key.Up:
                     listBox.SelectedIndex--;
@@ -71,7 +79,7 @@ namespace PlaylistManager.Windows
                     listBox.SelectedIndex++;
                     break;
                 case Key.Enter:
-                    if (SearchedSong != null)
+                    if (viewModel.SelectedResult != null)
                     {
                         openSemaphore.Release();
                     }
@@ -79,12 +87,18 @@ namespace PlaylistManager.Windows
             }
         }
 
-        private void OnDoubleClick(object? sender, RoutedEventArgs e)
+        private void OnClick(object? sender, RoutedEventArgs e)
         {
-            if (SearchedSong != null)
+            if (viewModel.SelectedResult != null)
             {
                 openSemaphore.Release();
             }
+        }
+
+        private void CloseModal()
+        {
+            viewModel.SelectedResult = null;
+            openSemaphore.Release();
         }
     }
 

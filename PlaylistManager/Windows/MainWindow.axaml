@@ -8,7 +8,9 @@
         Title="PlaylistManager"
         Background="Transparent"
         Icon="/Icons/Logo.ico">
-        <Panel>
+        <Grid>
                 <local:FlowCoordinator />
-        </Panel>
+                <Border IsVisible="{Binding ModalShown}" Background="#80000000" PointerPressed="ClickOff">
+                </Border> 
+        </Grid>
 </Window>
