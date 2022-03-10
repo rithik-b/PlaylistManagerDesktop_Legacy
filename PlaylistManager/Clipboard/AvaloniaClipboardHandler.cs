@@ -80,16 +80,23 @@ namespace PlaylistManager.Clipboard
 
         public async Task Copy(IEnumerable<PlaylistSongWrapper> playlistSongWrappers)
         {
-            var clipboardData = new DataObject();
             var playlistSongs = new List<IPlaylistSong>();
+            var hashes = "";
             foreach (var playlistSongWrapper in playlistSongWrappers)
             {
                 playlistSongs.Add(playlistSongWrapper.playlistSong);
+                if (playlistSongWrapper.playlistSong.TryGetIdentifierForPlaylistSong(out var identifier, out var _))
+                {
+                    hashes += identifier + "\n";
+                }
             }
+            hashes = hashes.TrimEnd();
             
+            var clipboardData = new DataObject();
             clipboardData.Set(IClipboardHandler.kPlaylistSongData, playlistSongs);
-            var clipboard = Application.Current?.Clipboard;
+            clipboardData.Set(DataFormats.Text, hashes);
             
+            var clipboard = Application.Current?.Clipboard;
             if (clipboard != null)
             {
                 await clipboard.SetDataObjectAsync(clipboardData);
