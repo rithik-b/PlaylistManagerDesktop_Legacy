@@ -212,7 +212,7 @@ namespace PlaylistManager.Views
         public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         private bool DownloadableLevelsExist => Levels.Any(x => !x.Downloaded && x.Key != null);
-        public bool SongsLoading => !songsLoaded;
+        public bool SongsLoading => !songsLoaded || IsSyncing;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
         private LevelListItemViewModel? selectedLevel;
@@ -396,13 +396,26 @@ namespace PlaylistManager.Views
         #region Sync
 
         private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+        
+        private bool isSyncing;
+        private bool IsSyncing
+        {
+            get => isSyncing;
+            set
+            {
+                isSyncing = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(SongsLoading));
+            }
+        }
 
         private async Task SyncPlaylist()
         {
-            songsLoaded = false;
-            NotifyPropertyChanged(nameof(SongsLoading));
+            IsSyncing = true;
             await playlist.Sync(parentManager);
+            songsLoaded = false;
             Levels.Clear();
+            IsSyncing = false;
             _ = FetchSongs();
         }
 
