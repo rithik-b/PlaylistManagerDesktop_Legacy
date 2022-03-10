@@ -35,6 +35,11 @@ public partial class YesNoPopup : Window
 
     public async void ShowPopup(Window parent, YesNoPopupModel viewModel)
     {
+        if (ViewModel != null)
+        {
+            return;
+        }
+        
         ViewModel = viewModel;
         var mainWindow = parent as MainWindow;
         if (mainWindow != null)
@@ -48,6 +53,7 @@ public partial class YesNoPopup : Window
         {
             mainWindow.viewModel.ModalShown = false;
         }
+        ViewModel = null;
         Hide();
     }
 

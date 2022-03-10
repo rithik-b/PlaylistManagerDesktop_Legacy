@@ -52,7 +52,7 @@
                                 </Panel>
                             </Panel>
                         </FloatingButton>
-                        <FloatingButton Background="#606060" Command="{Binding SyncPlaylist}" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
+                        <FloatingButton Background="#606060" Command="{Binding ToggleSync}" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
                             <userControls:ProgressIcon Icon="{StaticResource arrow_sync_regular}" Animate="{Binding IsSyncing}"  />
                         </FloatingButton>
                     </StackPanel>
