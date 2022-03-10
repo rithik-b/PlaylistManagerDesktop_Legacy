@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Threading;
 using System.Threading.Tasks;
 using Aura.UI.Controls;
 using Avalonia;
@@ -198,6 +200,12 @@ namespace PlaylistManager.Views
         private Bitmap? coverImage;
         private CoverImageLoader? coverImageLoader;
         
+        private YesNoPopup? yesNoPopup;
+        private YesNoPopup YesNoPopup => yesNoPopup ??= Locator.Current.GetService<YesNoPopup>()!;
+        
+        private MainWindow? mainWindow;
+        private MainWindow MainWindow => mainWindow ??= Locator.Current.GetService<MainWindow>()!;
+        
         public PlaylistsDetailViewModel(IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager)
         {
             this.playlist = playlist;
@@ -212,7 +220,7 @@ namespace PlaylistManager.Views
         public int OwnedSongs => Levels.Count(l => l.playlistSongWrapper.Downloaded);
         public string NumSongs => $"{playlist.Count} song{(playlist.Count != 1 ? "s" : "")} {(songsLoaded ? $"({OwnedSongs} downloaded)" : "")}";
         private bool DownloadableLevelsExist => Levels.Any(x => !x.Downloaded && x.Key != null);
-        public bool SongsLoading => !songsLoaded;
+        public bool SongsLoading => !songsLoaded || IsSyncing;
         public ObservableCollection<LevelListItemViewModel> Levels { get; } = new();
 
         private LevelListItemViewModel? selectedLevel;
@@ -305,9 +313,7 @@ namespace PlaylistManager.Views
             SelectedLevel = source;
         }
 
-        #region Download & Sync
-
-        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+        #region Download
         
         private double downloadProgress;
         private double DownloadProgress
@@ -391,6 +397,49 @@ namespace PlaylistManager.Views
             }
 
             IsDownloading = false;
+        }
+
+        #endregion
+
+        #region Sync
+
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+        private bool IsSyncing =>  syncCancellationTokenSource is {IsCancellationRequested: false};
+        private CancellationTokenSource? syncCancellationTokenSource;
+
+        private async Task ToggleSync()
+        {
+            if (IsSyncing)
+            {
+                syncCancellationTokenSource?.Cancel();
+                return;
+            }
+
+            syncCancellationTokenSource = new CancellationTokenSource();
+            NotifyPropertyChanged(nameof(IsSyncing));
+            NotifyPropertyChanged(nameof(SongsLoading));
+            
+            try
+            {
+                var success = await playlist.Sync(parentManager, syncCancellationTokenSource.Token);
+                if (!success)
+                {
+                    YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel("Error: The playlist cannot be synced right now.", "Ok", showNoButton: false));
+                }
+            }
+            catch (Exception e)
+            {
+                if (e is not TaskCanceledException)
+                {
+                    YesNoPopup.ShowPopup(MainWindow, new YesNoPopupModel("Error: The playlist cannot be synced right now.", "Ok", showNoButton: false));
+                }
+            }
+
+            syncCancellationTokenSource = null;
+            songsLoaded = false;
+            Levels.Clear();
+            await FetchSongs();
+            NotifyPropertyChanged(nameof(IsSyncing));
         }
 
         #endregion

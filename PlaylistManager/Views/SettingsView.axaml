@@ -12,7 +12,9 @@
                     <StackPanel VerticalAlignment="Center" Spacing="35">
                         <Grid ColumnDefinitions="*, Auto">
                             <userControls:FileSetting Grid.Column="0" SettingName="Beat Saber Directory" SettingValue="{Binding BeatSaberDir}" ModeValue="FolderRead" />
-                            <userControls:ProgressButton Grid.Column="1" ToolTip.Tip="Refresh Playlists and Levels" HorizontalAlignment="Right" VerticalAlignment="Center" Icon="{StaticResource arrow_sync_regular}" Command="{Binding RefreshLevels}" Animate="{Binding RefreshingLevels}" IsEnabled="{Binding RefreshingLevels, Converter={x:Static BoolConverters.Not}}" />
+                            <Button Grid.Column="1" ToolTip.Tip="Refresh Playlists and Levels" HorizontalAlignment="Right" VerticalAlignment="Center" IsEnabled="{Binding RefreshingLevels, Converter={x:Static BoolConverters.Not}}" Command="{Binding RefreshLevels}">
+                                <userControls:ProgressIcon Icon="{StaticResource arrow_sync_regular}" Animate="{Binding RefreshingLevels}"  />
+                            </Button>
                         </Grid>
                     </StackPanel>
                 </GroupBox>

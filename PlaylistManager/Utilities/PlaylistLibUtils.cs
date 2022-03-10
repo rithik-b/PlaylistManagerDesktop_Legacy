@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using BeatSaberPlaylistsLib.Blist;
 using BeatSaberPlaylistsLib.Legacy;
 using BeatSaberPlaylistsLib.Types;
 using PlaylistManager.Models;
+using Splat;
 using Difficulty = PlaylistManager.Models.Difficulty;
 
 namespace PlaylistManager.Utilities
@@ -167,6 +169,27 @@ namespace PlaylistManager.Utilities
             }
 
             return Path.GetFileName(path);
+        }
+
+        public static async Task<bool> Sync(this IPlaylist playlist, BeatSaberPlaylistsLib.PlaylistManager parentManager, CancellationToken? cancellationToken = null)
+        {
+            if (playlist.TryGetCustomData("syncURL", out var rawSyncURL) && rawSyncURL is string syncURL)
+            {
+                var handler = playlist.GetHandlerForPlaylist(parentManager);
+                if (handler != null)
+                {
+                    var httpClientService = Locator.Current.GetService<HttpClientService>()!;
+                    var response = await httpClientService.GetAsync(syncURL, cancellationToken ?? CancellationToken.None);
+                    if (response.Successful)
+                    {
+                        playlist.Clear();
+                        await using var playlistStream = await response.ReadAsStreamAsync(); 
+                        handler.Populate(playlistStream, playlist);
+                        return true;
+                    }   
+                }
+            }
+            return false;
         }
     }
 }
