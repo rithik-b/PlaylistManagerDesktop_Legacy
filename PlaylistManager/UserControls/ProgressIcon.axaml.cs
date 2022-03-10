@@ -12,15 +12,15 @@ using ReactiveUI;
 
 namespace PlaylistManager.UserControls
 {
-    public class ProgressButton : TemplatedControl
+    public class ProgressIcon : TemplatedControl
     {
-        public ProgressButton()
+        public ProgressIcon()
         {
             AvaloniaXamlLoader.Load(this);
         }
 
         public static readonly StyledProperty<Geometry> IconProperty =
-            AvaloniaProperty.Register<ProgressButton, Geometry>(nameof(Icon), defaultBindingMode: BindingMode.TwoWay);
+            AvaloniaProperty.Register<ProgressIcon, Geometry>(nameof(Icon), defaultBindingMode: BindingMode.TwoWay);
 
         public Geometry Icon
         {
@@ -28,14 +28,8 @@ namespace PlaylistManager.UserControls
             set => SetValue(IconProperty, value);
         }
 
-        public static readonly DirectProperty<ProgressButton, ICommand> CommandProperty =
-            AvaloniaProperty.RegisterDirect<ProgressButton, ICommand>(nameof(Command), button => button.Command, 
-                (button, command) => button.Command = command, enableDataValidation: true);
-
-        private ICommand Command { get; set; }
-
         public static readonly StyledProperty<bool> AnimateProperty = 
-            AvaloniaProperty.Register<ProgressButton, bool>(nameof(Animate), defaultBindingMode: BindingMode.TwoWay);
+            AvaloniaProperty.Register<ProgressIcon, bool>(nameof(Animate), defaultBindingMode: BindingMode.TwoWay);
         
         public bool Animate
         {

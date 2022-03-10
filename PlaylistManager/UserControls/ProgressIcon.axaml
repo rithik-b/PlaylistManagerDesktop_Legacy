@@ -1,12 +1,10 @@
-<ContentControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="PlaylistManager.UserControls.ProgressButton"
+<ContentControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="PlaylistManager.UserControls.ProgressIcon"
                 xmlns:userControls="clr-namespace:PlaylistManager.UserControls">
     <ContentControl.Styles>
-        <Style Selector="userControls|ProgressButton">
+        <Style Selector="userControls|ProgressIcon">
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Button Command="{TemplateBinding Command}">
-                        <PathIcon Classes.ProgressIcon="{TemplateBinding Animate}" Data="{TemplateBinding Icon}" />
-                    </Button>
+                    <PathIcon Classes.ProgressIcon="{TemplateBinding Animate}" Data="{TemplateBinding Icon}" />
                 </ControlTemplate>
             </Setter>
         </Style>
