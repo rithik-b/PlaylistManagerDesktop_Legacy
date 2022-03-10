@@ -51,7 +51,7 @@
                                 </Panel>
                             </Panel>
                         </FloatingButton>
-                        <FloatingButton Background="#606060" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
+                        <FloatingButton Background="#606060" Command="{Binding SyncPlaylist}" IsVisible="{Binding IsSyncable}" ToolTip.Tip="Sync Playlist">
                             <PathIcon Data="{StaticResource arrow_sync_regular}" />
                         </FloatingButton>
                     </StackPanel>

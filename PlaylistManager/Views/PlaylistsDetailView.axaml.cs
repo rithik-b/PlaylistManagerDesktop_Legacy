@@ -305,9 +305,7 @@ namespace PlaylistManager.Views
             SelectedLevel = source;
         }
 
-        #region Download & Sync
-
-        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+        #region Download
         
         private double downloadProgress;
         private double DownloadProgress
@@ -391,6 +389,21 @@ namespace PlaylistManager.Views
             }
 
             IsDownloading = false;
+        }
+
+        #endregion
+
+        #region Sync
+
+        private bool IsSyncable => playlist.TryGetCustomData("syncURL", out var _);
+
+        private async Task SyncPlaylist()
+        {
+            songsLoaded = false;
+            NotifyPropertyChanged(nameof(SongsLoading));
+            await playlist.Sync(parentManager);
+            Levels.Clear();
+            _ = FetchSongs();
         }
 
         #endregion
