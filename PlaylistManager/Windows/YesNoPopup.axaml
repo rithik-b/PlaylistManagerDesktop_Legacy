@@ -13,7 +13,7 @@
                     <TextBlock Text="{Binding YesButtonText}" />
                 </Button>
                 <Button Click="NoButtonClick" IsVisible="{Binding ShowNoButton}">
-                    <TextBlock Text="{Binding YesButtonText}" />
+                    <TextBlock Text="{Binding NoButtonText}" />
                 </Button>
             </StackPanel>
         </StackPanel>
