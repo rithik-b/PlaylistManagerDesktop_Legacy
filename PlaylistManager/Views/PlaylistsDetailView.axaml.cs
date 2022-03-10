@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Aura.UI.Controls;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -65,6 +66,16 @@ namespace PlaylistManager.Views
             var playlist = utils.PlaylistManager.GetPlaylist("monterwook_s_speed_practice.json");
             ViewModel = new PlaylistsDetailViewModel(playlist!, utils.PlaylistManager);
 #endif
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Exit += delegate(object? sender, ControlledApplicationLifetimeExitEventArgs args)
+                {
+                    if (ViewModel != null)
+                    {
+                        ViewModel.parentManager.StorePlaylist(ViewModel.playlist);
+                    }
+                };
+            }
         }
 
         private void DragOverList(object sender, DragEventArgs e)
